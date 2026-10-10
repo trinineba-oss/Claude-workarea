@@ -1,10 +1,10 @@
-# Game Design (draft v2)
+# Game Design (draft v3)
 
 Working title: **Gyro's Awakening** (a parody of *Link's Awakening*; easy to change).
 
 ## Pitch
 
-A hero washes up on the shore of the Gulf of Paria and finds a strange, dreamlike
+A hero washes up at **San Fernando Wharf** and finds a strange, dreamlike
 **San Fernando, Trinidad**. The **Legendary Lamb Gyro** waits at the top of San Fernando
 Hill, and only the **Gyro God**, sleeping inside a giant roti, can release it. It is a top-down
 adventure in the spirit of *Link's Awakening*: a small world full of odd locals, secrets behind
@@ -27,7 +27,7 @@ opinion about everything.
 
 ## Story beats
 
-1. **Washed ashore.** The hero wakes on the Gulf shore beside a wrecked boat, hungry. A
+1. **Washed up at the wharf.** The hero wakes on San Fernando Wharf beside a wrecked boat, hungry. A
    scarlet ibis ("Ibis", the owl-style guide, or a gloomy corbeau for a funnier tone) explains
    the world.
 2. **The legend.** The Legendary Lamb Gyro rests atop San Fernando Hill, sealed by the
@@ -36,9 +36,16 @@ opinion about everything.
 4. **The rival.** A smug fast-food baron ("Doner Dread") is chasing the same prize and shows
    up at each temple one step ahead, gloating.
 5. **The hill.** With all four seasonings the hero wakes the Gyro God and reaches the gyro.
-6. **The twist.** The whole thing is the hero's dream while waiting for an order at a roti
-   shop or doubles stand. The final gag: the vendor calls "Your order ready!" and hands over
-   an ordinary, delicious gyro while the credits roll over the empty streets. Bittersweet, then funny.
+6. **The twist.** The whole thing was a dream. The hero dozed off at **Cross Crossing**
+   while waiting for a gyro. The final scene: the street vendor shakes them awake ("Boss,
+   yuh gyro ready!"), the hero collects an ordinary, delicious gyro, and the credits roll
+   over the busy food stretch. Bittersweet, then funny. The vendor has been in the dream
+   all along, in a different role (the shopkeeper, the riddle men's cook, or the Gyro God's
+   voice; your call).
+
+   *Optional prologue:* a 30-second scene at the Cross Crossing stand: the hero orders a
+   gyro, is told "wait small", sits down and nods off, then wakes up on the wharf. It makes
+   the ending land harder, and it is cheap to build.
 
 ## World (San Fernando, stylized)
 
@@ -47,9 +54,10 @@ knowledge of the city.**
 
 | Area | Role | Ideas |
 | --- | --- | --- |
-| Gulf shore | Tutorial, start | Wrecked boat, crabs, mud flats, the gull/ibis guide |
+| San Fernando Wharf | Tutorial, start | Wrecked boat, crabs, old cranes and crates, the ibis/corbeau guide |
+| Cross Crossing | Overworld / hub | The street-food stretch: stalls and vendors, the trading quest, smells that heal, and the dream's mirror of the real stand |
 | Harris Promenade | Hub | Shops, benches, NPCs, save point, maxi taxi stop |
-| High Street and market | Overworld | Vendors, the trading quest, the rum-shop riddle men |
+| High Street and market | Overworld | More vendors, the rum-shop riddle men |
 | Skinner Park | Overworld / minigame | A cricket or football minigame |
 | Temples 1-4 | Dungeons | Ideas: quarry caves, the market at night, the refinery tower, the old wharf |
 | San Fernando Hill | Finale | Opens after four seasonings |
@@ -58,12 +66,12 @@ The overworld is a grid of screen-sized rooms (as built in milestone 1).
 
 ## Link's-Awakening-style set pieces, reimagined
 
-- **Shopkeeper rule:** the doubles vendor is cheerful until you try to skip the line or steal;
+- **Shopkeeper rule:** a Cross Crossing vendor is cheerful until you try to skip the line or steal;
   the gag is the punishment, not violence.
 - **Maxi taxis:** colorful minibuses as fast travel between hubs (the ocarina/telephone idea).
 - **Chain-chomp ally:** a pothound on a long rope who guards a path.
-- **Trading quest:** a chain of absurd favors (a bag of ice, a sno-cone, a lost slipper ...)
-  ending in a useful reward.
+- **Trading quest:** a chain of absurd favors along the Cross Crossing stalls (a bag of ice, a
+  sno-cone, a lost slipper ...) ending in a useful reward.
 - **Rum-shop riddle men:** a group of "liming" locals who give clues and terrible advice.
 - **Sleeping god:** the final boss sequence is waking the Gyro God, not killing it.
 
@@ -94,7 +102,7 @@ shockwave). Bosses are themed on the temple.
 ## Progression and length
 
 - A full game is about 4 to 6 hours; the first **vertical slice is about 30 minutes**:
-  shore, Promenade, a small overworld, Temple 1, its boss, and the first seasoning.
+  wharf, Promenade, a small overworld, Temple 1, its boss, and the first seasoning.
 - Saving: automatic on room change, pause and app background, stored in `user://`.
 - Gating is by items and seasonings (as in the original), never by grinding.
 
@@ -121,7 +129,7 @@ shockwave). Bosses are themed on the temple.
    controls, input map, save and load. Known gap: controls overlap the playfield edges on
    20:9 phones; revisit in the polish milestone.
 2. **Combat:** cutlass attack, health and damage, knockback, two enemy types, pickups.
-3. **World and dialogue:** the shore, Promenade, NPCs, text box, signs, the guide.
+3. **World and dialogue:** the wharf, Promenade, NPCs, text box, signs, the guide.
 4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.
 5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.
 6. **Polish:** sound effects, music, hit effects, menus, settings, low-end phone testing.
@@ -130,7 +138,9 @@ After the slice: Temples 2-4, the trading quest, minigames, the finale and the t
 
 ## Open questions
 
-1. **Local knowledge:** the landmarks, foods, slang and jokes you most want in the game.
+1. **Local knowledge:** the landmarks, foods, slang and jokes you most want in the game,
+   especially what you would find at Cross Crossing (which stalls, which foods, what the
+   atmosphere is like) and what the wharf looks like.
 2. **Dialect level:** light flavor, or heavy Trini English in dialogue (you would review it)?
 3. Hero: name, look, and whether they speak (Link's Awakening's hero is silent).
 4. Final title (the Trini angle could change it).
