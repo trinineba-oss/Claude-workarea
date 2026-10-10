@@ -1,7 +1,8 @@
 class_name Player
 extends CharacterBody2D
 ## Top-down hero: moves with the move_* actions, swings the cutlass with attack, and has
-## health in half "doubles" (two halves per heart icon).
+## health in half "doubles" (two halves per heart icon). The node's origin is at the hero's
+## feet, which is what depth sorting uses.
 
 signal health_changed(health: int, max_health: int)
 signal money_changed(money: int)
@@ -9,12 +10,13 @@ signal died
 
 enum State { NORMAL, ATTACK, HURT }
 
-const SPEED := 64.0
+const SPEED := 256.0
 const ATTACK_TIME := 0.28
 const HURT_TIME := 0.18
-const KNOCKBACK_SPEED := 120.0
+const KNOCKBACK_SPEED := 480.0
 const INVINCIBLE_SECONDS := 1.0
 const REVIVE_INVINCIBLE_SECONDS := 1.5
+const STEP_RATE := 11.0
 
 var max_health := 6
 var health := 6
@@ -28,6 +30,8 @@ var state := State.NORMAL
 var _state_time := 0.0
 var _invincible := 0.0
 var _knockback := Vector2.ZERO
+var _step := 0.0
+var _squash := Vector2.ONE
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _cutlass: Cutlass = $Cutlass
@@ -37,10 +41,23 @@ func _ready() -> void:
 	add_to_group("player")
 
 
+func _process(delta: float) -> void:
+	var walking := state == State.NORMAL and not frozen and velocity.length() > 1.0
+	if walking:
+		_step += delta * STEP_RATE
+	else:
+		_step = 0.0
+	_squash = _squash.lerp(Vector2.ONE, minf(delta * 12.0, 1.0))
+	var breathe := 0.0 if walking else sin(Time.get_ticks_msec() / 1000.0 * 3.0) * 0.02
+	_sprite.position.y = -absf(sin(_step)) * 6.0
+	_sprite.rotation = 1.4 if health <= 0 else sin(_step) * 0.08
+	_sprite.scale = Vector2(1.0 - breathe, 1.0 + breathe) * _squash
+	var flash := 0.4 if _invincible > 0.0 and int(_invincible * 14.0) % 2 == 0 else 1.0
+	_sprite.modulate.a = 0.45 if health <= 0 else flash
+
+
 func _physics_process(delta: float) -> void:
 	_invincible = maxf(_invincible - delta, 0.0)
-	if health > 0:
-		_sprite.modulate.a = 0.4 if _invincible > 0.0 and int(_invincible * 14.0) % 2 == 0 else 1.0
 	if frozen:
 		velocity = Vector2.ZERO
 		return
@@ -73,11 +90,12 @@ func take_hit(damage: int, from_position: Vector2) -> bool:
 	state = State.HURT
 	_state_time = HURT_TIME
 	_invincible = INVINCIBLE_SECONDS
+	_squash = Vector2(0.84, 1.14)
 	_cutlass.cancel()
+	Effects.burst(get_parent(), position + Vector2(0, -40), "hit")
 	health_changed.emit(health, max_health)
 	if health == 0:
 		frozen = true
-		_sprite.modulate.a = 0.3
 		died.emit()
 	return true
 
@@ -101,7 +119,6 @@ func revive() -> void:
 	frozen = false
 	state = State.NORMAL
 	_invincible = REVIVE_INVINCIBLE_SECONDS
-	_sprite.modulate.a = 1.0
 	health_changed.emit(health, max_health)
 
 
@@ -122,6 +139,7 @@ func _move() -> void:
 func _start_attack() -> void:
 	state = State.ATTACK
 	_state_time = ATTACK_TIME
+	_squash = Vector2(1.16, 0.88)
 	_cutlass.swing(facing, ATTACK_TIME)
 
 

@@ -1,8 +1,14 @@
-# Pixel Game (Godot 4.7, GDScript)
+# Gyro's Awakening game (Godot 4.7, GDScript)
 
-- Keep the pixel-art project settings in `project.godot` (nearest filtering, integer
-  viewport scaling, pixel snapping). Import new sprites with the default (no mipmaps,
-  no filter) settings.
+The folder is still called `pixel-game`, but the game is HD 2D now (it started as pixel art).
+
+- HD 2D: 1280x704 base resolution, `canvas_items` stretch, linear filtering. One tile is
+  64 px and rooms are 20x11 tiles; distances and speeds in code are in these pixels.
+- Node origins are at the character's feet (or the base of a tree/wall): depth sorting uses
+  them, so sprites are offset upward. Keep that convention for new art and scenes.
+- Placeholder art comes from `tools/gen_art.py` (Pillow + numpy, run with
+  `uv run --with pillow --with numpy python -I tools/gen_art.py`). Real art replaces the PNGs
+  at the same size and anchor.
 - Style: `make lint` runs `gdformat --check` and `gdlint`; fix with `gdformat scripts tests`.
 - Tests: `tests/*_test.gd` are headless `SceneTree` scripts extending `tests/test_base.gd`; add a
   new `<name>_test.gd` per system and run `make test`. The world data is validated there.

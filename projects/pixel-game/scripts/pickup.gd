@@ -14,11 +14,19 @@ const COIN_VALUE := 1
 ## Seconds until it disappears (blinking at the end); 0 keeps it forever.
 var lifetime := 0.0
 
+var _age := 0.0
+
 @onready var _sprite: Sprite2D = $Sprite2D
 
 
 func _ready() -> void:
 	_sprite.texture = TEXTURES[kind]
+	_age = randf() * TAU
+
+
+func _process(delta: float) -> void:
+	_age += delta
+	_sprite.position.y = -22.0 - sin(_age * 3.0) * 4.0
 
 
 func _physics_process(delta: float) -> void:
@@ -30,6 +38,7 @@ func _physics_process(delta: float) -> void:
 			return
 	for body in get_overlapping_bodies():
 		if body is Player and _collect(body):
+			Effects.burst(get_parent(), position + Vector2(0, -24), "sparkle")
 			queue_free()
 			return
 

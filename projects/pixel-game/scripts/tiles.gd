@@ -1,63 +1,90 @@
 class_name Tiles
 extends RefCounted
-## Tile legend for the ASCII room maps in data/rooms, and the shared TileSet.
+## Legend for the ASCII room maps in data/rooms, and the invisible collision tile set.
 ##
-## Legend: . grass   , flowers   s sand   p path   = stone floor   @ player start (sand)
-##         ~ water   # rock   b bush   T tree   (the last four are solid)
+##   .  grass        ,  grass with flowers   s  sand    p  dirt path    =  stone floor
+##   @  player start (sand)
+##   ~  water        #  rock wall            b  bush    T  tree         (these four are solid)
 
-const SIZE := 16
-const ATLAS := preload("res://assets/tiles/overworld.png")
-const COUNT := 9
-## character -> atlas column. Keep in sync with tools/gen_art.py.
-const INDEX := {
-	".": 0,
-	"s": 1,
-	"~": 2,
-	"#": 3,
-	"b": 4,
-	"T": 5,
-	"p": 6,
-	",": 7,
-	"=": 8,
-	"@": 1,
+const SIZE := 64
+## Ground material per character; "" means "take it from the neighbours" (see ground_at).
+const GROUND := {
+	".": "grass",
+	",": "grass",
+	"s": "sand",
+	"@": "sand",
+	"p": "dirt",
+	"=": "stone",
+	"~": "water",
+	"#": "",
+	"b": "",
+	"T": "",
 }
+## Characters that also place a scenery sprite.
+const SCENERY := {",": "flowers", "#": "rock", "b": "bush", "T": "tree"}
 const SOLID := ["~", "#", "b", "T"]
 
 static var _tileset: TileSet
 
 
 static func is_known(ch: String) -> bool:
-	return INDEX.has(ch)
+	return GROUND.has(ch)
 
 
 static func is_solid(ch: String) -> bool:
 	return ch in SOLID
 
 
-static func atlas_index(ch: String) -> int:
-	return INDEX[ch]
+static func scenery(ch: String) -> String:
+	return SCENERY.get(ch, "")
 
 
-## The shared tile set: one atlas row, with full-tile collision on solid tiles.
-static func tileset() -> TileSet:
+## Ground material under the tile at (x, y). Scenery tiles (rocks, bushes, trees) take the
+## most common walkable ground around them, so a bush on the beach stands on sand.
+static func ground_at(lines: PackedStringArray, x: int, y: int) -> String:
+	var own: String = GROUND[lines[y][x]]
+	if own != "":
+		return own
+	var counts := {}
+	for d in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var nx: int = x + d.x
+		var ny: int = y + d.y
+		if ny < 0 or ny >= lines.size() or nx < 0 or nx >= lines[ny].length():
+			continue
+		var ground: String = GROUND.get(lines[ny][nx], "")
+		if ground != "" and ground != "water":
+			counts[ground] = counts.get(ground, 0) + 1
+	var best := "grass"
+	var best_count := 0
+	for ground in counts:
+		if counts[ground] > best_count:
+			best = ground
+			best_count = counts[ground]
+	return best
+
+
+## One invisible, fully solid tile used to give solid map cells their collision.
+static func collision_tileset() -> TileSet:
 	if _tileset != null:
 		return _tileset
 	var ts := TileSet.new()
 	ts.tile_size = Vector2i(SIZE, SIZE)
 	ts.add_physics_layer()
 	var source := TileSetAtlasSource.new()
-	source.texture = ATLAS
+	var blank := Image.create(SIZE, SIZE, false, Image.FORMAT_RGBA8)
+	source.texture = ImageTexture.create_from_image(blank)
 	source.texture_region_size = Vector2i(SIZE, SIZE)
-	for i in COUNT:
-		source.create_tile(Vector2i(i, 0))
+	source.create_tile(Vector2i.ZERO)
 	ts.add_source(source, 0)
 	var half := SIZE / 2.0
-	var square := PackedVector2Array(
-		[Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)]
+	var data := source.get_tile_data(Vector2i.ZERO, 0)
+	data.add_collision_polygon(0)
+	data.set_collision_polygon_points(
+		0,
+		0,
+		PackedVector2Array(
+			[Vector2(-half, -half), Vector2(half, -half), Vector2(half, half), Vector2(-half, half)]
+		)
 	)
-	for ch in SOLID:
-		var data := source.get_tile_data(Vector2i(INDEX[ch], 0), 0)
-		data.add_collision_polygon(0)
-		data.set_collision_polygon_points(0, 0, square)
 	_tileset = ts
 	return ts

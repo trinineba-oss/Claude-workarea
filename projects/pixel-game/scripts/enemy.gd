@@ -1,16 +1,17 @@
 class_name Enemy
 extends CharacterBody2D
-## Base class for enemies: health, knockback, contact damage and drops. Subclasses
-## implement _think() to set `velocity` each physics frame.
+## Base class for enemies: health, knockback, contact damage, drops and a little animation.
+## Subclasses implement _think() to set `velocity` each physics frame, and may override
+## _animate(). The node's origin is at the enemy's feet (or its shadow, for fliers).
 
 signal died
 
 const KNOCKBACK_TIME := 0.18
-const MARGIN := 8.0
+const MARGIN := 32.0
 
 @export var max_health := 2
 @export var contact_damage := 1
-@export var knockback_speed := 130.0
+@export var knockback_speed := 520.0
 @export_range(0.0, 1.0) var coin_chance := 0.5
 @export_range(0.0, 1.0) var snack_chance := 0.2
 
@@ -18,6 +19,7 @@ var health := 0
 
 var _knockback := Vector2.ZERO
 var _stun := 0.0
+var _age := 0.0
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _contact: Area2D = $Contact
@@ -26,6 +28,11 @@ var _stun := 0.0
 func _ready() -> void:
 	health = max_health
 	add_to_group("enemies")
+
+
+func _process(delta: float) -> void:
+	_age += delta
+	_animate(delta)
 
 
 func _physics_process(delta: float) -> void:
@@ -57,6 +64,14 @@ func _think(_delta: float) -> void:
 	velocity = Vector2.ZERO
 
 
+## Default animation: a little hop while moving, facing the way it goes.
+func _animate(_delta: float) -> void:
+	var moving := velocity.length() > 1.0
+	_sprite.position.y = -absf(sin(_age * 12.0)) * 5.0 if moving else 0.0
+	if velocity.x != 0.0:
+		_sprite.flip_h = velocity.x < 0.0
+
+
 func _player() -> Player:
 	var player := get_tree().get_first_node_in_group("player") as Player
 	return player if player != null and not player.frozen else null
@@ -65,6 +80,7 @@ func _player() -> Player:
 func _die() -> void:
 	died.emit()
 	var room := get_parent()
+	Effects.burst(room, position + Vector2(0, -24), "poof")
 	var roll := randf()
 	var drop := ""
 	if roll < coin_chance:

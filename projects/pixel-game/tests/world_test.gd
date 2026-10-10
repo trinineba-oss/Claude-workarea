@@ -25,12 +25,20 @@ func _run() -> void:
 	broken.rooms[Vector2i(0, 0)] = PackedStringArray(["short"])
 	_check(not broken.validate().is_empty(), "bad room is reported")
 
-	var tileset := Tiles.tileset()
+	var tileset := Tiles.collision_tileset()
 	var source: TileSetAtlasSource = tileset.get_source(0)
-	_check(source.get_tiles_count() == Tiles.COUNT, "tile set has %d tiles" % Tiles.COUNT)
+	_check(source.get_tiles_count() == 1, "one collision tile")
+	var solid := source.get_tile_data(Vector2i.ZERO, 0)
+	_check(solid.get_collision_polygons_count(0) == 1, "the collision tile is solid")
 	for ch in ["T", "#", "~", "b"]:
-		var data := source.get_tile_data(Vector2i(Tiles.atlas_index(ch), 0), 0)
-		_check(data.get_collision_polygons_count(0) == 1, "'%s' is solid" % ch)
-	var grass := source.get_tile_data(Vector2i(Tiles.atlas_index("."), 0), 0)
-	_check(grass.get_collision_polygons_count(0) == 0, "grass is walkable")
+		_check(Tiles.is_solid(ch), "'%s' is solid" % ch)
+	for ch in [".", ",", "s", "p", "=", "@"]:
+		_check(not Tiles.is_solid(ch), "'%s' is walkable" % ch)
+
+	var beach := PackedStringArray(["sss", "sbs", "sss"])
+	_check(Tiles.ground_at(beach, 1, 1) == "sand", "a bush on the beach stands on sand")
+	var meadow := PackedStringArray(["...", ".T.", "~~~"])
+	_check(Tiles.ground_at(meadow, 1, 1) == "grass", "scenery ignores water when picking ground")
+	_check(Tiles.ground_at(meadow, 0, 2) == "water", "water is water")
+	_check(Tiles.scenery("T") == "tree" and Tiles.scenery(".") == "", "scenery lookup")
 	_finish()

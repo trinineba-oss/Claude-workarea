@@ -7,7 +7,7 @@ signal transition_finished
 
 const TRANSITION_SECONDS := 0.5
 ## How far the hero is carried into the next room during a transition.
-const PUSH_IN := 24.0
+const PUSH_IN := 96.0
 const ROOMS_DIR := "res://data/rooms"
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
@@ -39,6 +39,7 @@ func _ready() -> void:
 	if not _restore(save.read()):
 		coords = world.start_room()
 		_player.position = world.start_position()
+	_apply_debug_start()
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
@@ -65,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 	if world.has_room(coords + dir):
 		_transition(dir)
 	else:
-		_player.position = _clamp_to_room(_player.position, coords, 1.0)
+		_player.position = _clamp_to_room(_player.position, coords, 4.0)
 
 
 func _notification(what: int) -> void:
@@ -109,7 +110,7 @@ func _restore(data: Dictionary) -> bool:
 	if not world.has_room(saved_coords):
 		return false
 	coords = saved_coords
-	_player.position = _clamp_to_room(Vector2(position[0], position[1]), coords, 8.0)
+	_player.position = _clamp_to_room(Vector2(position[0], position[1]), coords, 32.0)
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
@@ -124,8 +125,9 @@ func _transition(dir: Vector2i) -> void:
 	_room = _make_room(target)
 	old_room.process_mode = Node.PROCESS_MODE_DISABLED
 	_room.process_mode = Node.PROCESS_MODE_DISABLED
-	var player_end := _clamp_to_room(_player.position + Vector2(dir) * PUSH_IN, target, 8.0)
+	var player_end := _clamp_to_room(_player.position + Vector2(dir) * PUSH_IN, target, 32.0)
 	var tween := create_tween().set_parallel(true)
+	tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(_camera, "position", _room_center(target), TRANSITION_SECONDS)
 	tween.tween_property(_player, "position", player_end, TRANSITION_SECONDS)
 	await tween.finished
@@ -155,6 +157,21 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 	return pos.clamp(
 		origin + Vector2.ONE * margin, origin + WorldMap.room_size() - Vector2.ONE * margin
 	)
+
+
+## Developer aid for the Web build: `index.html?room=0_0` starts in that room (used to take
+## screenshots of any room). Ignored everywhere else.
+func _apply_debug_start() -> void:
+	if not OS.has_feature("web"):
+		return
+	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	var found := RegEx.create_from_string("room=(-?\\d+)_(-?\\d+)").search(query)
+	if found == null:
+		return
+	var target := Vector2i(int(found.get_string(1)), int(found.get_string(2)))
+	if world.has_room(target):
+		coords = target
+		_player.position = _room_center(target)
 
 
 func _on_player_died() -> void:

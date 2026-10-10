@@ -8,7 +8,7 @@ const NO_FINGER := -2
 const MOUSE_FINGER := -1
 
 ## Extra pixels around the visible shape that still count as a hit.
-@export var hit_padding := 6.0
+@export var hit_padding := 24.0
 
 var _finger := NO_FINGER
 var _use_mouse := not DisplayServer.is_touchscreen_available()

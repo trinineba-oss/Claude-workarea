@@ -46,7 +46,7 @@ func _run() -> void:
 	_drag(0, centre + Vector2(0, -stick.radius))
 	_check(Input.get_action_strength(&"move_up") > 0.9, "drag up")
 	_check(Input.get_action_strength(&"move_right") == 0.0, "right released after drag")
-	_drag(0, centre + Vector2(2, 0))
+	_drag(0, centre + Vector2(stick.radius * 0.1, 0))
 	_check(not Input.is_action_pressed(&"move_right"), "inside the deadzone does nothing")
 
 	_touch(1, _centre(attack), true)

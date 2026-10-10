@@ -108,15 +108,20 @@ shockwave). Bosses are themed on the temple.
 
 ## Art and audio direction
 
-- 16x16 tiles and sprites, a small fixed palette with a hot, saturated Caribbean look:
-  flamboyant red and poui yellow blooms, mango green, concrete pastels, sea blue.
+- **HD 2D, smooth and lit** (switched from pixel art): clean cartoon shapes with soft
+  shadows, organic blended ground (sand, grass, dirt and water melt into each other), animated
+  water with shore foam, depth-sorted scenery, particles, a soft vignette. A hot, saturated
+  Caribbean palette: flamboyant red and poui yellow blooms, mango green, concrete pastels,
+  sea blue. Later: 2D lights for dusk and night scenes (Cross Crossing at night).
+- 64 px tiles on a 1280x704 base resolution, scaled smoothly to any screen.
 - Music: chiptune with **steelpan** timbres, soca and calypso rhythms for lively areas, a dreamy
   slightly detuned pan lullaby for the overworld; parang flavor for a festive area.
 - Placeholder art in early milestones; real art replaces it later.
 
 ## Technical plan (Godot 4.7)
 
-- `TileMapLayer` rooms from ASCII maps in `data/rooms/`; room-based camera (done).
+- Rooms from ASCII maps in `data/rooms/`: a ground shader blends materials, an invisible
+  `TileMapLayer` gives solid tiles collision, scenery is y-sorted sprites (done).
 - Player and enemies as `CharacterBody2D` with simple state machines.
 - Dialogue: data-driven (JSON or Godot resources) with a typewriter text box; text kept in
   data files so a local reviewer can edit the dialect without touching code.

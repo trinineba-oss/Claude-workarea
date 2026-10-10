@@ -28,6 +28,7 @@ func _run() -> void:
 	var camera: Camera2D = game.get_node("Camera2D")
 	var rooms: Node2D = game.get_node("Rooms")
 	var size := WorldMap.room_size()
+	var t := float(WorldMap.TILE)
 
 	_check(game.coords == Vector2i(1, 1), "starts in the start room")
 	_check(player.position == game.world.start_position(), "starts on the start tile")
@@ -39,18 +40,16 @@ func _run() -> void:
 	Input.action_press(&"move_right")
 	await _physics_frames(10)
 	Input.action_release(&"move_right")
-	_check(player.position.x > x0 + 5.0, "moves right")
+	_check(player.position.x > x0 + 20.0, "moves right")
 	var origin := WorldMap.room_origin(Vector2i(1, 1))
-	player.position = origin + Vector2(160, 8 * 16 + 8)  # last sand row above the water
+	player.position = origin + Vector2(10 * t, 8.5 * t)  # last sand row above the water
 	Input.action_press(&"move_down")
 	await _physics_frames(60)
 	Input.action_release(&"move_down")
-	_check(
-		player.position.y < origin.y + 9 * 16, "water blocks the hero (y=%f)" % player.position.y
-	)
+	_check(player.position.y < origin.y + 9 * t, "water blocks the hero (y=%f)" % player.position.y)
 
 	# Walking off the right edge scrolls to the next room.
-	player.position = origin + Vector2(size.x + 1.0, 5 * 16 + 8)
+	player.position = origin + Vector2(size.x + 1.0, 5.5 * t)
 	await _physics_frames(2)
 	_check(game.is_transitioning(), "transition starts at the edge")
 	await _wait_for_transition(game)
@@ -63,7 +62,7 @@ func _run() -> void:
 	var resume_position := player.position
 
 	# An edge that leads nowhere never starts a transition (the walls stop the hero first).
-	player.position = next_origin + Vector2(size.x + 5.0, 5 * 16 + 8)
+	player.position = next_origin + Vector2(size.x + 5.0, 5.5 * t)
 	await _physics_frames(2)
 	_check(not game.is_transitioning(), "no transition toward a missing room")
 	_check(game.coords == Vector2i(2, 1), "still in room (2, 1)")
