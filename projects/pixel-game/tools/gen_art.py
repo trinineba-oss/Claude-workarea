@@ -137,8 +137,8 @@ s_rgba.putalpha(spark)
 s_rgba.save(f"{OUT}/sprites/spark.png")
 
 # ---- Chad, the hero: 64x84, anchor = feet at bottom centre ------------------------------------
-# Based on the owner's look: very short dark hair, thick straight brows, short beard,
-# a deadpan heavy-lidded stare, grey crew-neck tee and a thin chain.
+# Based on the owner's look: very short dark hair, thick straight brows, a
+# five o'clock shadow, a deadpan heavy-lidded stare, grey crew-neck tee and a thin chain.
 c = Canvas(64, 84)
 SKIN, SHIRT, COLLAR = (186, 126, 88, 255), (104, 108, 116, 255), (58, 62, 74, 255)
 JEANS, HAIR = (44, 60, 96, 255), (32, 26, 26, 255)
@@ -151,9 +151,10 @@ c.ellipse(12.5, 30, 3.5, 5, SKIN)
 c.ellipse(51.5, 30, 3.5, 5, SKIN)
 c.ellipse(32, 28, 19, 20, SKIN)
 c.poly([(14, 24), (15, 14), (22, 7), (32, 5), (42, 7), (49, 14), (50, 24), (46, 17), (39, 14), (32, 15), (25, 14), (18, 17)], HAIR, outline=2.5)
-c.detail_ellipse(32, 42, 13, 7, (132, 90, 66, 255))  # short beard along the jaw and chin
-c.detail_ellipse(32, 37, 13, 4, SKIN)  # cheeks stay clear above the beard line
-c.detail_line([(27, 39), (32, 38.2), (37, 39)], (78, 54, 44, 255), 2.2)  # moustache
+STUBBLE = (158, 110, 84, 255)  # five o'clock shadow: a faint grey-brown tint, no beard
+c.detail_ellipse(32, 41, 15, 8.5, STUBBLE)  # jaw and chin
+c.detail_ellipse(32, 35.5, 14.5, 4.5, SKIN)  # cheeks stay clear
+c.detail_ellipse(32, 39, 4.5, 1.4, STUBBLE)  # upper lip
 c.detail_line([(29, 43), (35, 43)], (60, 36, 32, 255), 1.6)  # flat, unimpressed mouth
 c.detail_line([(20, 25), (29, 25.5)], HAIR, 3.2)  # thick straight brows
 c.detail_line([(35, 25.5), (44, 25)], HAIR, 3.2)
