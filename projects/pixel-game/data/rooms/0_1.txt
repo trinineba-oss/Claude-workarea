@@ -1,14 +1,16 @@
-########ssss########
-~ssssssssssssssssss#
-~ssssbsssssssssssss#
-~ss,ssssssssssbssss#
-~sssssssssssssssssss
-~sssssssssssssssssss
-~sssssssssssssssssss
-~sssssssbssssssssss#
-~sss~~sssssssssssss#
-~~~~~~~~~~~~~~~~~~~~
+########wwww########
+~~wwwwwwwwwwwwwwccw#
+~~owwwwwwwwwwwwwwcw#
+~~wwwwwwwwwwwwwwwww#
+~~wwwwwwwwwwwwwwwwww
+~~wwww@wwwwwwwwwwwww
+~~owwwwwwwwwwwwwwwww
+~~wwwwwwwwwwwwccwww#
+~~wwwwwwowwwwwwwwcw#
+~~~owwww~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~
 
-dog 12 5
-coin 4 2
+npc 8 4 ibis
+npc 5 9 fisherman
+sign 10 2 sign_wharf
+prop 12 8 boat

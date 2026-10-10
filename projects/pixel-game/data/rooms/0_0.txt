@@ -1,15 +1,15 @@
 TTTTTTTTTTTTTTTTTTTT
-T..,......b.....,..T
-T....T.......T.....T
-T.,.......,........T
-T...b...............
-T...pppppppppppppppp
-T...p..,............
-T.........T....,...T
-T..,...b.........,.T
-T.....,.........T..T
-TTTTTTTT....TTTTTTTT
+T..............T...T
+T..T..........,....T
+T.,..b.============T
+T......=rrrrrrrrrrrr
+T.b....=rrrrrrrrrrrr
+T...T..=rrrrrrrrrrrr
+T......=rrrr=======T
+T..T.,.=rrrr=......T
+T......=rrrr=.b.T,.T
+TTTTTTTTrrrrTTTTTTTT
 
-dog 10 3
-dog 14 8
-coin 7 2
+sign 12 8 sign_road
+npc 5 5 limer
+dog 15 8

@@ -1,19 +1,38 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/touch_controls.tscn" id="3_touch"]
 [ext_resource type="Script" path="res://scripts/pause_overlay.gd" id="4_pause"]
 [ext_resource type="Script" path="res://scripts/status_bar.gd" id="5_status"]
+[ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="6_vignette"]
+[ext_resource type="Script" path="res://scripts/dialogue_box.gd" id="7_dialogue"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_vignette"]
+shader = ExtResource("6_vignette")
 
 [node name="Game" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_game")
 
 [node name="Rooms" type="Node2D" parent="."]
+y_sort_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="PostFX" type="CanvasLayer" parent="."]
+layer = 5
+
+[node name="Vignette" type="ColorRect" parent="PostFX"]
+material = SubResource("ShaderMaterial_vignette")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="HUD" type="CanvasLayer" parent="."]
 process_mode = 3
@@ -24,10 +43,10 @@ layer = 10
 [node name="StatusBar" type="Control" parent="HUD"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 4.0
-offset_top = 2.0
-offset_right = 104.0
-offset_bottom = 30.0
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 420.0
+offset_bottom = 136.0
 mouse_filter = 2
 script = ExtResource("5_status")
 
@@ -38,10 +57,22 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 8
+theme_override_constants/outline_size = 8
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.14, 1)
+theme_override_font_sizes/font_size = 44
 text = "You fainted..."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="DialogueBox" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("7_dialogue")
 
 [node name="PauseOverlay" type="ColorRect" parent="HUD"]
 visible = false
@@ -61,7 +92,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_font_sizes/font_size = 8
+theme_override_constants/outline_size = 8
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.14, 1)
+theme_override_font_sizes/font_size = 44
 text = "PAUSED
 Game saved"
 horizontal_alignment = 1

@@ -13,12 +13,9 @@ config/icon="res://assets/sprites/icon.png"
 
 [display]
 
-window/size/viewport_width=320
-window/size/viewport_height=176
-window/size/window_width_override=1280
-window/size/window_height_override=704
-window/stretch/mode="viewport"
-window/stretch/scale_mode="integer"
+window/size/viewport_width=1280
+window/size/viewport_height=704
+window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=0
 
@@ -79,8 +76,7 @@ pause={
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.05, 0.05, 0.09, 1)
-textures/canvas_textures/default_texture_filter=0
-2d/snap/snap_2d_transforms_to_pixel=true
-2d/snap/snap_2d_vertices_to_pixel=true
+textures/canvas_textures/default_texture_filter=1
+anti_aliasing/quality/msaa_2d=1
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

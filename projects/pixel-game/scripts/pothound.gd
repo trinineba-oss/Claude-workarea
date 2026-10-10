@@ -2,9 +2,9 @@ class_name Pothound
 extends Enemy
 ## A stray dog: wanders, then chases the hero when they come close.
 
-const WALK_SPEED := 22.0
-const CHASE_SPEED := 42.0
-const CHASE_RANGE := 72.0
+const WALK_SPEED := 88.0
+const CHASE_SPEED := 168.0
+const CHASE_RANGE := 288.0
 
 var _wander := Vector2.ZERO
 var _wander_time := 0.0
@@ -22,5 +22,3 @@ func _think(delta: float) -> void:
 			)
 			_wander_time = randf_range(0.8, 2.0)
 		velocity = _wander * WALK_SPEED
-	if velocity.x != 0.0:
-		_sprite.flip_h = velocity.x < 0.0

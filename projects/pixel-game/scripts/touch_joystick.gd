@@ -11,17 +11,18 @@ const DIRECTIONS := {
 }
 
 ## Thumb travel from the centre, in pixels, for full speed.
-@export var radius := 22.0
+@export var radius := 88.0
 
 var _stick := Vector2.ZERO
 
 
 func _draw() -> void:
 	var centre := size / 2.0
-	draw_circle(centre, radius + 6.0, Color(1, 1, 1, 0.12))
-	draw_arc(centre, radius + 6.0, 0.0, TAU, 32, Color(1, 1, 1, 0.45), 1.0)
-	var alpha := 0.7 if _finger != NO_FINGER else 0.4
-	draw_circle(centre + _stick * radius, 9.0, Color(1, 1, 1, alpha))
+	draw_circle(centre, radius + 24.0, Color(1, 1, 1, 0.1))
+	draw_arc(centre, radius + 24.0, 0.0, TAU, 64, Color(1, 1, 1, 0.4), 3.0, true)
+	var alpha := 0.75 if _finger != NO_FINGER else 0.45
+	draw_circle(centre + _stick * radius, 38.0, Color(1, 1, 1, alpha))
+	draw_arc(centre + _stick * radius, 38.0, 0.0, TAU, 48, Color(1, 1, 1, 0.8), 2.0, true)
 
 
 func _on_press(pos: Vector2) -> void:

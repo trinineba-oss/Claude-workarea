@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://swdl8prdg7wa"
-path="res://.godot/imported/overworld.png-1d11005b9b483f56d16584ec2fb8dea5.ctex"
+uid="uid://b3ncf22f3otrh"
+path="res://.godot/imported/dirt.png-eff3bf0cf4f0b63edc466aba593ca4e6.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tiles/overworld.png"
-dest_files=["res://.godot/imported/overworld.png-1d11005b9b483f56d16584ec2fb8dea5.ctex"]
+source_file="res://assets/textures/dirt.png"
+dest_files=["res://.godot/imported/dirt.png-eff3bf0cf4f0b63edc466aba593ca4e6.ctex"]
 
 [params]
 

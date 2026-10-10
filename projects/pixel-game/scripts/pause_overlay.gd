@@ -10,7 +10,8 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed(&"pause"):
+	# Ignore pause while something else (a conversation) has paused the game.
+	if Input.is_action_just_pressed(&"pause") and (visible or not get_tree().paused):
 		toggle()
 
 

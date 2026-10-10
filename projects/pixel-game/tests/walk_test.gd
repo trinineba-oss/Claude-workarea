@@ -9,13 +9,15 @@ const DIRECTIONS := {
 	Vector2i.DOWN: &"move_down",
 	Vector2i.UP: &"move_up",
 }
-const INSET := 24.0
+## Start in the middle of the doorway tile itself.
+const INSET := WorldMap.TILE / 2.0
 
 
 func _run() -> void:
 	Engine.time_scale = 5.0
 	DirAccess.remove_absolute(SAVE_PATH)
 	var game: Game = GAME.instantiate()
+	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
 	await _physics_frames(2)
@@ -30,7 +32,6 @@ func _run() -> void:
 				continue
 			var tiles := _open_tiles(world, coords, dir)
 			for tile in [tiles.front(), tiles.back()]:
-				# Start INSET pixels inside the room, centred on the doorway tile.
 				var local := (Vector2(tile) + Vector2(0.5, 0.5)) * WorldMap.TILE
 				if dir.x != 0:
 					local.x = size.x - INSET if dir.x > 0 else INSET
