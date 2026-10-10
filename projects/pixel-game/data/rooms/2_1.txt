@@ -1,0 +1,15 @@
+########ssss########
+#ssssssssssssssssss#
+#ssssssssssssssssss#
+#sssbsssssssssbssss#
+sssssssssssssssssss#
+sssssssssssssssssss#
+sssssssssssssssssss#
+#ssssssssssssss##ss#
+#ss~~ssssssssss~~ss#
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+
+corbeau 14 2
+dog 9 5
+snack 4 6

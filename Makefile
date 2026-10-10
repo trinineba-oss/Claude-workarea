@@ -17,7 +17,10 @@ test:
 	@for p in $(GODOT_PROJECTS); do \
 		echo "godot test $$p"; \
 		godot --headless --path $$p --import >/dev/null 2>&1; \
-		godot --headless --path $$p --script res://tests/smoke_test.gd || exit 1; \
+		for t in $$p/tests/*_test.gd; do \
+			echo "  $$(basename $$t)"; \
+			timeout 120 godot --headless --path $$p --script res://tests/$$(basename $$t) || exit 1; \
+		done; \
 	done
 
 setup:

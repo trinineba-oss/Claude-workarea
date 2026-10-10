@@ -1,0 +1,15 @@
+TTTTTTTTTTTTTTTTTTTT
+T.....b.......,....T
+T..T.......,....T..T
+T.....,............T
+....b.......b.......
+pppppppppppppppppppp
+...,..........,.....
+T.....T.......b....T
+T..,.........,.....T
+T.......T.......,..T
+TTTTTTTT....TTTTTTTT
+
+corbeau 10 3
+dog 8 7
+coin 14 2

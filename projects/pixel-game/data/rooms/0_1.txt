@@ -1,0 +1,14 @@
+########ssss########
+~ssssssssssssssssss#
+~ssssbsssssssssssss#
+~ss,ssssssssssbssss#
+~sssssssssssssssssss
+~sssssssssssssssssss
+~sssssssssssssssssss
+~sssssssbssssssssss#
+~sss~~sssssssssssss#
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+
+dog 12 5
+coin 4 2

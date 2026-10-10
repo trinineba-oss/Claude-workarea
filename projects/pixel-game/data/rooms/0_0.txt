@@ -1,0 +1,15 @@
+TTTTTTTTTTTTTTTTTTTT
+T..,......b.....,..T
+T....T.......T.....T
+T.,.......,........T
+T...b...............
+T...pppppppppppppppp
+T...p..,............
+T.........T....,...T
+T..,...b.........,.T
+T.....,.........T..T
+TTTTTTTT....TTTTTTTT
+
+dog 10 3
+dog 14 8
+coin 7 2
