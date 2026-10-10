@@ -1,15 +1,17 @@
 TTTTTTTTTTTTTTTTTTTT
 T..............T...T
-T..T..........,....T
-T.,..b.============T
+T..T.......b.,.....T
+T.,..b...,......T..T
+T..................T
+T.b....============T
 T......=rrrrrrrrrrrr
-T.b....=rrrrrrrrrrrr
 T...T..=rrrrrrrrrrrr
-T......=rrrr=======T
-T..T.,.=rrrr=......T
-T......=rrrr=.b.T,.T
+T....,.=rrrrrrrrrrrr
+T..T...=rrrr=======T
 TTTTTTTTrrrrTTTTTTTT
 
-sign 12 8 sign_road
-npc 5 5 limer
-dog 15 8
+sign 13 9 sign_road
+dog 14 2
+prop 10 5 pole
+prop 17 5 pole
+prop 17 9 pole

@@ -45,7 +45,7 @@ The game started as pixel art and is now smooth HD 2D:
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway, dialogue)
+  walking through every doorway, dialogue, traffic)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -95,6 +95,9 @@ row 1). Walking off an open edge scrolls to the neighbouring room, and the game 
 | `T` | tree | yes |
 | `c` | crate | yes |
 | `o` | bollard | yes |
+| `R` | road you cannot walk on (busy traffic, or the road going off the map) | yes |
+| `F` | chain-link fence | yes |
+| `W` | painted concrete wall | yes |
 
 After the 11 map rows, a room file can list objects, one per line as `<kind> <x> <y> [id]`
 (tile coordinates; lines starting with `;` are comments):
@@ -105,7 +108,8 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 | `snack`, `coin` | | pickups |
 | `npc` | a character from `data/characters.json` | someone to talk to |
 | `sign` | a conversation from `data/dialogue.json` | a sign to read |
-| `prop` | a prop from `data/props.json` | a big solid thing (boat, food stall), optionally readable |
+| `prop` | a prop from `data/props.json` | a big solid thing (boat, food truck, gas station, shop, utility pole, parked car), optionally readable |
+| `traffic` | `up`, `down`, `left` or `right` | a lane of cars driving through that cell's column/row; cars hurt and knock back |
 
 ```
 npc 8 4 ibis
@@ -136,6 +140,9 @@ finish the line, then again for the next one.
 - `data/props.json` lists props: sprite, solid footprint, an optional awning label and an
   optional conversation.
 - On a new game the ibis welcomes Chad on the wharf (once).
+
+Utility poles (`prop <x> <y> pole`) are joined by power lines automatically: along each row of
+poles, and across the road to the pole on the other side.
 
 ## Saving
 

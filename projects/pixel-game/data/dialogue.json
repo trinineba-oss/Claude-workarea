@@ -2,56 +2,184 @@
   "_note": "DRAFT lines written by Claude. Every line needs review by someone from Trinidad (dialect, references, jokes). Each conversation is a list of lines; a line may set a story flag with \"set_flag\".",
   "conversations": {
     "ibis_intro": [
-      {"speaker": "Ibis", "text": "Eh-eh! Look who wash up on the wharf!"},
-      {"speaker": "Ibis", "text": "Welcome to San Fernando. Well... a San Fernando. Something feel a little off today, eh?"},
-      {"speaker": "Ibis", "text": "Word is, on top of San Fernando Hill sits the Legendary Lamb Gyro."},
-      {"speaker": "Ibis", "text": "The Gyro God sealed it away, and now it sleeping inside a giant roti. Don't ask me how."},
-      {"speaker": "Ibis", "text": "Four sacred seasonings will wake it. Start by heading up to Cross Crossing. Everybody there know something."},
-      {"speaker": "Ibis", "text": "And mind the corbeaux. They doh play nice.", "set_flag": "intro_done"}
+      {
+        "speaker": "Ibis",
+        "text": "Eh-eh! Look who wash up on the wharf!"
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Welcome to San Fernando. Well... a San Fernando. Something feel a little off today, eh?"
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Word is, on top of San Fernando Hill sits the Legendary Lamb Gyro."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "The Gyro God sealed it away, and now it sleeping inside a giant roti. Don't ask me how."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Four sacred seasonings will wake it. Start by heading up to Cross Crossing. Everybody there know something."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "And mind the corbeaux. They doh play nice.",
+        "set_flag": "intro_done"
+      }
     ],
     "ibis_hint": [
-      {"speaker": "Ibis", "text": "Cross Crossing is up the road from the wharf. Follow the road, then turn right."},
-      {"speaker": "Ibis", "text": "If you feel faint, eat something. Is the answer to most things."}
+      {
+        "speaker": "Ibis",
+        "text": "Cross Crossing is up the road from the wharf. The food trucks are along Lady Hailes Avenue, past the junction."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Mind the traffic on Cipero Street. Them drivers doh stop for nobody. Not even legends."
+      }
     ],
     "fisherman": [
-      {"speaker": "Fisherman", "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."},
-      {"speaker": "Fisherman", "text": "That boat is yours? Was yours, I mean."}
+      {
+        "speaker": "Fisherman",
+        "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "That boat is yours? Was yours, I mean."
+      }
     ],
     "limer": [
-      {"speaker": "Liming man", "text": "We just liming, boss. Watching the traffic."},
-      {"speaker": "Liming man", "text": "Is a full-time job. No pay, but the view nice."}
+      {
+        "speaker": "Liming man",
+        "text": "We just liming, boss. Watching the traffic."
+      },
+      {
+        "speaker": "Liming man",
+        "text": "Is a full-time job. No pay, but the view nice."
+      }
     ],
     "doubles_vendor": [
-      {"speaker": "Doubles auntie", "text": "Doubles! Slight pepper? Heavy pepper?"},
-      {"speaker": "Doubles auntie", "text": "Oh, you ent have no money? Then is no pepper and no doubles, darling."}
-    ],
-    "roti_cook": [
-      {"speaker": "Roti cook", "text": "Buss-up-shut or dhalpuri? Take your time, the line ent going nowhere."},
-      {"speaker": "Roti cook", "text": "A giant roti on the Hill? Hmph. Whoever made that one never learn to fold."}
+      {
+        "speaker": "Doubles auntie",
+        "text": "Doubles! Slight pepper? Heavy pepper?"
+      },
+      {
+        "speaker": "Doubles auntie",
+        "text": "Oh, you ent have no money? Then is no pepper and no doubles, darling."
+      }
     ],
     "gyro_vendor_first": [
-      {"speaker": "Gyro man", "text": "Gyro? Nah, boss. Gyro sold out."},
-      {"speaker": "Gyro man", "text": "Well... the legendary one, anyway. That one up on the Hill."},
-      {"speaker": "Gyro man", "text": "Wait small... Chad? Is you? I feel like I know you from somewhere.", "set_flag": "met_gyro_man"}
+      {
+        "speaker": "Gyro man",
+        "text": "Gyro? Nah, boss. Gyro sold out. Whole truck empty."
+      },
+      {
+        "speaker": "Gyro man",
+        "text": "Well... the legendary one, anyway. That one up on the Hill."
+      },
+      {
+        "speaker": "Gyro man",
+        "text": "Wait small... Chad? Is you? I feel like I know you from somewhere.",
+        "set_flag": "met_gyro_man"
+      }
     ],
     "gyro_vendor": [
-      {"speaker": "Gyro man", "text": "Still here? Go on up the Hill. I go keep a spot for you."}
+      {
+        "speaker": "Gyro man",
+        "text": "Still here? Go on up the Hill. I go keep a spot for you."
+      }
     ],
     "sign_wharf": [
-      {"speaker": "", "text": "SAN FERNANDO WHARF. No fishing off the jetty."},
-      {"speaker": "", "text": "(Somebody scratch out the 'No'.)"}
+      {
+        "speaker": "",
+        "text": "SAN FERNANDO WHARF. No fishing off the jetty."
+      },
+      {
+        "speaker": "",
+        "text": "(Somebody scratch out the 'No'.)"
+      }
     ],
     "sign_road": [
-      {"speaker": "", "text": "CROSS CROSSING this way. Food. All of it."}
+      {
+        "speaker": "",
+        "text": "CROSS CROSSING this way. Food. All of it."
+      }
     ],
     "sign_crossing": [
-      {"speaker": "", "text": "CROSS CROSSING. Please do not feed the corbeaux. They will not leave."}
+      {
+        "speaker": "",
+        "text": "CROSS CROSSING. Cipero Street this way, Lady Hailes Avenue that way."
+      },
+      {
+        "speaker": "",
+        "text": "Pedestrians: look left, look right, look left again, then pray."
+      }
     ],
     "sign_beach": [
-      {"speaker": "", "text": "BEACH CLOSED for... reasons. The Management."}
+      {
+        "speaker": "",
+        "text": "BEACH CLOSED for... reasons. The Management."
+      }
     ],
     "boat": [
-      {"speaker": "", "text": "Your boat. What left of it. The sail still looking hopeful."}
+      {
+        "speaker": "",
+        "text": "Your boat. What left of it. The sail still looking hopeful."
+      }
+    ],
+    "soup_lady": [
+      {
+        "speaker": "Corn soup lady",
+        "text": "Corn soup! Hot hot hot."
+      },
+      {
+        "speaker": "Corn soup lady",
+        "text": "Yes, in this heat. Is tradition, darling. You drink it hot or you doh drink it at all."
+      }
+    ],
+    "pork_man": [
+      {
+        "speaker": "Pork man",
+        "text": "Pork? Pork. You want pork?"
+      },
+      {
+        "speaker": "Pork man",
+        "text": "Is a yes or no question, boss. The line behind you getting long."
+      }
+    ],
+    "seafood_man": [
+      {
+        "speaker": "Seafood man",
+        "text": "Seafood boil! Crab, shrimp, corn, all in one bag."
+      },
+      {
+        "speaker": "Seafood man",
+        "text": "Bring napkins. Bring plenty napkins. The corbeaux does wait for the bag."
+      }
+    ],
+    "gas_station": [
+      {
+        "speaker": "",
+        "text": "A sign on the pump: PAY INSIDE. A sign on the door: PAY OUTSIDE."
+      }
+    ],
+    "shop_tyres": [
+      {
+        "speaker": "",
+        "text": "TYRES. Closed for lunch. (The sign look like it there a long time.)"
+      }
+    ],
+    "sign_lady_hailes": [
+      {
+        "speaker": "",
+        "text": "LADY HAILES AVENUE. Food trucks ahead. Pace yourself."
+      }
+    ],
+    "sign_lot": [
+      {
+        "speaker": "",
+        "text": "PRIVATE LOT. No liming. (Somebody leave a chair.)"
+      }
     ]
   }
 }

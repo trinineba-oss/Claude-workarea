@@ -376,6 +376,120 @@ for y in range(0, 256, 32):
 Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGB").save(f"{OUT}/textures/wood.png")
 material(f"{OUT}/textures/road.png", (62, 64, 72), (92, 94, 104), 12, grain=0.35, contrast=1.1)
 
+# ---- Cross Crossing and Lady Hailes Avenue (from the owner's street footage) -------------------
+def car(path, body, roof):
+    """Top-down car facing down (front at the bottom): 60x104, centred."""
+    c = Canvas(60, 104)
+    for x, y in ((6, 22), (54, 22), (6, 80), (54, 80)):
+        c.rrect(x - 4, y - 9, x + 4, y + 9, 3, (30, 30, 36, 255), outline=1.5)
+    c.rrect(6, 4, 54, 100, 16, body)
+    c.rrect(12, 30, 48, 74, 8, roof)
+    c.detail_line([(14, 74), (46, 74)], (60, 72, 96, 255), 7)  # windscreen
+    c.detail_line([(15, 30), (45, 30)], (60, 72, 96, 255), 5)  # rear window
+    c.detail_ellipse(15, 94, 5, 3, (255, 244, 190, 255))
+    c.detail_ellipse(45, 94, 5, 3, (255, 244, 190, 255))
+    c.detail_ellipse(15, 9, 5, 2.5, (220, 60, 60, 255))
+    c.detail_ellipse(45, 9, 5, 2.5, (220, 60, 60, 255))
+    c.save(path)
+
+
+car(f"{OUT}/sprites/car_white.png", (236, 238, 240, 255), (250, 250, 252, 255))
+car(f"{OUT}/sprites/car_red.png", (196, 46, 52, 255), (220, 70, 72, 255))
+car(f"{OUT}/sprites/car_blue.png", (52, 92, 170, 255), (76, 116, 196, 255))
+car(f"{OUT}/sprites/car_grey.png", (128, 132, 140, 255), (152, 156, 164, 255))
+
+
+def food_truck(path, body, accent, trailer=False):
+    """Food truck / trailer, side view: 208x156, anchor = wheels at bottom centre (104, 150)."""
+    c = Canvas(208, 156)
+    for x in ((40, 160) if not trailer else (70, 138)):
+        c.ellipse(x, 140, 13, 13, (36, 36, 40, 255))
+    if trailer:
+        c.rrect(196, 116, 208, 122, 2, (90, 90, 96, 255), outline=1.5)
+    else:
+        c.rrect(150, 52, 204, 134, 12, body)  # cab
+        c.rrect(168, 62, 198, 92, 6, (120, 160, 200, 255), outline=1.5)
+    c.rrect(6, 30, 160 if not trailer else 198, 134, 10, body)
+    c.rrect(30, 54, 128, 96, 5, (60, 50, 50, 255), outline=1.5)  # serving window
+    c.poly([(24, 50), (134, 50), (142, 34), (16, 34)], accent, outline=2)  # awning
+    c.rrect(30, 96, 128, 104, 2, (230, 220, 200, 255), outline=1.5)  # counter
+    for i in range(4):
+        c.detail_ellipse(44 + i * 26, 98, 7, 3, (240, 190, 90, 255))
+    c.detail_line([(12, 120), (150 if not trailer else 190, 120)], accent, 6)  # stripe
+    c.save(path)
+
+
+food_truck(f"{OUT}/sprites/truck_red.png", (204, 50, 50, 255), (250, 210, 60, 255))
+food_truck(f"{OUT}/sprites/truck_yellow.png", (246, 200, 54, 255), (214, 64, 48, 255), trailer=True)
+food_truck(f"{OUT}/sprites/truck_orange.png", (240, 140, 40, 255), (60, 150, 210, 255), trailer=True)
+food_truck(f"{OUT}/sprites/truck_teal.png", (40, 160, 160, 255), (250, 240, 220, 255))
+food_truck(f"{OUT}/sprites/truck_purple.png", (128, 76, 170, 255), (250, 200, 70, 255))
+
+c = Canvas(340, 250)  # gas station: canopy over a pump island; anchor = island base (170, 246)
+c.rrect(40, 56, 56, 246, 4, (220, 220, 226, 255))
+c.rrect(284, 56, 300, 246, 4, (220, 220, 226, 255))
+c.rrect(90, 200, 250, 246, 8, (190, 190, 196, 255))  # island
+for x in (120, 200):
+    c.rrect(x, 150, x + 30, 214, 5, (210, 54, 54, 255))
+    c.rrect(x + 5, 160, x + 25, 182, 3, (40, 46, 60, 255), outline=1.2)
+c.rrect(4, 10, 336, 64, 10, (246, 246, 248, 255))  # canopy slab
+c.detail_line([(10, 44), (330, 44)], (214, 50, 50, 255), 12)
+c.detail_line([(10, 56), (330, 56)], (200, 200, 206, 255), 3)
+c.save(f"{OUT}/sprites/gas_station.png")
+
+c = Canvas(400, 330)  # tall yellow building with a green sign; anchor = bottom centre (200, 326)
+YEL, YEL_D = (238, 200, 70, 255), (206, 164, 50, 255)
+c.rrect(20, 20, 380, 326, 6, YEL)
+c.rrect(14, 12, 386, 30, 4, (230, 230, 226, 255))
+for floor in range(4):
+    y = 44 + floor * 62
+    for i in range(6):
+        c.detail_line([(48 + i * 56, y), (48 + i * 56, y + 34)], (70, 90, 110, 255), 26)
+    c.detail_line([(20, y + 48), (380, y + 48)], YEL_D, 3)
+c.rrect(0, 60, 26, 300, 4, (40, 150, 90, 255))  # green vertical sign
+c.rrect(140, 270, 260, 326, 4, (90, 96, 104, 255))  # entrance
+c.save(f"{OUT}/sprites/yellow_building.png")
+
+
+def shop(path, wall, trim):
+    """Single-storey flat-roof shop with a roller shutter: 200x170, anchor = bottom centre (100, 166)."""
+    c = Canvas(200, 170)
+    c.rrect(6, 40, 194, 166, 4, wall)
+    c.rrect(0, 32, 200, 46, 3, trim)
+    c.rrect(30, 4, 170, 36, 5, (250, 248, 240, 255))  # signboard
+    c.rrect(26, 70, 122, 166, 3, (150, 154, 160, 255))  # shutter
+    for y in range(80, 160, 10):
+        c.detail_line([(30, y), (118, y)], (120, 124, 130, 255), 2)
+    c.rrect(136, 72, 178, 120, 3, (110, 150, 190, 255), outline=1.5)
+    c.save(path)
+
+
+shop(f"{OUT}/sprites/shop_blue.png", (120, 170, 214, 255), (60, 100, 150, 255))
+shop(f"{OUT}/sprites/shop_pink.png", (234, 160, 170, 255), (190, 90, 110, 255))
+shop(f"{OUT}/sprites/shop_cream.png", (238, 226, 196, 255), (170, 150, 110, 255))
+
+c = Canvas(64, 250)  # utility pole: anchor = foot (32, 246); wires attach at the crossarm (y=26)
+c.rrect(27, 14, 37, 246, 4, (120, 92, 66, 255))
+c.rrect(4, 22, 60, 30, 3, (96, 74, 54, 255))
+for x in (10, 32, 54):
+    c.rrect(x - 3, 14, x + 3, 22, 2, (210, 220, 230, 255), outline=1.2)
+c.save(f"{OUT}/sprites/pole.png")
+
+c = Canvas(64, 80)  # chain-link fence segment: anchor = bottom centre (32, 78)
+c.rrect(2, 10, 8, 78, 2, (150, 156, 164, 255), outline=1.5)
+c.rrect(56, 10, 62, 78, 2, (150, 156, 164, 255), outline=1.5)
+c.rrect(2, 10, 62, 15, 2, (150, 156, 164, 255), outline=1.5)
+for i in range(-8, 9):
+    c.detail_line([(8 + i * 6, 16), (8 + i * 6 + 58, 76)], (176, 182, 190, 255), 1.2)
+    c.detail_line([(56 - i * 6, 16), (56 - i * 6 - 58, 76)], (176, 182, 190, 255), 1.2)
+c.save(f"{OUT}/sprites/fence.png")
+
+c = Canvas(66, 86)  # painted concrete wall block: anchor = bottom centre (33, 84)
+c.rrect(3, 22, 63, 84, 4, (226, 218, 200, 255))
+c.rrect(1, 12, 65, 26, 4, (196, 188, 170, 255))
+c.detail_line([(3, 60), (63, 60)], (206, 198, 180, 255), 2)
+c.save(f"{OUT}/sprites/wall.png")
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

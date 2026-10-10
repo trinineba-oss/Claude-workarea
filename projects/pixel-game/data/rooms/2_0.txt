@@ -1,14 +1,24 @@
 TTTTTTTTTTTTTTTTTTTT
-T..,.......b.......T
-T.....T.......T....T
-T.,.........,......T
-.......b..........#T
-pppppppp...,.....##T
-...........b....###T
-T......T.......####T
-T..,.........,.####T
-T.....,......T..###T
-TTTTTTTT....TTTTTTTT
+T==================T
+T==================T
+T==================T
+T..................T
+T..................T
+rrrrrrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrrrrrr
+rrrrrrrrrrrrrrrrrrrr
+T.......pppp.......T
+TTTTTTTTssssTTTTTTTT
 
-corbeau 12 2
-corbeau 5 8
+prop 3 4 truck_gyros
+npc 5 5 gyro_vendor
+prop 9 4 truck_doubles
+npc 11 5 doubles_vendor
+prop 15 4 truck_corn_soup
+npc 17 5 soup_lady
+prop 2 2 parked_car_white
+prop 6 2 parked_car_red
+prop 13 2 parked_car_blue
+sign 1 5 sign_lady_hailes
+prop 7 9 pole
+prop 14 9 pole

@@ -1,8 +1,176 @@
 {
   "_note": "Large static things placed with `prop <x> <y> <id>`. footprint = solid tiles [w, h] centred on the cell horizontally, ending at the cell's centre line (the prop's base). label = text painted on the awning. dialogue = what the hero reads when they interact (optional).",
-  "boat": {"sprite": "boat", "footprint": [3, 1], "dialogue": "boat"},
-  "stall_doubles": {"sprite": "stall_yellow", "footprint": [2, 1], "label": "DOUBLES"},
-  "stall_roti": {"sprite": "stall_green", "footprint": [2, 1], "label": "ROTI"},
-  "stall_gyro": {"sprite": "stall_red", "footprint": [2, 1], "label": "GYRO"},
-  "stall_coconut": {"sprite": "stall_green", "footprint": [2, 1], "label": "COCONUT"}
+  "boat": {
+    "sprite": "boat",
+    "footprint": [
+      3,
+      1
+    ],
+    "dialogue": "boat"
+  },
+  "gas_station": {
+    "sprite": "gas_station",
+    "footprint": [
+      5,
+      2
+    ],
+    "solid": [
+      160,
+      46
+    ],
+    "label": "GAS",
+    "dialogue": "gas_station"
+  },
+  "yellow_building": {
+    "sprite": "yellow_building",
+    "footprint": [
+      6,
+      2
+    ],
+    "solid": [
+      380,
+      110
+    ]
+  },
+  "shop_tyres": {
+    "sprite": "shop_blue",
+    "footprint": [
+      3,
+      1
+    ],
+    "label": "TYRES",
+    "dialogue": "shop_tyres"
+  },
+  "shop_vitamins": {
+    "sprite": "shop_pink",
+    "footprint": [
+      3,
+      1
+    ],
+    "label": "VITAMINS"
+  },
+  "shop_hardware": {
+    "sprite": "shop_cream",
+    "footprint": [
+      3,
+      1
+    ],
+    "label": "HARDWARE"
+  },
+  "pole": {
+    "sprite": "pole",
+    "footprint": [
+      1,
+      1
+    ],
+    "solid": [
+      20,
+      16
+    ]
+  },
+  "parked_car_white": {
+    "sprite": "car_white",
+    "footprint": [
+      1,
+      2
+    ],
+    "solid": [
+      52,
+      96
+    ]
+  },
+  "parked_car_red": {
+    "sprite": "car_red",
+    "footprint": [
+      1,
+      2
+    ],
+    "solid": [
+      52,
+      96
+    ]
+  },
+  "parked_car_blue": {
+    "sprite": "car_blue",
+    "footprint": [
+      1,
+      2
+    ],
+    "solid": [
+      52,
+      96
+    ]
+  },
+  "truck_gyros": {
+    "sprite": "truck_red",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "GYROS"
+  },
+  "truck_corn_soup": {
+    "sprite": "truck_yellow",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "CORN SOUP"
+  },
+  "truck_pork": {
+    "sprite": "truck_orange",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "PORK"
+  },
+  "truck_seafood": {
+    "sprite": "truck_teal",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "SEAFOOD BOIL"
+  },
+  "truck_doubles": {
+    "sprite": "truck_purple",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "DOUBLES"
+  },
+  "truck_hotdogs": {
+    "sprite": "truck_yellow",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      190,
+      50
+    ],
+    "label": "HOT DOGS"
+  }
 }

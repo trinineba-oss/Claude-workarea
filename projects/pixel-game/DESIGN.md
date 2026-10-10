@@ -36,26 +36,33 @@ opinion about everything.
 4. **The rival.** A smug fast-food baron ("Doner Dread") is chasing the same prize and shows
    up at each temple one step ahead, gloating.
 5. **The hill.** With all four seasonings the hero wakes the Gyro God and reaches the gyro.
-6. **The twist.** The whole thing was a dream. The hero dozed off at **Cross Crossing**
-   while waiting for a gyro. The final scene: the street vendor shakes them awake ("Boss,
+6. **The twist.** The whole thing was a dream. Chad dozed off by the gyro truck on
+   **Lady Hailes Avenue, by Cross Crossing**, while waiting for a gyro. The final scene: the street vendor shakes them awake ("Boss,
    yuh gyro ready!" — or "Chad! Yuh gyro ready!"), Chad collects an ordinary, delicious gyro, and the credits roll
    over the busy food stretch. Bittersweet, then funny. The vendor has been in the dream
    all along, in a different role (the shopkeeper, the riddle men's cook, or the Gyro God's
    voice; your call).
 
-   *Optional prologue:* a 30-second scene at the Cross Crossing stand: the hero orders a
+   *Optional prologue:* a 30-second scene at the gyro truck: Chad orders a
    gyro, is told "wait small", sits down and nods off, then wakes up on the wharf. It makes
    the ending land harder, and it is cheap to build.
 
 ## World (San Fernando, stylized)
 
-Real places are inspiration; layouts are invented. **Please correct these with your own
-knowledge of the city.**
+Real places are inspiration; layouts are invented and squeezed into screen-sized rooms.
+Cross Crossing and Lady Hailes Avenue are based on the owner's Street View footage
+(reference only, not stored in the repo): a busy junction where **Cipero Street** meets the
+road east, with a gas station, a tall yellow building and poles with overhead wires
+everywhere; then **Lady Hailes Avenue**, a long avenue with grass verges, car parks and a
+row of brightly painted **food trucks and trailers** (gyros, burgers, pork, seafood boil,
+corn soup, hot dogs, doubles...). Trucks use generic food names, never the real businesses'.
 
 | Area | Role | Ideas |
 | --- | --- | --- |
 | San Fernando Wharf | Tutorial, start | Wrecked boat, crabs, old cranes and crates, the ibis/corbeau guide |
-| Cross Crossing | Overworld / hub | The street-food stretch: stalls and vendors, the trading quest, smells that heal, and the dream's mirror of the real stand |
+| Cross Crossing (built) | Junction | Gas station, yellow building, poles and wires; busy traffic on Cipero Street that Chad has to cross |
+| Lady Hailes Avenue (built) | Food-truck hub | Gyros, doubles and corn soup trucks and vendors; the gyro man; the ending happens here |
+| Lady Hailes east (built) | Overworld | Pork and seafood trucks; a fenced lot with corbeaux after the food |
 | Harris Promenade | Hub | Shops, benches, NPCs, save point, maxi taxi stop |
 | High Street and market | Overworld | More vendors, the rum-shop riddle men |
 | Skinner Park | Overworld / minigame | A cricket or football minigame |

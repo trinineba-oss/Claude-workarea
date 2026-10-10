@@ -1,20 +1,26 @@
-####################
-####################
-#==================#
-#==================#
+WWWWWWWWRRRRWWWWWWWW
+W=======rrrr=======W
+W=======rrrr=======W
+W=======rrrr=======W
+W=======rrrr=======W
+W=======rrrr=======W
 rrrrrrrrrrrrrrrrrrrr
 rrrrrrrrrrrrrrrrrrrr
 rrrrrrrrrrrrrrrrrrrr
-#==================#
-#==================#
-#T================T#
-########====########
+W=======rrrr=======W
+WW====WWRRRRFFFFFFFF
 
-prop 4 2 stall_doubles
-npc 6 3 doubles_vendor
-prop 10 2 stall_roti
-npc 12 3 roti_cook
-prop 15 2 stall_coconut
-prop 5 8 stall_gyro
-npc 7 8 gyro_vendor
-sign 14 8 sign_crossing
+prop 4 4 gas_station
+prop 15 4 yellow_building
+traffic 9 3 down
+traffic 11 3 up
+prop 2 5 pole
+prop 6 5 pole
+prop 13 5 pole
+prop 18 5 pole
+prop 2 9 pole
+prop 6 9 pole
+prop 13 9 pole
+prop 18 9 pole
+sign 7 9 sign_crossing
+npc 3 5 limer

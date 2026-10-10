@@ -1,0 +1,22 @@
+TTTTTTTTTTTTTTTTTTTT
+T.........FFFFFFFFFT
+T.........F........T
+T.........F........T
+T.........FFF..FFFFT
+T..................T
+rrrrrrrrrrrrrrrrrrrR
+rrrrrrrrrrrrrrrrrrrR
+rrrrrrrrrrrrrrrrrrrR
+T.b....b....b...b..T
+TTTTTTTTTTTTTTTTTTTT
+
+prop 3 4 truck_pork
+npc 5 5 pork_man
+prop 7 3 truck_seafood
+npc 8 5 seafood_man
+corbeau 13 2
+corbeau 16 3
+dog 4 2
+coin 15 2
+snack 17 2
+sign 12 5 sign_lot

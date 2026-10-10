@@ -45,6 +45,10 @@ const SCENERY := {
 		Vector2(0, -27),
 		Vector2(0.7, 0.6)
 	],
+	"fence":
+	[preload("res://assets/sprites/fence.png"), Vector2(0, 30), Vector2(0, -39), Vector2.ZERO],
+	"wall":
+	[preload("res://assets/sprites/wall.png"), Vector2(0, 32), Vector2(0, -41), Vector2.ZERO],
 }
 const FLOWERS := preload("res://assets/sprites/flowers.png")
 
@@ -68,6 +72,31 @@ func build(room_coords: Vector2i, lines: PackedStringArray, things: Array = []) 
 		var node := Entities.create(thing["kind"], thing.get("arg", ""))
 		node.position = _cell_centre(thing["cell"])
 		add_child(node)
+	_add_wires()
+
+
+## Power lines between utility poles (props with id "pole"): along each row of poles, and
+## across the road to the nearest pole on the other side.
+func _add_wires() -> void:
+	var poles: Array[Vector2] = []
+	for child in get_children():
+		if child is Prop and child.prop_id == "pole":
+			poles.append(child.position + Vector2(0, Prop.POLE_TOP))
+	if poles.size() < 2:
+		return
+	var wires := Wires.new()
+	poles.sort_custom(func(a, b): return a.x < b.x)
+	var tile := float(WorldMap.TILE)
+	for i in poles.size():
+		for j in range(i + 1, poles.size()):
+			var a := poles[i]
+			var b := poles[j]
+			var same_row := absf(a.y - b.y) < tile
+			var near_along := same_row and b.x - a.x < tile * 8.0
+			var near_across := not same_row and absf(b.x - a.x) < tile * 2.5
+			if near_along or near_across:
+				wires.add_span(a, b)
+	add_child(wires)
 
 
 func _make_ground(lines: PackedStringArray) -> Sprite2D:
