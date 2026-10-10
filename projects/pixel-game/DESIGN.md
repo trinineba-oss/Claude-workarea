@@ -152,7 +152,8 @@ After the slice: Temples 2-4, the trading quest, minigames, the finale and the t
    especially what you would find at Cross Crossing (which stalls, which foods, what the
    atmosphere is like) and what the wharf looks like.
 2. **Dialect level:** light flavor, or heavy Trini English in dialogue (you would review it)?
-3. Chad's look, and whether he speaks (Link's Awakening's hero is silent).
+3. ~~Chad's look~~ Decided: based on the owner (short dark hair, thick brows, short beard,
+   deadpan stare, grey tee, thin chain). Still open: does Chad speak (Link's Awakening's hero is silent)?
 4. ~~Final title~~ Decided: *Chad and the Legendary Lamb Gyro*.
 5. Art source: your own, a free pack you upload, or placeholders for now.
 6. Music: do you have any, or should we plan simple original tracks?
