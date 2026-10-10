@@ -119,7 +119,10 @@ shockwave). Bosses are themed on the temple.
   shadows, organic blended ground (sand, grass, dirt and water melt into each other), animated
   water with shore foam, depth-sorted scenery, particles, a soft vignette. A hot, saturated
   Caribbean palette: flamboyant red and poui yellow blooms, mango green, concrete pastels,
-  sea blue. Later: 2D lights for dusk and night scenes (Cross Crossing at night).
+  sea blue.
+- **Day and night cycle (built):** a 12-minute day; dusk and night tint the world, and food
+  trucks, the gas station, street lamps and headlights light up. Night can change what people
+  say (the ibis sleeps; the food trucks come into their own after dark).
 - 64 px tiles on a 1280x704 base resolution, scaled smoothly to any screen.
 - Music: chiptune with **steelpan** timbres, soca and calypso rhythms for lively areas, a dreamy
   slightly detuned pan lullaby for the overworld; parang flavor for a festive area.

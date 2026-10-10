@@ -26,6 +26,7 @@ var _room: Room
 var _transitioning := false
 var _entry_position := Vector2.ZERO
 
+@onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
 @onready var _player: Player = $Player
 @onready var _camera: Camera2D = $Camera2D
@@ -45,12 +46,14 @@ func _ready() -> void:
 	_player.money_changed.connect(_status.set_money)
 	_player.died.connect(_on_player_died)
 	_player.story_flags = flags
+	day_night.minute_changed.connect(_status.set_time)
 	_player.interact_requested.connect(_on_interact_requested)
 	_dialogue.line_shown.connect(_on_line_shown)
 	if not _restore(save.read()):
 		coords = world.start_room()
 		_player.position = world.start_position()
 	_apply_debug_start()
+	_status.set_time(day_night.hour)
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
@@ -120,6 +123,13 @@ func talk(id: String, with: Interactable = null) -> void:
 	conversation_finished.emit(id)
 
 
+## Story flags plus "night" while it is dark, for choosing what characters say.
+func dialogue_state() -> Dictionary:
+	var state := flags.duplicate()
+	state["night"] = day_night.is_night()
+	return state
+
+
 func is_talking() -> bool:
 	return _dialogue.is_open()
 
@@ -135,6 +145,7 @@ func save_game() -> void:
 		"health": _player.health,
 		"money": _player.money,
 		"flags": flags,
+		"hour": day_night.hour,
 	}
 	save.write(data)
 
@@ -152,6 +163,7 @@ func _restore(data: Dictionary) -> bool:
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
+	day_night.set_hour(float(data.get("hour", day_night.hour)))
 	var saved_flags: Variant = data.get("flags", {})
 	if saved_flags is Dictionary:
 		flags.merge(saved_flags, true)
@@ -200,12 +212,15 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 	)
 
 
-## Developer aid for the Web build: `index.html?room=0_0` starts in that room (used to take
-## screenshots of any room). Ignored everywhere else.
+## Developer aid for the Web build: `index.html?room=0_0` starts in that room and `&time=21`
+## at that hour (used to take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
+	if time != null:
+		day_night.set_hour(float(time.get_string(1)))
 	var found := RegEx.create_from_string("room=(-?\\d+)_(-?\\d+)").search(query)
 	if found == null:
 		return
@@ -222,7 +237,7 @@ func _play_intro() -> void:
 
 
 func _on_interact_requested(target: Interactable) -> void:
-	talk(target.dialogue_id(flags), target)
+	talk(target.dialogue_id(dialogue_state()), target)
 
 
 func _on_line_shown(line: Dictionary) -> void:

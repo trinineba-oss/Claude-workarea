@@ -24,6 +24,9 @@ func setup(texture: Texture2D, lane_velocity: Vector2) -> void:
 	_sprite.rotation = Vector2.DOWN.angle_to(velocity)
 	_sprite.position = Vector2(0, -16)
 	add_child(_sprite)
+	var headlights := NightLight.make(Color(1.0, 0.95, 0.8), 220, 0.9)
+	headlights.position = Vector2(0, -16) + velocity.normalized() * 90.0
+	add_child(headlights)
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
 	rect.size = Vector2(52, 92) if velocity.x == 0.0 else Vector2(92, 52)

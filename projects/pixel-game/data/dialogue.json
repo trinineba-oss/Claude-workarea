@@ -180,6 +180,28 @@
         "speaker": "",
         "text": "PRIVATE LOT. No liming. (Somebody leave a chair.)"
       }
+    ],
+    "ibis_night": [
+      {
+        "speaker": "Ibis",
+        "text": "Zzz... ibis does sleep at night, boss... come back in the morning... zzz."
+      }
+    ],
+    "gyro_vendor_night": [
+      {
+        "speaker": "Gyro man",
+        "text": "Night shift is the real shift, boss. Everybody hungry after dark."
+      },
+      {
+        "speaker": "Gyro man",
+        "text": "Still no legendary gyro, though. Only the regular kind. Also sold out."
+      }
+    ],
+    "soup_lady_night": [
+      {
+        "speaker": "Corn soup lady",
+        "text": "Now is the proper time for corn soup. Cool breeze, hot soup. Perfect."
+      }
     ]
   }
 }

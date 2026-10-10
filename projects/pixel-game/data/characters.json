@@ -1,5 +1,5 @@
 {
-  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts.",
+  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts. The pseudo-flag \"night\" is set while it is dark.",
   "ibis": {
     "name": "Ibis",
     "sprite": "ibis",
@@ -7,6 +7,10 @@
       {
         "unless": "intro_done",
         "dialogue": "ibis_intro"
+      },
+      {
+        "if": "night",
+        "dialogue": "ibis_night"
       },
       {
         "dialogue": "ibis_hint"
@@ -49,6 +53,10 @@
         "dialogue": "gyro_vendor_first"
       },
       {
+        "if": "night",
+        "dialogue": "gyro_vendor_night"
+      },
+      {
         "dialogue": "gyro_vendor"
       }
     ]
@@ -57,6 +65,10 @@
     "name": "Corn soup lady",
     "sprite": "npc_cook",
     "talk": [
+      {
+        "if": "night",
+        "dialogue": "soup_lady_night"
+      },
       {
         "dialogue": "soup_lady"
       }

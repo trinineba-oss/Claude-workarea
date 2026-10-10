@@ -45,7 +45,7 @@ The game started as pixel art and is now smooth HD 2D:
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway, dialogue, traffic)
+  walking through every doorway, dialogue, traffic, day and night)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -123,8 +123,6 @@ edges must line up exactly with the neighbour; an edge with no neighbour must be
 objects must be a known kind with a valid id, inside the room and on a non-solid tile. A separate test walks
 through every doorway to make sure none is blocked.
 
-For screenshots of a specific room, open the Web build with `index.html?room=0_0`.
-
 ## Talking
 
 Walk up to someone (or a sign, or the boat) and face them: a speech bubble appears. Press
@@ -144,9 +142,21 @@ finish the line, then again for the next one.
 Utility poles (`prop <x> <y> pole`) are joined by power lines automatically: along each row of
 poles, and across the road to the pole on the other side.
 
+## Day and night
+
+A full day takes 12 real minutes (`DayNight.SECONDS_PER_DAY`); a new game starts at 7 am and
+the clock stops while the game is paused or in a conversation. The world is tinted through
+dawn, day, dusk and night (the HUD is not), and the time shows under the money with a sun or
+moon. At night, lights come on: food-truck windows, the gas-station canopy, street lamps on the
+poles and car headlights. Add a lamp to any prop with `"light": [x, y, size, "#colour"]` in
+`data/props.json`. Characters can say different things at night: the pseudo-flag `night` works
+in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is saved.
+
+For screenshots, the Web build also takes `&time=21` (e.g. `index.html?room=2_0&time=21`).
+
 ## Saving
 
-`user://save.json` holds the room and position. It is written on every room change, on pause,
+`user://save.json` holds the room, position, health, money, story flags and time of day. It is written on every room change, on pause,
 and when the app goes to the background or closes. A missing, corrupt or different-version
 file starts a new game.
 

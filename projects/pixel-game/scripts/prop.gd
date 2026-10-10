@@ -30,6 +30,11 @@ func setup(id: String) -> void:
 		add_child(_feet_shape(Vector2(solid[0], solid[1]), Vector2(0, -solid[1] / 2.0)))
 	else:
 		add_child(_feet_shape(area - Vector2(8, 8), Vector2(0, -area.y / 2.0)))
+	var lamp: Array = data.get("light", [])
+	if lamp.size() == 4:
+		var light := NightLight.make(Color(lamp[3]), lamp[2])
+		light.position = Vector2(lamp[0], lamp[1])
+		add_child(light)
 	var text: String = data.get("label", "")
 	if text != "":
 		var label := Label.new()
