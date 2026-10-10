@@ -11,6 +11,7 @@ const FONT_SIZE := 30
 var _health := 6
 var _max_health := 6
 var _money := 0
+var _hour := 7.0
 
 
 func _draw() -> void:
@@ -33,6 +34,7 @@ func _draw() -> void:
 		font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, 6, Color(0.1, 0.06, 0.14)
 	)
 	draw_string(font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, Color.WHITE)
+	_draw_clock(Vector2(0, money_at.y + COIN.get_height() + 12))
 
 
 func set_health(health: int, max_health: int) -> void:
@@ -41,6 +43,30 @@ func set_health(health: int, max_health: int) -> void:
 	queue_redraw()
 
 
+func set_time(hour: float) -> void:
+	_hour = hour
+	queue_redraw()
+
+
 func set_money(money: int) -> void:
 	_money = money
 	queue_redraw()
+
+
+func _draw_clock(at: Vector2) -> void:
+	var centre := at + Vector2(18, 16)
+	if DayNight.night_amount_at(_hour) > 0.5:
+		draw_circle(centre, 13.0, Color(0.95, 0.94, 0.82))
+		draw_circle(centre + Vector2(6, -4), 11.0, Color(0.1, 0.08, 0.2))
+	else:
+		draw_circle(centre, 11.0, Color(1.0, 0.82, 0.25))
+		for i in 8:
+			var d := Vector2.from_angle(i * TAU / 8.0)
+			draw_line(centre + d * 14.0, centre + d * 19.0, Color(1.0, 0.82, 0.25), 3.0)
+	var font := ThemeDB.fallback_font
+	var text := DayNight.clock_text(_hour)
+	var text_at := at + Vector2(44, 26)
+	draw_string_outline(
+		font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, 6, Color(0.1, 0.06, 0.14)
+	)
+	draw_string(font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)

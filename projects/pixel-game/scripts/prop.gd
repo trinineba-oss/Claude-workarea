@@ -3,6 +3,9 @@ extends Interactable
 ## A large static thing (wrecked boat, food stall) from data/props.json. Its footprint of
 ## tiles is solid; it can optionally be read like a sign.
 
+## Where wires attach on a utility pole, relative to its base.
+const POLE_TOP := -220.0
+
 var prop_id := ""
 var footprint := Vector2i.ONE
 
@@ -22,7 +25,16 @@ func setup(id: String) -> void:
 	sprite.texture = load("res://assets/sprites/%s.png" % data.get("sprite", "crate"))
 	sprite.offset = Vector2(0, -sprite.texture.get_height() / 2.0 + 4.0)
 	add_child(sprite)
-	add_child(_feet_shape(area - Vector2(8, 8), Vector2(0, -area.y / 2.0)))
+	var solid: Array = data.get("solid", [])
+	if solid.size() == 2:
+		add_child(_feet_shape(Vector2(solid[0], solid[1]), Vector2(0, -solid[1] / 2.0)))
+	else:
+		add_child(_feet_shape(area - Vector2(8, 8), Vector2(0, -area.y / 2.0)))
+	var lamp: Array = data.get("light", [])
+	if lamp.size() == 4:
+		var light := NightLight.make(Color(lamp[3]), lamp[2])
+		light.position = Vector2(lamp[0], lamp[1])
+		add_child(light)
 	var text: String = data.get("label", "")
 	if text != "":
 		var label := Label.new()

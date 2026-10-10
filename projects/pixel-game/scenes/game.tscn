@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://scripts/status_bar.gd" id="5_status"]
 [ext_resource type="Shader" path="res://shaders/vignette.gdshader" id="6_vignette"]
 [ext_resource type="Script" path="res://scripts/dialogue_box.gd" id="7_dialogue"]
+[ext_resource type="Script" path="res://scripts/day_night.gd" id="8_daynight"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_vignette"]
 shader = ExtResource("6_vignette")
@@ -21,6 +22,9 @@ y_sort_enabled = true
 [node name="Player" parent="." instance=ExtResource("2_player")]
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="DayNight" type="Node" parent="."]
+script = ExtResource("8_daynight")
 
 [node name="PostFX" type="CanvasLayer" parent="."]
 layer = 5
@@ -46,7 +50,7 @@ anchors_preset = 0
 offset_left = 20.0
 offset_top = 16.0
 offset_right = 420.0
-offset_bottom = 136.0
+offset_bottom = 180.0
 mouse_filter = 2
 script = ExtResource("5_status")
 

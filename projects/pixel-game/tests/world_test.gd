@@ -4,7 +4,7 @@ extends "res://tests/test_base.gd"
 
 func _run() -> void:
 	var world := WorldMap.load_dir("res://data/rooms")
-	_check(world.rooms.size() == 6, "loads 6 rooms (got %d)" % world.rooms.size())
+	_check(world.rooms.size() == 7, "loads 7 rooms (got %d)" % world.rooms.size())
 	var problems := world.validate()
 	_check(problems.is_empty(), "world is valid: %s" % ", ".join(problems))
 	_check(world.start_room() == Vector2i(0, 1), "the start room is the wharf (0, 1)")
@@ -14,7 +14,12 @@ func _run() -> void:
 		kinds.count("npc") == 2 and kinds.count("prop") == 1, "the wharf has 2 people and the boat"
 	)
 	var crossing := world.objects_in(Vector2i(1, 0)).map(func(o): return o["arg"])
-	_check("gyro_vendor" in crossing, "the gyro man is at Cross Crossing")
+	_check(
+		"gas_station" in crossing and "down" in crossing,
+		"Cross Crossing has the gas station and traffic"
+	)
+	var avenue := world.objects_in(Vector2i(2, 0)).map(func(o): return o["arg"])
+	_check("gyro_vendor" in avenue, "the gyro man is on Lady Hailes Avenue")
 	world.objects[Vector2i(0, 0)].append({"kind": "unicorn", "cell": Vector2i(1, 1)})
 	world.objects[Vector2i(0, 0)].append({"kind": "dog", "cell": Vector2i(0, 0)})
 	world.objects[Vector2i(0, 0)].append({"kind": "dog", "cell": Vector2i(40, 0)})

@@ -1,9 +1,95 @@
 {
-  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts.",
-  "ibis": {"name": "Ibis", "sprite": "ibis", "talk": [{"unless": "intro_done", "dialogue": "ibis_intro"}, {"dialogue": "ibis_hint"}]},
-  "fisherman": {"name": "Fisherman", "sprite": "npc_fisherman", "talk": [{"dialogue": "fisherman"}]},
-  "limer": {"name": "Liming man", "sprite": "npc_limer", "talk": [{"dialogue": "limer"}]},
-  "doubles_vendor": {"name": "Doubles auntie", "sprite": "npc_auntie", "talk": [{"dialogue": "doubles_vendor"}]},
-  "roti_cook": {"name": "Roti cook", "sprite": "npc_cook", "talk": [{"dialogue": "roti_cook"}]},
-  "gyro_vendor": {"name": "Gyro man", "sprite": "npc_vendor", "talk": [{"unless": "met_gyro_man", "dialogue": "gyro_vendor_first"}, {"dialogue": "gyro_vendor"}]}
+  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts. The pseudo-flag \"night\" is set while it is dark.",
+  "ibis": {
+    "name": "Ibis",
+    "sprite": "ibis",
+    "talk": [
+      {
+        "unless": "intro_done",
+        "dialogue": "ibis_intro"
+      },
+      {
+        "if": "night",
+        "dialogue": "ibis_night"
+      },
+      {
+        "dialogue": "ibis_hint"
+      }
+    ]
+  },
+  "fisherman": {
+    "name": "Fisherman",
+    "sprite": "npc_fisherman",
+    "talk": [
+      {
+        "dialogue": "fisherman"
+      }
+    ]
+  },
+  "limer": {
+    "name": "Liming man",
+    "sprite": "npc_limer",
+    "talk": [
+      {
+        "dialogue": "limer"
+      }
+    ]
+  },
+  "doubles_vendor": {
+    "name": "Doubles auntie",
+    "sprite": "npc_auntie",
+    "talk": [
+      {
+        "dialogue": "doubles_vendor"
+      }
+    ]
+  },
+  "gyro_vendor": {
+    "name": "Gyro man",
+    "sprite": "npc_vendor",
+    "talk": [
+      {
+        "unless": "met_gyro_man",
+        "dialogue": "gyro_vendor_first"
+      },
+      {
+        "if": "night",
+        "dialogue": "gyro_vendor_night"
+      },
+      {
+        "dialogue": "gyro_vendor"
+      }
+    ]
+  },
+  "soup_lady": {
+    "name": "Corn soup lady",
+    "sprite": "npc_cook",
+    "talk": [
+      {
+        "if": "night",
+        "dialogue": "soup_lady_night"
+      },
+      {
+        "dialogue": "soup_lady"
+      }
+    ]
+  },
+  "pork_man": {
+    "name": "Pork man",
+    "sprite": "npc_limer",
+    "talk": [
+      {
+        "dialogue": "pork_man"
+      }
+    ]
+  },
+  "seafood_man": {
+    "name": "Seafood man",
+    "sprite": "npc_fisherman",
+    "talk": [
+      {
+        "dialogue": "seafood_man"
+      }
+    ]
+  }
 }

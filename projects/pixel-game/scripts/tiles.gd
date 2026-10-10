@@ -5,6 +5,8 @@ extends RefCounted
 ##   .  grass        ,  grass with flowers   s  sand    p  dirt path    =  paving / stone floor
 ##   w  dock planks  r  road                 @  player start (dock planks)
 ##   ~  water   #  rock wall   b  bush   T  tree   c  crate   o  bollard   (these are solid)
+##   R  road you cannot walk on (busy traffic, off the edge of the map)       (solid)
+##   F  chain-link fence   W  painted concrete wall                          (solid)
 
 const SIZE := 64
 ## Ground material per character; "" means "take it from the neighbours" (see ground_at).
@@ -23,12 +25,22 @@ const GROUND := {
 	"T": "",
 	"c": "",
 	"o": "",
+	"R": "road",
+	"F": "",
+	"W": "",
 }
 ## Characters that also place a scenery sprite.
 const SCENERY := {
-	",": "flowers", "#": "rock", "b": "bush", "T": "tree", "c": "crate", "o": "bollard"
+	",": "flowers",
+	"#": "rock",
+	"b": "bush",
+	"T": "tree",
+	"c": "crate",
+	"o": "bollard",
+	"F": "fence",
+	"W": "wall",
 }
-const SOLID := ["~", "#", "b", "T", "c", "o"]
+const SOLID := ["~", "#", "b", "T", "c", "o", "R", "F", "W"]
 
 static var _tileset: TileSet
 
