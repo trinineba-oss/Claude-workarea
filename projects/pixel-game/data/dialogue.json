@@ -32,7 +32,7 @@
     "gyro_vendor_first": [
       {"speaker": "Gyro man", "text": "Gyro? Nah, boss. Gyro sold out."},
       {"speaker": "Gyro man", "text": "Well... the legendary one, anyway. That one up on the Hill."},
-      {"speaker": "Gyro man", "text": "Wait small... I feel like I know you from somewhere.", "set_flag": "met_gyro_man"}
+      {"speaker": "Gyro man", "text": "Wait small... Chad? Is you? I feel like I know you from somewhere.", "set_flag": "met_gyro_man"}
     ],
     "gyro_vendor": [
       {"speaker": "Gyro man", "text": "Still here? Go on up the Hill. I go keep a spot for you."}

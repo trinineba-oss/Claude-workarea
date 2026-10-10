@@ -1,4 +1,6 @@
-# Gyro's Awakening game (Godot 4.7, GDScript)
+# Chad and the Legendary Lamb Gyro (Godot 4.7, GDScript)
+
+The hero is Chad.
 
 The folder is still called `pixel-game`, but the game is HD 2D now (it started as pixel art).
 
