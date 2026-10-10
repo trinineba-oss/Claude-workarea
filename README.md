@@ -10,6 +10,7 @@ common toolchains, plus automatic dependency setup for anything you drop into
 | Path | Purpose |
 | --- | --- |
 | `projects/<name>/` | One folder per project. Committed. Dependencies install automatically at session start. |
+| `projects/pixel-game/` | A starter Godot 2D pixel-art game for Android. See its README. |
 | `scratch/` | Throwaway work. Git-ignored, so it disappears with the container. |
 | `.claude/hooks/session-start.sh` | SessionStart hook that prepares each cloud session. |
 | `.claude/settings.json` | Registers the hook. |
@@ -29,6 +30,7 @@ the session starts:
    - `pyproject.toml` / `requirements.txt` → a `.venv` via uv (`uv sync` when `uv.lock` exists)
    - `go.mod` → `go mod download`
    - `Cargo.toml` → `cargo fetch`
+   - `project.godot` → Godot 4.7.2 and its export templates (from the Nix cache) plus `gdtoolkit`
 3. Adds `~/.local/bin` to the session `PATH`.
 
 The container state is cached after the hook finishes, so later sessions start faster.

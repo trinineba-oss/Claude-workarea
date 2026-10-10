@@ -10,7 +10,12 @@ target/
 dist/
 build/
 
+# Godot cache (the .import files next to assets ARE committed)
+.godot/
+
 # Secrets and local overrides
+*.keystore
+*.jks
 .env
 .env.*
 .claude/settings.local.json
