@@ -1,5 +1,5 @@
 {
-  "_note": "Large static things placed with `prop <x> <y> <id>`. footprint = solid tiles [w, h] centred on the cell horizontally, ending at the cell's centre line (the prop's base). label = text painted on the awning. dialogue = what the hero reads when they interact (optional). light = [x, y, size, \"#colour\"] adds a lamp that shines at night (x, y from the prop's base).",
+  "_note": "Large static things placed with `prop <x> <y> <id>`. footprint = solid tiles [w, h] centred on the cell horizontally, ending at the cell's centre line (the prop's base). label = text painted on the awning. dialogue = what the hero reads when they interact (optional). solid = [w, h] of the solid base in pixels, or \"none\" to walk over it. light = [x, y, size, \"#colour\"] adds a lamp that shines at night (x, y from the prop's base).",
   "boat": {
     "sprite": "boat",
     "footprint": [
@@ -220,5 +220,42 @@
       260,
       "#ffcf7a"
     ]
+  },
+  "torch": {
+    "sprite": "torch",
+    "footprint": [
+      1,
+      1
+    ],
+    "solid": [
+      16,
+      12
+    ],
+    "light": [
+      0,
+      -90,
+      340,
+      "#ffa64d"
+    ]
+  },
+  "cave_mouth": {
+    "sprite": "cave_mouth",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": "none"
+  },
+  "boss_door": {
+    "sprite": "boss_door",
+    "footprint": [
+      3,
+      1
+    ],
+    "solid": [
+      180,
+      40
+    ],
+    "dialogue": "boss_door"
   }
 }

@@ -46,7 +46,7 @@ func safe_radius() -> float:
 
 
 func _process(_delta: float) -> void:
-	var night := DayNight.current.night_amount() if DayNight.current != null else 0.0
+	var night := DayNight.current.light_amount() if DayNight.current != null else 0.0
 	energy = base_energy * night
 	visible = energy > 0.01
 

@@ -26,7 +26,7 @@ func _read_all(box: DialogueBox) -> int:
 		box.advance()  # next line
 		await process_frame
 		lines += 1
-	await _frames(3)
+	await _settle()
 	return lines
 
 
@@ -95,7 +95,7 @@ func _run() -> void:
 	box.advance()
 	await process_frame
 	root.push_input(tap, true)
-	await _frames(4)
+	await _settle()
 	_check(not box.is_open(), "tapping the screen closes the last line")
 	_check(not paused, "the game resumes afterwards")
 	_check(_finished == ["fisherman"], "conversation_finished fires")
@@ -124,17 +124,10 @@ func _run() -> void:
 	await _frames(1)
 	_check(box.is_open() and player.state != Player.State.ATTACK, "attack near the ibis talks")
 	_check(text.text.begins_with("Cross Crossing is up"), "later talks are the hint")
-	# The hint has three lines: skip the typing and move on, twice, then finish the last.
-	box.advance()
-	await process_frame
-	box.advance()
-	await process_frame
-	box.advance()
-	await process_frame
-	box.advance()
-	await process_frame
-	box.advance()
-	await process_frame
+	# Skip the typing and move on for each line, then finish typing the last one.
+	for i in 2 * GameData.conversation("ibis_hint").size() - 1:
+		box.advance()
+		await process_frame
 	Input.action_press(&"attack")
 	await process_frame
 	box.advance()

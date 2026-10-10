@@ -1,0 +1,21 @@
+####################
+#==================#
+#==================#
+#==================#
+#==================#
+===================#
+===================#
+#==================#
+#==================#
+#==================#
+#########==#########
+
+; The Big Blue Crab. Shutters close while it fights; its chest holds the boomerang.
+bigcrab 10 3 crab
+shutter 9 10
+shutter 0 5
+chest 9 5 coconut_boomerang@crab
+prop 2 1 torch
+prop 17 1 torch
+prop 2 9 torch
+prop 17 9 torch

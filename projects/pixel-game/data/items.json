@@ -134,5 +134,12 @@
       "difficulty": 0.4,
       "weight": 1
     }
+  },
+  "coconut_boomerang": {
+    "name": "Coconut boomerang",
+    "icon": "coconut_boomerang",
+    "price": 0,
+    "heal": 0,
+    "tool": true
   }
 }

@@ -53,6 +53,9 @@ const SCENERY := {
 const FLOWERS := preload("res://assets/sprites/flowers.png")
 
 var coords := Vector2i.ZERO
+## Prepended to the keys of stateful objects ("temple1:" in a dungeon, "" outdoors), so their
+## saved state never clashes between maps.
+var key_prefix := ""
 ## True for the plain sea/grass rooms that fill gaps at the edges of the world.
 var filler := false
 
@@ -84,10 +87,23 @@ func build(
 	for thing in things:
 		var node := Entities.create(thing["kind"], thing.get("arg", ""))
 		node.position = _cell_centre(thing["cell"])
-		if node is Forage:
-			node.key = "%d_%d_%d_%d" % [coords.x, coords.y, thing["cell"].x, thing["cell"].y]
+		if "key" in node:
+			node.key = (
+				key_prefix + "%d_%d_%d_%d" % [coords.x, coords.y, thing["cell"].x, thing["cell"].y]
+			)
 		add_child(node)
 	_add_wires()
+
+
+## Chad has just walked in: push blocks go back to their starting tiles unless every plate
+## here is already pressed, so a jammed block puzzle can always be retried.
+func on_enter() -> void:
+	var plates := get_children().filter(func(n): return n is Plate)
+	if plates.is_empty() or plates.all(func(p): return p.is_pressed()):
+		return
+	for child in get_children():
+		if child is PushBlock:
+			child.reset()
 
 
 ## Power lines between utility poles (props with id "pole"): along each row of poles, and

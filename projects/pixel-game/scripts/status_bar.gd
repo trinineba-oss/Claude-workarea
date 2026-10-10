@@ -1,9 +1,11 @@
 class_name StatusBar
 extends Control
-## Health ("doubles", two halves each) and money, drawn at the top left.
+## Health ("doubles", two halves each), money and the clock, drawn at the top left, plus
+## small keys while in a dungeon.
 
 const DOUBLE := preload("res://assets/sprites/snack.png")
 const COIN := preload("res://assets/sprites/coin.png")
+const KEY := preload("res://assets/sprites/key.png")
 const STEP := 56.0
 const EMPTY := Color(0.1, 0.06, 0.14, 0.45)
 const FONT_SIZE := 30
@@ -13,6 +15,7 @@ var _max_health := 6
 var _money := 0
 var _hour := 7.0
 var _day := 1
+var _keys := -1
 
 
 func _draw() -> void:
@@ -35,7 +38,24 @@ func _draw() -> void:
 		font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, 6, Color(0.1, 0.06, 0.14)
 	)
 	draw_string(font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, FONT_SIZE, Color.WHITE)
-	_draw_clock(Vector2(0, money_at.y + COIN.get_height() + 12))
+	var clock_at := Vector2(0, money_at.y + COIN.get_height() + 12)
+	_draw_clock(clock_at)
+	if _keys >= 0:
+		var key_at := clock_at + Vector2(0, 42)
+		draw_texture(KEY, key_at)
+		var key_text := "x %d" % _keys
+		var key_text_at := key_at + Vector2(KEY.get_width() + 8, KEY.get_height() * 0.78)
+		draw_string_outline(
+			font,
+			key_text_at,
+			key_text,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			26,
+			6,
+			Color(0.1, 0.06, 0.14)
+		)
+		draw_string(font, key_text_at, key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 
 
 func set_health(health: int, max_health: int) -> void:
@@ -51,6 +71,12 @@ func set_time(hour: float) -> void:
 
 func set_day(day: int) -> void:
 	_day = day
+	queue_redraw()
+
+
+## Small keys held in this dungeon; -1 hides the counter (outdoors).
+func set_keys(count: int) -> void:
+	_keys = count
 	queue_redraw()
 
 

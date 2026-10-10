@@ -25,10 +25,10 @@ func setup(id: String) -> void:
 	sprite.texture = load("res://assets/sprites/%s.png" % data.get("sprite", "crate"))
 	sprite.offset = Vector2(0, -sprite.texture.get_height() / 2.0 + 4.0)
 	add_child(sprite)
-	var solid: Array = data.get("solid", [])
-	if solid.size() == 2:
+	var solid: Variant = data.get("solid", [])
+	if solid is Array and solid.size() == 2:
 		add_child(_feet_shape(Vector2(solid[0], solid[1]), Vector2(0, -solid[1] / 2.0)))
-	else:
+	elif not (solid is String and solid == "none"):
 		add_child(_feet_shape(area - Vector2(8, 8), Vector2(0, -area.y / 2.0)))
 	var lamp: Array = data.get("light", [])
 	if lamp.size() == 4:

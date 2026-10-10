@@ -22,36 +22,47 @@ func _run() -> void:
 	root.add_child(game)
 	await _physics_frames(2)
 	var player: Player = game.get_node("Player")
-	var world := game.world
 	var size := WorldMap.room_size()
 	var walks := 0
 
-	for coords in world.rooms:
-		for dir: Vector2i in DIRECTIONS:
-			if not world.has_room(coords + dir):
-				continue
-			var tiles := _open_tiles(world, coords, dir)
-			for tile in [tiles.front(), tiles.back()]:
-				var local := (Vector2(tile) + Vector2(0.5, 0.5)) * WorldMap.TILE
-				if dir.x != 0:
-					local.x = size.x - INSET if dir.x > 0 else INSET
-				else:
-					local.y = size.y - INSET if dir.y > 0 else INSET
-				game.go_to(coords, WorldMap.room_origin(coords) + local)
-				player.revive()
-				await physics_frame
-				Input.action_press(DIRECTIONS[dir])
-				var frames := 0
-				while game.coords == coords and frames < 240:
+	for map_id: String in Game.MAPS:
+		var first: Vector2i = game._world_for(map_id).rooms.keys()[0]
+		game.enter_map(map_id, first, WorldMap.room_origin(first) + size / 2.0)
+		var world := game.world
+		for coords in world.rooms:
+			for dir: Vector2i in DIRECTIONS:
+				if not world.has_room(coords + dir):
+					continue
+				var tiles := _open_tiles(world, coords, dir)
+				if tiles.is_empty():
+					continue  # a wall between two rooms
+				for tile in [tiles.front(), tiles.back()]:
+					var local := (Vector2(tile) + Vector2(0.5, 0.5)) * WorldMap.TILE
+					if dir.x != 0:
+						local.x = size.x - INSET if dir.x > 0 else INSET
+					else:
+						local.y = size.y - INSET if dir.y > 0 else INSET
+					game.go_to(coords, WorldMap.room_origin(coords) + local)
+					# Doors, gates and enemies are tested elsewhere; here only the walls count.
+					for node in get_nodes_in_group("doors") + get_nodes_in_group("enemies"):
+						node.free()
+					player.revive()
 					await physics_frame
-					frames += 1
-				Input.action_release(DIRECTIONS[dir])
-				walks += 1
-				_check(
-					game.coords == coords + dir,
-					"can walk from room %s through tile %s toward %s" % [coords, tile, dir]
-				)
-	_check(walks >= 20, "walked through %d doorways" % walks)
+					Input.action_press(DIRECTIONS[dir])
+					var frames := 0
+					while game.coords == coords and frames < 240:
+						await physics_frame
+						frames += 1
+					Input.action_release(DIRECTIONS[dir])
+					walks += 1
+					_check(
+						game.coords == coords + dir,
+						(
+							"can walk on %s from room %s through tile %s toward %s"
+							% [map_id, coords, tile, dir]
+						)
+					)
+	_check(walks >= 36, "walked through %d doorways" % walks)
 	Engine.time_scale = 1.0
 	game.free()
 	DirAccess.remove_absolute(SAVE_PATH)

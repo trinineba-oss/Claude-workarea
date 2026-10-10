@@ -663,6 +663,190 @@ c.detail_ellipse(27, 41, 2, 2.2, INK)
 c.detail_ellipse(37, 41, 2, 2.2, INK)
 c.save(f"{OUT}/sprites/soucouyant.png")
 
+# ---- temple 1: Callaloo Cave ----------------------------------------------------------------------
+WOOD, WOOD_D, IRON, IRON_L = (150, 98, 56, 255), (110, 70, 40, 255), (70, 70, 84, 255), (130, 134, 150, 255)
+STONE, STONE_D = (128, 118, 112, 255), (92, 84, 82, 255)
+BRASS = (236, 196, 80, 255)
+
+
+def padlock(c, cx, cy):
+    c.ellipse(cx, cy - 6, 7, 8, IRON, outline=2)
+    c.detail_ellipse(cx, cy - 6, 3.5, 4.5, WOOD_D)
+    c.rrect(cx - 10, cy - 2, cx + 10, cy + 14, 3, BRASS, outline=2)
+    c.detail_ellipse(cx, cy + 5, 2, 2.5, INK)
+
+
+c = Canvas(128, 112)  # locked door across a top/bottom wall: anchor = bottom centre
+c.rrect(2, 6, 126, 110, 10, STONE)
+c.rrect(14, 20, 114, 110, 6, WOOD)
+for x in (38, 64, 90):
+    c.detail_line([(x, 24), (x, 108)], WOOD_D, 2)
+for y in (40, 88):
+    c.detail_line([(16, y), (112, y)], IRON, 5)
+padlock(c, 64, 60)
+c.save(f"{OUT}/sprites/door_locked_h.png")
+
+c = Canvas(64, 176)  # locked door in a side wall: anchor = bottom centre
+c.rrect(4, 4, 60, 174, 8, STONE)
+c.rrect(14, 16, 50, 172, 5, WOOD)
+for y in (50, 130):
+    c.detail_line([(16, y), (48, y)], IRON, 5)
+c.detail_line([(32, 20), (32, 168)], WOOD_D, 2)
+padlock(c, 32, 86)
+c.save(f"{OUT}/sprites/door_locked_v.png")
+
+c = Canvas(128, 112)  # iron gate across a top/bottom wall
+c.rrect(2, 6, 126, 110, 10, STONE)
+c.rrect(12, 18, 116, 110, 4, (34, 28, 40, 255), outline=1.5)
+for x in range(20, 112, 16):
+    c.rrect(x, 18, x + 6, 110, 3, IRON, outline=1.5)
+c.detail_line([(14, 44), (114, 44)], IRON_L, 4)
+c.detail_line([(14, 84), (114, 84)], IRON_L, 4)
+c.save(f"{OUT}/sprites/gate_h.png")
+
+c = Canvas(64, 176)  # iron gate in a side wall
+c.rrect(4, 4, 60, 174, 8, STONE)
+c.rrect(12, 14, 52, 172, 4, (34, 28, 40, 255), outline=1.5)
+for y in range(22, 168, 18):
+    c.rrect(12, y, 52, y + 6, 3, IRON, outline=1.5)
+c.detail_line([(26, 16), (26, 170)], IRON_L, 3)
+c.detail_line([(40, 16), (40, 170)], IRON_L, 3)
+c.save(f"{OUT}/sprites/gate_v.png")
+
+
+def chest(path, open_):
+    """Treasure chest, 64x60, anchor = bottom centre (the game lifts it by 24 px)."""
+    c = Canvas(64, 60)
+    c.rrect(6, 26, 58, 58, 6, WOOD)
+    if open_:
+        c.rrect(8, 4, 56, 22, 6, WOOD_D)
+        c.detail_ellipse(32, 28, 22, 4, (250, 230, 140, 255))
+    else:
+        c.rrect(6, 10, 58, 32, 10, WOOD)
+        c.detail_line([(8, 30), (56, 30)], WOOD_D, 3)
+    for x in (16, 48):
+        c.detail_line([(x, 28 if open_ else 12), (x, 56)], BRASS, 4)
+    if not open_:
+        c.rrect(27, 26, 37, 38, 2, BRASS, outline=1.5)
+    c.save(path)
+
+
+chest(f"{OUT}/sprites/chest.png", False)
+chest(f"{OUT}/sprites/chest_open.png", True)
+
+c = Canvas(64, 82)  # push block: anchor = bottom centre (sits on its tile, top face showing)
+c.rrect(2, 22, 62, 80, 6, STONE_D)
+c.rrect(2, 2, 62, 50, 6, STONE)
+c.detail_line([(12, 14), (52, 14)], (160, 150, 144, 255), 3)
+c.detail_ellipse(32, 26, 9, 9, STONE_D)
+c.detail_ellipse(32, 26, 5, 5, (110, 100, 98, 255))
+c.save(f"{OUT}/sprites/block.png")
+
+
+def plate(path, down):
+    c = Canvas(60, 60)  # pressure plate decal, anchor = centre
+    c.rrect(2, 2, 58, 58, 6, STONE_D, outline=2)
+    c.rrect(8, 8 if not down else 12, 52, 52, 5, (196, 150, 70, 255) if not down else (120, 96, 60, 255), outline=1.5)
+    c.detail_ellipse(30, 30 if not down else 33, 8, 8, (230, 190, 100, 255) if not down else (150, 120, 70, 255))
+    c.save(path)
+
+
+plate(f"{OUT}/sprites/plate.png", False)
+plate(f"{OUT}/sprites/plate_down.png", True)
+
+
+def orb(path, colour, light):
+    c = Canvas(56, 80)  # crystal switch on a stand: anchor = bottom centre (lifted 24 px in game)
+    c.rrect(14, 50, 42, 78, 4, STONE)
+    c.rrect(8, 44, 48, 54, 4, STONE_D)
+    c.ellipse(28, 26, 20, 20, colour)
+    c.detail_ellipse(22, 19, 7, 5, light)
+    c.save(path)
+
+
+orb(f"{OUT}/sprites/switch_off.png", (220, 60, 70, 255), (255, 170, 170, 255))
+orb(f"{OUT}/sprites/switch_on.png", (60, 130, 230, 255), (180, 220, 255, 255))
+
+c = Canvas(56, 40)  # cave crab, anchor = feet at bottom centre
+SHELL, SHELL_D = (70, 120, 200, 255), (46, 84, 150, 255)
+for x in (8, 14, 42, 48):
+    c.detail_line([(x + (6 if x < 28 else -6), 26), (x, 38)], SHELL_D, 3)
+c.ellipse(4, 14, 6, 6, SHELL)
+c.ellipse(52, 14, 6, 6, SHELL)
+c.ellipse(28, 24, 18, 12, SHELL)
+c.detail_ellipse(28, 20, 10, 4, (120, 170, 236, 255))
+for x in (22, 34):
+    c.detail_line([(x, 14), (x, 8)], SHELL_D, 2)
+    c.detail_ellipse(x, 7, 2.5, 2.5, INK)
+c.save(f"{OUT}/sprites/crab.png")
+
+c = Canvas(176, 120)  # the Big Blue Crab (mini-boss), anchor = feet at bottom centre
+for x in (34, 50, 66, 110, 126, 142):
+    c.detail_line([(x + (14 if x < 88 else -14), 80), (x, 116)], SHELL_D, 5)
+c.poly([(6, 40), (2, 12), (22, 2), (36, 22), (26, 44)], SHELL)  # left claw
+c.poly([(170, 40), (174, 12), (154, 2), (140, 22), (150, 44)], SHELL)  # right claw
+c.detail_line([(12, 6), (22, 24)], (250, 240, 230, 255), 3)
+c.detail_line([(164, 6), (154, 24)], (250, 240, 230, 255), 3)
+c.ellipse(88, 74, 64, 40, SHELL)
+c.detail_ellipse(88, 64, 40, 14, (120, 170, 236, 255))
+c.detail_ellipse(64, 86, 8, 5, SHELL_D)
+c.detail_ellipse(112, 86, 8, 5, SHELL_D)
+for x in (72, 104):
+    c.detail_line([(x, 42), (x, 26)], SHELL_D, 4)
+    c.detail_ellipse(x, 24, 6, 6, (250, 246, 240, 255))
+    c.detail_ellipse(x + (2 if x < 88 else -2), 25, 3, 3, INK)
+c.detail_line([(64, 18), (78, 24)], INK, 3)  # angry brows
+c.detail_line([(112, 18), (98, 24)], INK, 3)
+c.detail_line([(78, 96), (88, 92), (98, 96)], INK, 3)
+c.save(f"{OUT}/sprites/big_crab.png")
+
+
+def _boomerang(c):
+    c.poly([(8, 34), (22, 6), (30, 10), (20, 30), (42, 38), (38, 44)], (128, 82, 46, 255), outline=2.5)
+    c.detail_line([(14, 32), (24, 10)], (176, 124, 76, 255), 2)
+    c.detail_line([(22, 34), (38, 40)], (176, 124, 76, 255), 2)
+    c.detail_ellipse(21, 32, 3, 3, (250, 244, 230, 255))
+
+
+icon(f"{OUT}/items/coconut_boomerang.png", _boomerang)
+
+c = Canvas(32, 36)  # small key (HUD and chests)
+c.ellipse(16, 10, 9, 9, BRASS, outline=2)
+c.rrect(13, 14, 19, 34, 2, BRASS, outline=2)
+c.rrect(19, 24, 25, 28, 1, BRASS, outline=1.5)
+c.rrect(19, 30, 25, 34, 1, BRASS, outline=1.5)
+c.detail_ellipse(16, 10, 4, 4, (120, 90, 30, 255))
+c.save(f"{OUT}/sprites/key.png")
+
+c = Canvas(200, 176)  # cave mouth in a rock face (no collision): anchor = bottom centre
+c.ellipse(100, 120, 98, 70, STONE)
+c.ellipse(100, 70, 80, 64, (150, 140, 132, 255))
+c.ellipse(100, 140, 52, 44, (16, 12, 22, 255), outline=4)
+c.poly([(48, 176), (152, 176), (148, 140), (52, 140)], (16, 12, 22, 255), outline=0)
+c.detail_ellipse(70, 52, 20, 8, (176, 168, 160, 255))
+c.detail_line([(30, 110), (46, 130)], STONE_D, 3)
+c.detail_line([(166, 96), (156, 120)], STONE_D, 3)
+c.save(f"{OUT}/sprites/cave_mouth.png")
+
+c = Canvas(40, 104)  # wall torch on a post: anchor = foot
+c.rrect(16, 40, 24, 102, 3, WOOD_D)
+c.rrect(8, 34, 32, 46, 4, IRON)
+c.poly([(20, 2), (32, 22), (28, 36), (12, 36), (8, 22)], (246, 130, 40, 255), outline=2)
+c.detail_ellipse(20, 26, 6, 8, (252, 220, 100, 255))
+c.save(f"{OUT}/sprites/torch.png")
+
+c = Canvas(192, 200)  # the sealed temple door (boss door, milestone 5): anchor = bottom centre
+c.rrect(4, 8, 188, 198, 14, STONE_D)
+c.rrect(24, 30, 168, 198, 60, (60, 40, 30, 255))
+c.rrect(34, 44, 158, 198, 52, WOOD)
+c.detail_line([(96, 46), (96, 196)], WOOD_D, 3)
+for y in (90, 150):
+    c.detail_line([(36, y), (156, y)], IRON, 6)
+c.poly([(96, 96), (116, 120), (110, 150), (96, 160), (82, 150), (76, 120)], (220, 50, 40, 255), outline=2.5)  # pepper lock
+c.rrect(92, 84, 100, 98, 2, (60, 140, 60, 255), outline=1.5)
+c.detail_ellipse(90, 118, 4, 8, (255, 140, 120, 255))
+c.save(f"{OUT}/sprites/boss_door.png")
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

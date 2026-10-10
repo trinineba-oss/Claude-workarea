@@ -1,0 +1,20 @@
+####################
+#==~~~~#=====#=====#
+#==~~~~#=====#=====#
+#==~~~~###==##=====#
+#==~~~~============#
+#==~~~~=============
+#==~~~~=============
+#==~~~~============#
+#==~~~~============#
+#==~~~~============#
+####################
+
+; Hit the crystal across the water with the boomerang to open the way to the sealed door.
+locked 19 5
+switch 2 5 west_switch
+gate 10 3 west_switch
+prop 10 2 boss_door
+prop 15 1 torch
+prop 18 9 torch
+sign 9 8 sign_switch

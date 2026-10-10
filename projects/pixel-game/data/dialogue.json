@@ -39,6 +39,10 @@
       },
       {
         "speaker": "Ibis",
+        "text": "They say the first sacred seasoning is in a cave behind the closed beach. Bring a light heart and a sharp cutlass."
+      },
+      {
+        "speaker": "Ibis",
         "text": "And after dark, stick to the street lights. Bandits doh like to be seen, and soucouyant doh like to be bothered."
       }
     ],
@@ -123,6 +127,10 @@
       {
         "speaker": "",
         "text": "BEACH CLOSED for... reasons. The Management."
+      },
+      {
+        "speaker": "",
+        "text": "(The reason is a cave. It smell like callaloo.)"
       }
     ],
     "boat": [
@@ -269,6 +277,56 @@
       {
         "speaker": "Seafood man",
         "text": "Bandits in the dark, soucouyant in the sky, corbeaux in the bin. Buy yuh boil and go home."
+      }
+    ],
+    "sign_cave": [
+      {
+        "speaker": "",
+        "text": "CALLALOO CAVE. Keep out. This means you. Yes, you, with the cutlass."
+      },
+      {
+        "speaker": "",
+        "text": "(Carved underneath: 'The first sacred seasoning sleeps beyond the pepper door.')"
+      }
+    ],
+    "sign_block": [
+      {
+        "speaker": "",
+        "text": "Heavy stone. Lean on it and it might move. Lean on the wrong way and it go sulk in a corner."
+      },
+      {
+        "speaker": "",
+        "text": "(Leave the room and come back to put it back.)"
+      }
+    ],
+    "sign_switch": [
+      {
+        "speaker": "",
+        "text": "The crystal across the water opens the way. Nobody could swim it. Nobody ever try, but still."
+      }
+    ],
+    "boss_door": [
+      {
+        "speaker": "",
+        "text": "A great door, sealed with a lock shaped like a hot pepper."
+      },
+      {
+        "speaker": "",
+        "text": "Something big is snoring on the other side. It smell like... curry?"
+      }
+    ],
+    "got_coconut_boomerang": [
+      {
+        "speaker": "",
+        "text": "You got the Coconut Boomerang! Select it and press B to throw."
+      },
+      {
+        "speaker": "",
+        "text": "It flies out, hits what it hits, and comes back. Like a good neighbour. Or a bad debt."
+      },
+      {
+        "speaker": "",
+        "text": "It sails over water too, so things across a gap are in reach now."
       }
     ]
   }

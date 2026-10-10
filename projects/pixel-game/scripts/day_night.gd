@@ -21,6 +21,9 @@ const TINTS := [
 	[24.0, Color(0.3, 0.34, 0.58)],
 ]
 
+## The fixed light inside caves and temples (torches do the rest).
+const INDOORS_TINT := Color(0.46, 0.42, 0.58)
+
 ## The clock currently in play, for lights and other nodes that react to the time.
 static var current: DayNight
 
@@ -29,6 +32,12 @@ var hour := 7.0
 ## Days since the game began (day 1 is the first).
 var day := 1
 var seconds_per_day := SECONDS_PER_DAY
+## Inside a dungeon: the clock keeps running, but the world keeps a dim cave tint and every
+## lamp (torch) is lit.
+var indoors := false:
+	set(value):
+		indoors = value
+		set_hour(hour)
 
 var _modulate: CanvasModulate
 var _last_minute := -1
@@ -59,7 +68,7 @@ func set_hour(value: float) -> void:
 		day_changed.emit(day)
 	hour = fposmod(value, 24.0)
 	if _modulate != null:
-		_modulate.color = tint_at(hour)
+		_modulate.color = INDOORS_TINT if indoors else tint_at(hour)
 	var minute := int(hour * 60.0)
 	if minute != _last_minute:
 		_last_minute = minute
@@ -69,6 +78,11 @@ func set_hour(value: float) -> void:
 ## How dark it is: 0 in daylight, 1 at night, ramping through dawn and dusk.
 func night_amount() -> float:
 	return night_amount_at(hour)
+
+
+## How strongly lamps shine: night_amount() outdoors, always full indoors.
+func light_amount() -> float:
+	return 1.0 if indoors else night_amount()
 
 
 func is_night() -> bool:
