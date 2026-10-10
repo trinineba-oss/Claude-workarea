@@ -107,8 +107,9 @@ Enemies: seagulls (swooping), pigeon mobs, angry onions (tear-gas), sentient mea
 
 ## Milestones (each ends in a playable build and a passing `make test`)
 
-1. **Foundation:** tile room, scrolling camera, collisions, virtual controls, input map,
-   save and load.
+1. **Foundation (done):** tile rooms, scrolling room-to-room camera, collisions, virtual
+   controls, input map, save and load. Known gap: on 20:9 phones the controls overlap
+   about 30 px of the playfield edges; revisit the layout in the polish milestone.
 2. **Combat:** skewer attack, health and damage, knockback, two enemy types, pickups.
 3. **World and dialogue:** beach, Pita Village, NPCs, text box, signs, the gull guide.
 4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.

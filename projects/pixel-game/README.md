@@ -17,16 +17,61 @@ touching the screen, and collect coins.
 
 ## Layout
 
-- `scenes/` – `main.tscn` (game loop), `player.tscn`, `coin.tscn`
-- `scripts/` – GDScript for each scene
-- `assets/sprites/` – art. Commit the `.import` files next to each asset; `.godot/` is ignored.
-- `tests/smoke_test.gd` – headless test that boots the game and collects a coin
+- `scenes/` – `game.tscn` (main scene), `player.tscn`, `touch_controls.tscn`
+- `scripts/` – GDScript: `game.gd` (rooms, transitions, autosave, pause), `world_map.gd`
+  and `room.gd` (map loading and tiles), `tiles.gd` (tile legend and shared TileSet),
+  `player.gd`, `save_game.gd`, and the touch widgets (`touch_*.gd`)
+- `data/rooms/<x>_<y>.txt` – the world: one 20x11 ASCII map per screen (see below)
+- `assets/` – placeholder art (`tools/gen_art.py` regenerates it). Commit the `.import`
+  files next to each asset; `.godot/` is ignored.
+- `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game)
 - `export_presets.cfg` – Android and Web export presets
+- `DESIGN.md` – the game design and milestone plan
+
+## Controls
+
+| Action | Keyboard | Touch |
+| --- | --- | --- |
+| Move | Arrow keys or WASD | Joystick (bottom left) |
+| Attack | Z | A |
+| Item | X | B |
+| Interact | C | X |
+| Pause (also saves) | Esc | II (top right) |
+
+Touch controls show on touch devices and in the browser; on desktop the mouse acts as a
+finger. Attack, item and interact are wired to input actions but do nothing yet (milestone 2).
+
+## Building the world
+
+Each file in `data/rooms/` is one screen, named by its grid position (`1_1.txt` is column 1,
+row 1). Walking off an open edge scrolls to the neighbouring room, and the game saves.
+
+| Char | Tile | Solid |
+| --- | --- | --- |
+| `.` | grass | no |
+| `,` | flowers | no |
+| `s` | sand | no |
+| `p` | path | no |
+| `=` | stone floor | no |
+| `@` | player start (sand); exactly one in the world | no |
+| `~` | water | yes |
+| `#` | rock wall | yes |
+| `b` | bush | yes |
+| `T` | tree | yes |
+
+Rules (checked by `make test`): every file has 11 rows of 20 characters; openings on shared
+edges must line up exactly with the neighbour; an edge with no neighbour must be solid.
+
+## Saving
+
+`user://save.json` holds the room and position. It is written on every room change, on pause,
+and when the app goes to the background or closes. A missing, corrupt or different-version
+file starts a new game.
 
 ## Commands (from the repo root)
 
 ```sh
-make test   # headless smoke test (runs alongside the other repo tests)
+make test   # headless tests (alongside the other repo tests)
 make lint   # gdformat + gdlint
 godot --path projects/pixel-game              # open the game (needs a display)
 godot --path projects/pixel-game --editor     # open the editor (needs a display)

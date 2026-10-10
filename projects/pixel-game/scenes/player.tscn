@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="2_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
-size = Vector2(8, 12)
+size = Vector2(10, 6)
 
 [node name="Player" type="CharacterBody2D"]
 motion_mode = 1
@@ -14,5 +14,5 @@ script = ExtResource("1_player")
 texture = ExtResource("2_tex")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 1)
+position = Vector2(0, 5)
 shape = SubResource("RectangleShape2D_player")
