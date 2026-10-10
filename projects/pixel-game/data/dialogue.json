@@ -1,5 +1,5 @@
 {
-  "_note": "DRAFT lines written by Claude. Every line needs review by someone from Trinidad (dialect, references, jokes). Each conversation is a list of lines; a line may set a story flag with \"set_flag\".",
+  "_note": "DRAFT lines written by Claude. Every line needs review by someone from Trinidad (dialect, references, jokes). Each conversation is a list of lines; a line may set a story flag with \"set_flag\". A line can also hand Chad an item with \"give\": \"<item id>\".",
   "conversations": {
     "ibis_intro": [
       {
@@ -36,12 +36,16 @@
       {
         "speaker": "Ibis",
         "text": "Mind the traffic on Cipero Street. Them drivers doh stop for nobody. Not even legends."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "And after dark, stick to the street lights. Bandits doh like to be seen, and soucouyant doh like to be bothered."
       }
     ],
     "fisherman": [
       {
         "speaker": "Fisherman",
-        "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."
+        "text": "Catch anything yet? If is a slipper, throw it back. Somebody looking for it."
       },
       {
         "speaker": "Fisherman",
@@ -201,6 +205,70 @@
       {
         "speaker": "Corn soup lady",
         "text": "Now is the proper time for corn soup. Cool breeze, hot soup. Perfect."
+      }
+    ],
+    "fisherman_rod": [
+      {
+        "speaker": "Fisherman",
+        "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "Here, take this old rod. A man who could fish will never go hungry. Well, not for long."
+      },
+      {
+        "speaker": "",
+        "text": "You got a fishing rod! Select it, face the water and press B to cast.",
+        "give": "fishing_rod",
+        "set_flag": "has_rod"
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "Hold steady when they bite. Snapper in the day, kingfish when the sun going down."
+      }
+    ],
+    "fisherman_night": [
+      {
+        "speaker": "Fisherman",
+        "text": "Night fishing is for kingfish and for thinking. Mostly thinking."
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "And watch the sky over the beach. Ball of fire, flying low. Soucouyant. Old-time story... but I see it with mih own two eyes."
+      }
+    ],
+    "limer_night": [
+      {
+        "speaker": "Liming man",
+        "text": "Night lime is the best lime, boss. But stay under the street lights, eh."
+      },
+      {
+        "speaker": "Liming man",
+        "text": "Bandits does wait up in the dark part of Cipero Street. They want yuh money, not yuh company."
+      },
+      {
+        "speaker": "Liming man",
+        "text": "If one grab yuh money, run him down and give him one good lash. He go drop it quick."
+      }
+    ],
+    "doubles_vendor_night": [
+      {
+        "speaker": "Doubles auntie",
+        "text": "Darling, it late. Keep yuh money in yuh shoe and walk where it bright."
+      },
+      {
+        "speaker": "Doubles auntie",
+        "text": "My mother used to say nothing good does happen after ten o'clock. Except doubles."
+      }
+    ],
+    "seafood_man_night": [
+      {
+        "speaker": "Seafood man",
+        "text": "Down this end have no street lights at all, boss. Only my truck."
+      },
+      {
+        "speaker": "Seafood man",
+        "text": "Bandits in the dark, soucouyant in the sky, corbeaux in the bin. Buy yuh boil and go home."
       }
     ]
   }

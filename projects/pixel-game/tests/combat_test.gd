@@ -17,8 +17,8 @@ func _new_game() -> Game:
 
 func _spawn(game: Game, kind: String, pos: Vector2) -> Node2D:
 	var node := Entities.create(kind)
-	node.position = pos - game.get_node("Rooms").get_child(0).position
-	game.get_node("Rooms").get_child(0).add_child(node)
+	node.position = pos - game.current_room().position
+	game.current_room().add_child(node)
 	return node
 
 
@@ -67,13 +67,11 @@ func _run() -> void:
 	_check(dog.health == 1, "a swing hits once (health %d)" % dog.health)
 	player.end_invincibility()
 	player.position = centre
-	dog.position = centre + Vector2(72, 0) - game.get_node("Rooms").get_child(0).position
+	dog.position = centre + Vector2(72, 0) - game.current_room().position
 	await _swing()
 	_check(not is_instance_valid(dog) or dog.is_queued_for_deletion(), "two swings kill the dog")
 	await _physics_frames(4)
-	var pickups := game.get_node("Rooms").get_child(0).get_children().filter(
-		func(n): return n is Pickup
-	)
+	var pickups := game.current_room().get_children().filter(func(n): return n is Pickup)
 	_check(pickups.size() == 1, "the dog dropped a coin")
 	player.end_invincibility()
 	player.position = pickups[0].global_position
@@ -142,7 +140,7 @@ func _run() -> void:
 	)
 	_check(player.position == game.get("_entry_position"), "back at the room entrance")
 	_check(not game.get_node("HUD/FaintLabel").visible, "the faint message hides")
-	_check(game.get_node("Rooms").get_child_count() == 1, "the room was rebuilt once")
+	_check(game.loaded_rooms().size() == 9, "rooms are still streamed after fainting")
 
 	# --- stats are saved ------------------------------------------------------------------
 	player.health = 3

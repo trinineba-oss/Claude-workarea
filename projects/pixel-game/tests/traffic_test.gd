@@ -21,7 +21,7 @@ func _run() -> void:
 	var origin := WorldMap.room_origin(crossing)
 	game.go_to(crossing, origin + Vector2(3.5 * t, 7.5 * t))
 	await _physics_frames(2)
-	var room: Room = game.get_node("Rooms").get_child(0)
+	var room: Room = game.current_room()
 	var lanes := room.get_children().filter(func(n): return n is Traffic)
 	_check(lanes.size() == 2, "Cross Crossing has two lanes")
 	var wires := room.get_children().filter(func(n): return n is Wires)

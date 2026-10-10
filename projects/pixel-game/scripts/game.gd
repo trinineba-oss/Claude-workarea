@@ -1,17 +1,18 @@
 class_name Game
 extends Node2D
-## The adventure: one room at a time, with a scrolling transition between rooms,
-## autosave on every room change, and pause.
+## The adventure: a free-scrolling world streamed room by room (the room Chad is in and its
+## neighbours stay loaded), autosave whenever he enters another room, and pause.
 
-signal transition_finished
+signal room_changed(coords: Vector2i)
 signal conversation_finished(id: String)
 
-const TRANSITION_SECONDS := 0.5
-## How far the hero is carried into the next room during a transition.
-const PUSH_IN := 96.0
 const ROOMS_DIR := "res://data/rooms"
+## Rooms within this many rooms of Chad stay loaded, so the camera never shows a gap.
+const LOAD_RADIUS := 1
+const CAMERA_SMOOTHING := 7.0
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
+const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 
 ## Play the ibis's welcome the first time a game starts (tests turn this off).
 @export var play_intro := true
@@ -21,10 +22,17 @@ var save := SaveGame.new()
 var flags: Dictionary = {}
 var world: WorldMap
 var coords := Vector2i.ZERO
+## Chad's bag. Saved with the game.
+var inventory := Inventory.new()
+## Forage plant key -> game day it is ready again. Saved with the game.
+var forage_state: Dictionary = {}
 
-var _room: Room
-var _transitioning := false
+var _loaded: Dictionary = {}  # Vector2i -> Room
 var _entry_position := Vector2.ZERO
+var _hotbar: Hotbar
+var _minigame: FishingMinigame
+var _fishing := false
+var _was_night := false
 
 @onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
@@ -38,6 +46,7 @@ var _entry_position := Vector2.ZERO
 
 
 func _ready() -> void:
+	add_to_group("game")
 	world = WorldMap.load_dir(ROOMS_DIR)
 	for problem in world.validate():
 		push_error("world map: " + problem)
@@ -47,6 +56,20 @@ func _ready() -> void:
 	_player.died.connect(_on_player_died)
 	_player.story_flags = flags
 	day_night.minute_changed.connect(_status.set_time)
+	day_night.day_changed.connect(_status.set_day)
+	_hotbar = Hotbar.new()
+	_hotbar.name = "Hotbar"
+	$HUD.add_child(_hotbar)
+	$HUD.move_child(_hotbar, _touch.get_index() + 1)
+	_hotbar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_hotbar.offset_left = -_hotbar.size.x / 2.0
+	_hotbar.offset_right = _hotbar.size.x / 2.0
+	_hotbar.offset_top = -_hotbar.size.y - 20.0
+	_hotbar.offset_bottom = -20.0
+	_hotbar.bind(inventory)
+	_minigame = FishingMinigame.new()
+	_minigame.name = "FishingMinigame"
+	$HUD.add_child(_minigame)
 	_player.interact_requested.connect(_on_interact_requested)
 	_dialogue.line_shown.connect(_on_line_shown)
 	if not _restore(save.read()):
@@ -54,35 +77,138 @@ func _ready() -> void:
 		_player.position = world.start_position()
 	_apply_debug_start()
 	_status.set_time(day_night.hour)
+	_status.set_day(day_night.day)
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
-	_room = _make_room(coords)
-	_camera.position = _room_center(coords)
+	_was_night = day_night.is_night()
+	_setup_camera()
+	_refresh_rooms()
+	_snap_camera()
 	if play_intro and not flags.get("intro_done", false):
 		_play_intro.call_deferred()
 
 
 func _physics_process(_delta: float) -> void:
-	if _transitioning:
+	var now := WorldMap.room_at(_player.position)
+	if now == coords:
 		return
-	var local := _player.position - WorldMap.room_origin(coords)
-	var size := WorldMap.room_size()
-	var dir := Vector2i.ZERO
-	if local.x < 0.0:
-		dir = Vector2i.LEFT
-	elif local.x >= size.x:
-		dir = Vector2i.RIGHT
-	elif local.y < 0.0:
-		dir = Vector2i.UP
-	elif local.y >= size.y:
-		dir = Vector2i.DOWN
-	if dir == Vector2i.ZERO:
-		return
-	if world.has_room(coords + dir):
-		_transition(dir)
+	if world.has_room(now):
+		coords = now
+		_entry_position = _player.position
+		_refresh_rooms()
+		save_game()
+		room_changed.emit(coords)
 	else:
+		# Edges toward empty cells are solid, so this only guards against teleports.
 		_player.position = _clamp_to_room(_player.position, coords, 4.0)
+
+
+func _process(_delta: float) -> void:
+	_camera.position = _player.position
+	var night := day_night.is_night()
+	if night and not _was_night:
+		Effects.float_text(
+			self, _player.position + Vector2(0, -120), "Night. Stick to the lights.", NIGHT_COLOR
+		)
+	_was_night = night
+	if Input.is_action_just_pressed(&"item") and not _player.frozen and not is_talking():
+		use_selected_item()
+
+
+## Uses the item in the selected hotbar slot: cast the rod, or eat food to heal.
+func use_selected_item() -> bool:
+	var id := _hotbar.selected_id()
+	if id == "":
+		return false
+	if id == "fishing_rod":
+		fish()
+		return true
+	var heal := int(GameData.item(id).get("heal", 0))
+	var above := _player.position + Vector2(0, -90)
+	if heal <= 0:
+		Effects.float_text(self, above, "Can't eat that", Color(1, 0.8, 0.6))
+		return false
+	if _player.is_full_health():
+		Effects.float_text(self, above, "Not hungry", Color(1, 0.8, 0.6))
+		return false
+	inventory.remove(id)
+	_player.heal(heal)
+	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
+	return true
+
+
+## The hotbar at the bottom of the screen.
+func hotbar() -> Hotbar:
+	return _hotbar
+
+
+## The catch minigame overlay.
+func fishing_minigame() -> FishingMinigame:
+	return _minigame
+
+
+func is_fishing() -> bool:
+	return _fishing
+
+
+## Where Chad's line would land: the centre of the tile in front of him if it is water.
+func water_in_front() -> Variant:
+	var spot := _player.position + _player.facing * 70.0 + Vector2(0, -8)
+	var cell := Vector2i((spot / WorldMap.TILE).floor())
+	if world.tile_at(cell) != "~":
+		return null
+	return (Vector2(cell) + Vector2(0.5, 0.5)) * WorldMap.TILE
+
+
+## Casts, waits for a bite, then plays the catch minigame. Returns the fish caught, or "".
+func fish(bite_seconds := -1.0) -> String:
+	if _fishing:
+		return ""
+	var spot: Variant = water_in_front()
+	var above := _player.position + Vector2(0, -90)
+	if spot == null:
+		Effects.float_text(self, above, "Face the water to fish", Color(1, 0.8, 0.6))
+		return ""
+	_fishing = true
+	_player.frozen = true
+	var bobber := Sprite2D.new()
+	bobber.texture = preload("res://assets/sprites/bobber.png")
+	bobber.position = spot
+	bobber.z_index = 2
+	add_child(bobber)
+	var bob := bobber.create_tween().set_loops()
+	bob.tween_property(bobber, "position:y", spot.y + 5.0, 0.5)
+	bob.tween_property(bobber, "position:y", spot.y, 0.5)
+	var wait := bite_seconds if bite_seconds >= 0.0 else randf_range(1.0, 2.5)
+	await get_tree().create_timer(wait, false).timeout
+	Effects.float_text(self, spot + Vector2(0, -30), "!", Color(1, 0.9, 0.3))
+	var id := GameData.pick_fish(day_night.hour)
+	var difficulty := float(GameData.item(id).get("fish", {}).get("difficulty", 1.0))
+	get_tree().paused = true
+	var touch_was_visible := _touch.visible
+	_touch.visible = false
+	_hotbar.visible = false
+	_minigame.start(id, difficulty)
+	var result: String = await _minigame.finished
+	_touch.visible = touch_was_visible
+	_hotbar.visible = true
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().paused = false
+	bobber.queue_free()
+	_player.frozen = false
+	_fishing = false
+	var name: String = GameData.item(id).get("name", id)
+	if result != "caught":
+		Effects.float_text(self, above, "It got away...", Color(0.8, 0.85, 1))
+		return ""
+	if inventory.add(id) > 0:
+		Effects.float_text(self, above, "Bag full! You let the %s go" % name, Color(1, 0.6, 0.5))
+		return ""
+	Effects.float_text(self, above, "+1 %s" % name, Color(1, 0.95, 0.6))
+	save_game()
+	return id
 
 
 func _notification(what: int) -> void:
@@ -94,13 +220,25 @@ func _notification(what: int) -> void:
 
 ## Jumps straight to a room, e.g. for fast travel (maxi taxis) or tests.
 func go_to(room_coords: Vector2i, pos: Vector2) -> void:
-	_room.free()
+	for room: Room in _loaded.values():
+		room.free()
+	_loaded.clear()
 	coords = room_coords
-	_room = _make_room(coords)
 	_player.position = pos
 	_entry_position = pos
-	_camera.position = _room_center(coords)
+	_refresh_rooms()
+	_snap_camera()
 	save_game()
+
+
+## The room Chad is in.
+func current_room() -> Room:
+	return _loaded.get(coords)
+
+
+## Every loaded room, including filler rooms at the edges of the world.
+func loaded_rooms() -> Array:
+	return _loaded.values()
 
 
 ## Plays a conversation from data/dialogue.json, pausing the game until it ends.
@@ -112,9 +250,11 @@ func talk(id: String, with: Interactable = null) -> void:
 	get_tree().paused = true
 	var touch_was_visible := _touch.visible
 	_touch.visible = false
+	_hotbar.visible = false
 	_dialogue.start(GameData.conversation(id))
 	await _dialogue.finished
 	_touch.visible = touch_was_visible
+	_hotbar.visible = true
 	# Let the button press that closed the box go stale before the hero can act on it.
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -127,15 +267,12 @@ func talk(id: String, with: Interactable = null) -> void:
 func dialogue_state() -> Dictionary:
 	var state := flags.duplicate()
 	state["night"] = day_night.is_night()
+	state["day"] = day_night.day
 	return state
 
 
 func is_talking() -> bool:
 	return _dialogue.is_open()
-
-
-func is_transitioning() -> bool:
-	return _transitioning
 
 
 func save_game() -> void:
@@ -146,6 +283,9 @@ func save_game() -> void:
 		"money": _player.money,
 		"flags": flags,
 		"hour": day_night.hour,
+		"day": day_night.day,
+		"inventory": inventory.to_data(),
+		"forage": forage_state,
 	}
 	save.write(data)
 
@@ -163,40 +303,62 @@ func _restore(data: Dictionary) -> bool:
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
+	day_night.day = maxi(int(data.get("day", 1)), 1)
 	day_night.set_hour(float(data.get("hour", day_night.hour)))
+	inventory.from_data(data.get("inventory", []))
+	var saved_forage: Variant = data.get("forage", {})
+	if saved_forage is Dictionary:
+		for key: String in saved_forage:
+			forage_state[key] = int(saved_forage[key])
 	var saved_flags: Variant = data.get("flags", {})
 	if saved_flags is Dictionary:
 		flags.merge(saved_flags, true)
 	return true
 
 
-func _transition(dir: Vector2i) -> void:
-	var target := coords + dir
-	_transitioning = true
-	_player.frozen = true
-	var old_room := _room
-	_room = _make_room(target)
-	old_room.process_mode = Node.PROCESS_MODE_DISABLED
-	_room.process_mode = Node.PROCESS_MODE_DISABLED
-	var player_end := _clamp_to_room(_player.position + Vector2(dir) * PUSH_IN, target, 32.0)
-	var tween := create_tween().set_parallel(true)
-	tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(_camera, "position", _room_center(target), TRANSITION_SECONDS)
-	tween.tween_property(_player, "position", player_end, TRANSITION_SECONDS)
-	await tween.finished
-	old_room.queue_free()
-	_room.process_mode = Node.PROCESS_MODE_INHERIT
-	coords = target
-	_entry_position = _player.position
-	_player.frozen = false
-	_transitioning = false
-	save_game()
-	transition_finished.emit()
+func _refresh_rooms() -> void:
+	var wanted := {}
+	for dy in range(-LOAD_RADIUS, LOAD_RADIUS + 1):
+		for dx in range(-LOAD_RADIUS, LOAD_RADIUS + 1):
+			wanted[coords + Vector2i(dx, dy)] = true
+	for room_coords: Vector2i in _loaded.keys():
+		if not wanted.has(room_coords):
+			_loaded[room_coords].queue_free()
+			_loaded.erase(room_coords)
+	for room_coords: Vector2i in wanted:
+		if not _loaded.has(room_coords):
+			_loaded[room_coords] = _make_room(room_coords)
+
+
+func _setup_camera() -> void:
+	var rect := world.bounds()
+	var size := WorldMap.room_size()
+	_camera.limit_left = int(rect.position.x * size.x)
+	_camera.limit_top = int(rect.position.y * size.y)
+	_camera.limit_right = int(rect.end.x * size.x)
+	_camera.limit_bottom = int(rect.end.y * size.y)
+	_camera.position_smoothing_enabled = true
+	_camera.position_smoothing_speed = CAMERA_SMOOTHING
+
+
+func _snap_camera() -> void:
+	_camera.position = _player.position
+	_camera.reset_smoothing()
 
 
 func _make_room(room_coords: Vector2i) -> Room:
 	var room := Room.new()
-	room.build(room_coords, world.rows(room_coords), world.objects_in(room_coords))
+	var real := world.has_room(room_coords)
+	room.build(
+		room_coords,
+		world.rows_or_filler(room_coords),
+		world.objects_in(room_coords) if real else [],
+		world.padded_rows(room_coords),
+		not real
+	)
+	for child in room.get_children():
+		if child is Forage:
+			child.ready_day = int(forage_state.get(child.key, 0))
 	_rooms.add_child(room)
 	return room
 
@@ -212,12 +374,16 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 	)
 
 
-## Developer aid for the Web build: `index.html?room=0_0` starts in that room and `&time=21`
-## at that hour (used to take screenshots). Ignored everywhere else.
+## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
+## that tile, `&time=21` at that hour, and `&give=fishing_rod` puts an item in the bag (used to
+## take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
+		if GameData.has_item(gift.get_string(1)):
+			inventory.add(gift.get_string(1))
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
@@ -228,6 +394,12 @@ func _apply_debug_start() -> void:
 	if world.has_room(target):
 		coords = target
 		_player.position = _room_center(target)
+		var at := RegEx.create_from_string("at=(\\d+)_(\\d+)").search(query)
+		if at != null:
+			var cell := Vector2(int(at.get_string(1)), int(at.get_string(2)))
+			_player.position = (
+				WorldMap.room_origin(target) + (cell + Vector2(0.5, 0.5)) * WorldMap.TILE
+			)
 
 
 func _play_intro() -> void:
@@ -237,20 +409,47 @@ func _play_intro() -> void:
 
 
 func _on_interact_requested(target: Interactable) -> void:
-	talk(target.dialogue_id(dialogue_state()), target)
+	if target is Forage:
+		harvest(target)
+	else:
+		talk(target.dialogue_id(dialogue_state()), target)
+
+
+## Picks a forage plant into the bag. Returns how many items were added.
+func harvest(plant: Forage) -> int:
+	if not plant.is_ready(day_night.day):
+		return 0
+	var before := plant.ready_day
+	var got := plant.pick(day_night.day)
+	var id: String = got[0]
+	var amount: int = got[1]
+	var added := amount - inventory.add(id, amount)
+	var above := plant.position + Vector2(0, -120)
+	if added == 0:
+		plant.ready_day = before
+		plant.refresh(day_night.day)
+		Effects.float_text(plant.get_parent(), above, "Bag full!", Color(1, 0.6, 0.5))
+		return 0
+	forage_state[plant.key] = plant.ready_day
+	var name: String = GameData.item(id).get("name", id)
+	Effects.float_text(plant.get_parent(), above, "+%d %s" % [added, name], Color(1, 0.95, 0.6))
+	Effects.burst(plant.get_parent(), plant.position + Vector2(0, -40), "sparkle")
+	return added
 
 
 func _on_line_shown(line: Dictionary) -> void:
 	if line.has("set_flag"):
 		flags[line["set_flag"]] = true
+	if line.has("give") and GameData.has_item(line["give"]):
+		inventory.add(line["give"])
 
 
 func _on_player_died() -> void:
 	_faint_label.visible = true
 	await get_tree().create_timer(FAINT_SECONDS).timeout
 	_faint_label.visible = false
-	_room.queue_free()
-	_room = _make_room(coords)
+	_loaded[coords].queue_free()
+	_loaded[coords] = _make_room(coords)
 	_player.position = _entry_position
 	_player.revive()
 	save_game()

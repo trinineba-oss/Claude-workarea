@@ -13,3 +13,7 @@ sssssssssssssssssss#
 corbeau 14 2
 dog 9 5
 snack 4 6
+forage 6 6 coconut_palm
+forage 11 2 coconut_palm
+night 16 5 soucouyant
+night 10 6 bandit

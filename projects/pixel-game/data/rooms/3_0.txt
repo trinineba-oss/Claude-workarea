@@ -20,3 +20,8 @@ dog 4 2
 coin 15 2
 snack 17 2
 sign 12 5 sign_lot
+forage 15 9 chadon_beni_patch
+forage 17 5 mango_tree
+forage 9 9 pepper_bush
+night 15 7 bandit
+night 6 7 soucouyant

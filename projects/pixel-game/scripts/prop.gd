@@ -33,6 +33,7 @@ func setup(id: String) -> void:
 	var lamp: Array = data.get("light", [])
 	if lamp.size() == 4:
 		var light := NightLight.make(Color(lamp[3]), lamp[2])
+		light.safe = true
 		light.position = Vector2(lamp[0], lamp[1])
 		add_child(light)
 	var text: String = data.get("label", "")

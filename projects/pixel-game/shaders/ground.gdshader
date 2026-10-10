@@ -16,7 +16,9 @@ uniform sampler2D road_tex : source_color, repeat_enable, filter_linear_mipmap;
 uniform sampler2D noise_tex : repeat_enable, filter_linear;
 uniform sampler2D weights2 : filter_linear;
 uniform vec2 room_origin = vec2(0.0);
-uniform vec2 room_size = vec2(1280.0, 704.0);
+// The weights images are the room plus a one-tile border from its neighbours.
+uniform vec2 grid_size = vec2(22.0, 13.0);
+uniform float tile_size = 64.0;
 uniform float texture_world_size = 256.0;
 // Higher = crisper borders between materials.
 uniform float sharpness = 10.0;
@@ -28,7 +30,7 @@ float noise_at(vec2 world, float scale, float offset) {
 void fragment() {
 	vec4 w = texture(TEXTURE, UV);
 	vec4 w2 = texture(weights2, UV);
-	vec2 world = room_origin + UV * room_size;
+	vec2 world = room_origin + (UV * grid_size - 1.0) * tile_size;
 	vec2 tuv = world / texture_world_size;
 
 	// Weights for grass, sand, dirt, water, stone; each nudged by its own noise.

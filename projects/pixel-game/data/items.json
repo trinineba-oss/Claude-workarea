@@ -1,0 +1,138 @@
+{
+  "_note": "Things Chad can carry. icon = assets/items/<icon>.png. price = what it sells for (TT$). heal = half-doubles restored when eaten (0 = not edible). A \"fish\" block makes it catchable: times = hour ranges it bites, difficulty = how jumpy it is, weight = how often it bites. \"tool\": true marks tools.",
+  "mango": {
+    "name": "Mango",
+    "icon": "mango",
+    "price": 4,
+    "heal": 1
+  },
+  "coconut": {
+    "name": "Coconut",
+    "icon": "coconut",
+    "price": 6,
+    "heal": 2
+  },
+  "chadon_beni": {
+    "name": "Chadon beni",
+    "icon": "chadon_beni",
+    "price": 3,
+    "heal": 0
+  },
+  "pimento": {
+    "name": "Pimento pepper",
+    "icon": "pimento",
+    "price": 3,
+    "heal": 0
+  },
+  "fishing_rod": {
+    "name": "Fishing rod",
+    "icon": "fishing_rod",
+    "price": 0,
+    "heal": 0,
+    "tool": true
+  },
+  "red_snapper": {
+    "name": "Red snapper",
+    "icon": "red_snapper",
+    "price": 18,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          6,
+          18
+        ]
+      ],
+      "difficulty": 1.0,
+      "weight": 5
+    }
+  },
+  "carite": {
+    "name": "Carite",
+    "icon": "carite",
+    "price": 22,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          5,
+          11
+        ],
+        [
+          15,
+          20
+        ]
+      ],
+      "difficulty": 1.3,
+      "weight": 4
+    }
+  },
+  "kingfish": {
+    "name": "Kingfish",
+    "icon": "kingfish",
+    "price": 40,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          17,
+          24
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "difficulty": 1.8,
+      "weight": 2
+    }
+  },
+  "cavalli": {
+    "name": "Cavalli",
+    "icon": "cavalli",
+    "price": 15,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          0,
+          24
+        ]
+      ],
+      "difficulty": 0.8,
+      "weight": 4
+    }
+  },
+  "flying_fish": {
+    "name": "Flying fish",
+    "icon": "flying_fish",
+    "price": 25,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          6,
+          12
+        ]
+      ],
+      "difficulty": 2.2,
+      "weight": 2
+    }
+  },
+  "slipper": {
+    "name": "Somebody's slipper",
+    "icon": "slipper",
+    "price": 1,
+    "heal": 0,
+    "fish": {
+      "times": [
+        [
+          0,
+          24
+        ]
+      ],
+      "difficulty": 0.4,
+      "weight": 1
+    }
+  }
+}

@@ -490,6 +490,179 @@ c.rrect(1, 12, 65, 26, 4, (196, 188, 170, 255))
 c.detail_line([(3, 60), (63, 60)], (206, 198, 180, 255), 2)
 c.save(f"{OUT}/sprites/wall.png")
 
+# ---- sandbox: item icons (48x48, centred) and forage plants -----------------------------------
+def icon(path, draw):
+    c = Canvas(48, 48)
+    draw(c)
+    c.save(path)
+
+
+def _mango(c):
+    c.ellipse(24, 27, 15, 13, (246, 170, 46, 255))
+    c.detail_ellipse(18, 24, 8, 7, (250, 210, 70, 255))
+    c.detail_ellipse(31, 32, 6, 5, (226, 88, 50, 255))
+    c.ellipse(29, 12, 7, 3.5, (60, 150, 70, 255), outline=1.5)
+
+
+def _coconut(c):
+    c.ellipse(24, 26, 16, 15, (120, 84, 52, 255))
+    c.detail_ellipse(19, 21, 5, 4, (150, 110, 74, 255))
+    for x, y in ((20, 26), (27, 25), (24, 31)):
+        c.detail_ellipse(x, y, 1.8, 1.8, (70, 46, 30, 255))
+
+
+def _chadon_beni(c):
+    for ang, (dx, dy) in enumerate(((-9, -4), (9, -6), (0, -12), (-6, 6), (8, 5))):
+        c.ellipse(24 + dx, 26 + dy, 6, 11, (66, 160, 72, 255), outline=1.8)
+    c.detail_line([(24, 40), (24, 18)], (40, 110, 50, 255), 2)
+
+
+def _pimento(c):
+    c.poly([(16, 18), (34, 16), (36, 30), (26, 42), (14, 30)], (222, 52, 40, 255))
+    c.detail_ellipse(21, 22, 4, 3, (250, 120, 100, 255))
+    c.rrect(22, 8, 27, 18, 2, (60, 140, 60, 255), outline=1.5)
+
+
+icon(f"{OUT}/items/mango.png", _mango)
+icon(f"{OUT}/items/coconut.png", _coconut)
+icon(f"{OUT}/items/chadon_beni.png", _chadon_beni)
+icon(f"{OUT}/items/pimento.png", _pimento)
+
+
+def fruit_tree(path, fruit):
+    """Mango tree, 128x156 like the plain tree; fruit drawn when given. Anchor (64, 150)."""
+    c = Canvas(128, 156)
+    c.rrect(54, 96, 74, 150, 6, (116, 78, 46, 255))
+    for cx, cy, r in ((40, 74, 30), (88, 74, 30), (64, 52, 38), (38, 46, 26), (92, 46, 26), (64, 86, 30)):
+        c.ellipse(cx, cy, r, r * 0.92, (40, 118, 64, 255))
+    for cx, cy, r in ((52, 40, 16), (82, 36, 12)):
+        c.detail_ellipse(cx, cy, r, r * 0.8, (84, 160, 84, 255))
+    if fruit:
+        for x, y in ((40, 66), (62, 80), (84, 60), (72, 44), (48, 90), (94, 84), (30, 50)):
+            c.detail_ellipse(x, y, 6, 5, (246, 170, 46, 255))
+            c.detail_ellipse(x - 2, y - 1.5, 2.5, 2, (252, 214, 90, 255))
+    c.save(path)
+
+
+fruit_tree(f"{OUT}/sprites/mango_tree.png", True)
+fruit_tree(f"{OUT}/sprites/mango_tree_picked.png", False)
+
+
+def palm(path, nuts):
+    """Coconut palm, 120x176. Anchor = trunk base (60, 172)."""
+    c = Canvas(120, 176)
+    c.poly([(56, 172), (66, 172), (70, 60), (62, 40), (54, 60)], (156, 116, 72, 255))
+    for x0, y0, x1, y1 in ((60, 40, 6, 58), (60, 40, 114, 58), (60, 40, 20, 14), (60, 40, 100, 12), (60, 40, 60, 2)):
+        c.poly([(x0, y0 - 6), (x1, y1), (x0, y0 + 6)], (52, 140, 70, 255), outline=2)
+    if nuts:
+        for x, y in ((52, 50), (66, 52), (59, 58)):
+            c.ellipse(x, y, 7, 7, (120, 84, 52, 255), outline=2)
+    c.save(path)
+
+
+palm(f"{OUT}/sprites/palm.png", True)
+palm(f"{OUT}/sprites/palm_picked.png", False)
+
+
+def herb_patch(path, ready, leaf, extra=None):
+    """Low plant patch, 72x48. Anchor = bottom centre (36, 46)."""
+    c = Canvas(72, 48)
+    for cx, cy in ((18, 34), (36, 28), (54, 34), (27, 38), (45, 38)):
+        c.ellipse(cx, cy, 9 if ready else 6, 7 if ready else 4.5, leaf, outline=2)
+    if ready and extra:
+        for x, y in ((22, 26), (40, 22), (52, 28), (30, 34)):
+            c.detail_ellipse(x, y, 3.5, 4.5, extra)
+    c.save(path)
+
+
+herb_patch(f"{OUT}/sprites/chadon_beni_patch.png", True, (66, 160, 72, 255))
+herb_patch(f"{OUT}/sprites/chadon_beni_patch_picked.png", False, (66, 160, 72, 255))
+herb_patch(f"{OUT}/sprites/pepper_bush.png", True, (48, 128, 60, 255), (222, 52, 40, 255))
+herb_patch(f"{OUT}/sprites/pepper_bush_picked.png", False, (48, 128, 60, 255))
+
+# ---- fishing: fish icons, rod, slipper, bobber ------------------------------------------------
+def fish_icon(path, body, fin, stripe=None, long=False):
+    c = Canvas(48, 48)
+    rx = 18 if long else 15
+    c.poly([(6, 16), (12, 24), (6, 32)], fin, outline=2)
+    c.ellipse(26, 24, rx, 10, body)
+    c.poly([(24, 14), (32, 8), (34, 16)], fin, outline=1.5)
+    if stripe:
+        c.detail_line([(14, 24), (40, 24)], stripe, 2.5)
+    c.detail_ellipse(36, 22, 2.4, 2.4, INK)
+    c.save(path)
+
+
+fish_icon(f"{OUT}/items/red_snapper.png", (226, 76, 70, 255), (196, 50, 50, 255))
+fish_icon(f"{OUT}/items/carite.png", (150, 170, 190, 255), (90, 110, 140, 255), (230, 200, 90, 255), long=True)
+fish_icon(f"{OUT}/items/kingfish.png", (110, 130, 160, 255), (60, 76, 110, 255), (200, 210, 230, 255), long=True)
+fish_icon(f"{OUT}/items/cavalli.png", (190, 196, 160, 255), (230, 200, 70, 255))
+fish_icon(f"{OUT}/items/flying_fish.png", (80, 130, 200, 255), (160, 210, 240, 255))
+
+
+def _rod(c):
+    c.detail_line([(8, 42), (40, 8)], (120, 80, 46, 255), 4)
+    c.detail_line([(40, 8), (42, 30)], (230, 230, 230, 255), 1.2)
+    c.ellipse(14, 36, 5, 5, (60, 60, 70, 255), outline=1.5)
+    c.ellipse(42, 32, 3, 3, (220, 60, 60, 255), outline=1)
+
+
+def _slipper(c):
+    c.rrect(10, 14, 38, 38, 12, (60, 140, 220, 255))
+    c.detail_line([(16, 22), (24, 28), (32, 22)], (250, 210, 60, 255), 3)
+
+
+icon(f"{OUT}/items/fishing_rod.png", _rod)
+icon(f"{OUT}/items/slipper.png", _slipper)
+
+c = Canvas(24, 24)  # bobber
+c.ellipse(12, 12, 8, 8, (240, 240, 240, 255))
+c.detail_line([(5, 12), (19, 12)], (220, 50, 50, 255), 6)
+c.save(f"{OUT}/sprites/bobber.png")
+
+# ---- night dangers -------------------------------------------------------------------------------
+c = Canvas(64, 84)  # bandit: a cartoon sneak-thief (hood, eye mask, bandana), anchor = feet
+HOOD, HOOD_L, BANDANA = (52, 50, 66, 255), (78, 76, 96, 255), (176, 40, 52, 255)
+c.rrect(21, 66, 30, 81, 4, (34, 34, 44, 255))
+c.rrect(34, 66, 43, 81, 4, (34, 34, 44, 255))
+c.rrect(18, 78, 31, 83, 2.5, (230, 230, 236, 255), outline=1.5)  # sneakers
+c.rrect(33, 78, 46, 83, 2.5, (230, 230, 236, 255), outline=1.5)
+c.ellipse(15, 58, 6, 6, HOOD)
+c.ellipse(49, 58, 6, 6, HOOD)
+c.rrect(17, 42, 47, 72, 10, HOOD)
+c.ellipse(32, 28, 21, 21, HOOD)  # hood
+c.ellipse(32, 31, 15, 15, SKINS[1], outline=2)  # face in the hood
+c.poly([(17, 34), (47, 34), (44, 46), (32, 50), (20, 46)], BANDANA, outline=2)  # bandana
+c.detail_line([(16, 27), (48, 27)], INK, 7)  # eye mask
+c.detail_ellipse(25, 27, 3, 2.2, (250, 246, 240, 255))
+c.detail_ellipse(39, 27, 3, 2.2, (250, 246, 240, 255))
+c.detail_ellipse(26, 27.3, 1.5, 1.5, INK)  # shifty side-eye
+c.detail_ellipse(40, 27.3, 1.5, 1.5, INK)
+c.detail_ellipse(24, 46, 5, 3, HOOD_L)  # hoodie pocket
+c.detail_ellipse(40, 46, 5, 3, HOOD_L)
+c.detail_line([(26, 52), (38, 52)], HOOD_L, 2.5)
+c.detail_line([(28, 40), (31, 42), (35, 39)], (210, 90, 96, 255), 1.4)  # bandana fold
+c.save(f"{OUT}/sprites/bandit.png")
+
+c = Canvas(40, 40)  # loot bag carried over the bandit's head, anchor = centre
+c.ellipse(20, 24, 14, 13, (176, 136, 84, 255))
+c.poly([(13, 10), (27, 10), (24, 15), (16, 15)], (176, 136, 84, 255), outline=2)
+c.detail_line([(15, 14), (25, 14)], (110, 80, 50, 255), 2)
+c.detail_line([(20, 17), (20, 33)], (60, 120, 60, 255), 2)
+c.detail_line([(24, 20), (17, 22), (23, 27), (16, 30)], (60, 120, 60, 255), 2.5)  # a "$"
+c.save(f"{OUT}/sprites/loot_bag.png")
+
+c = Canvas(64, 64)  # soucouyant fireball, anchor = bottom centre (the game lifts it)
+c.poly([(32, 6), (44, 24), (52, 14), (54, 36), (32, 60), (10, 36), (12, 14), (20, 24)], (226, 70, 34, 255), outline=2)
+c.ellipse(32, 40, 18, 18, (246, 130, 40, 255), outline=0)
+c.detail_ellipse(32, 44, 12, 12, (252, 196, 70, 255))
+c.detail_ellipse(32, 47, 7, 7, (255, 240, 170, 255))
+c.detail_line([(24, 36), (29, 38)], INK, 2)  # cross little eyebrows
+c.detail_line([(40, 36), (35, 38)], INK, 2)
+c.detail_ellipse(27, 41, 2, 2.2, INK)
+c.detail_ellipse(37, 41, 2, 2.2, INK)
+c.save(f"{OUT}/sprites/soucouyant.png")
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

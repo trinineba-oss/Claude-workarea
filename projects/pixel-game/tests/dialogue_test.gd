@@ -79,7 +79,7 @@ func _run() -> void:
 	box.advance()
 	_check(text.visible_characters == -1, "advancing shows the whole line")
 	box.advance()
-	_check(text.text.begins_with("Boy"), "a second advance in the same frame is ignored")
+	_check(text.text.begins_with("Catch anything"), "a second advance in the same frame is ignored")
 	await process_frame
 	box.advance()
 	await process_frame
@@ -124,6 +124,11 @@ func _run() -> void:
 	await _frames(1)
 	_check(box.is_open() and player.state != Player.State.ATTACK, "attack near the ibis talks")
 	_check(text.text.begins_with("Cross Crossing is up"), "later talks are the hint")
+	# The hint has three lines: skip the typing and move on, twice, then finish the last.
+	box.advance()
+	await process_frame
+	box.advance()
+	await process_frame
 	box.advance()
 	await process_frame
 	box.advance()

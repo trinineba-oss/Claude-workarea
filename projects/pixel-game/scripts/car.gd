@@ -4,7 +4,14 @@ extends Area2D
 
 const DAMAGE := 1
 
+## Fade distance at each end of the lane.
+const FADE := 64.0
+
 var velocity := Vector2.ZERO
+## Where the lane ends (room coordinates); the car fades out and is removed there.
+var end := Vector2.ZERO
+
+var _start := Vector2.ZERO
 
 var _sprite: Sprite2D
 
@@ -35,11 +42,20 @@ func setup(texture: Texture2D, lane_velocity: Vector2) -> void:
 	add_child(shape)
 
 
+func _ready() -> void:
+	_start = position
+	modulate.a = 0.0
+
+
 func _physics_process(delta: float) -> void:
 	position += velocity * delta
-	for body in get_overlapping_bodies():
-		if body is Player:
-			body.take_hit(DAMAGE, global_position - velocity.normalized() * 40.0)
-	var bounds := Rect2(Vector2(-200, -200), WorldMap.room_size() + Vector2(400, 400))
-	if not bounds.has_point(position):
+	var travelled := position.distance_to(_start)
+	var left := (end - position).dot(velocity.normalized())
+	modulate.a = clampf(minf(travelled, left) / FADE, 0.0, 1.0)
+	if left <= 0.0:
 		queue_free()
+		return
+	if modulate.a > 0.5:
+		for body in get_overlapping_bodies():
+			if body is Player:
+				body.take_hit(DAMAGE, global_position - velocity.normalized() * 40.0)

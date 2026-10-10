@@ -12,6 +12,7 @@ var _health := 6
 var _max_health := 6
 var _money := 0
 var _hour := 7.0
+var _day := 1
 
 
 func _draw() -> void:
@@ -48,6 +49,11 @@ func set_time(hour: float) -> void:
 	queue_redraw()
 
 
+func set_day(day: int) -> void:
+	_day = day
+	queue_redraw()
+
+
 func set_money(money: int) -> void:
 	_money = money
 	queue_redraw()
@@ -64,7 +70,7 @@ func _draw_clock(at: Vector2) -> void:
 			var d := Vector2.from_angle(i * TAU / 8.0)
 			draw_line(centre + d * 14.0, centre + d * 19.0, Color(1.0, 0.82, 0.25), 3.0)
 	var font := ThemeDB.fallback_font
-	var text := DayNight.clock_text(_hour)
+	var text := "Day %d  %s" % [_day, DayNight.clock_text(_hour)]
 	var text_at := at + Vector2(44, 26)
 	draw_string_outline(
 		font, text_at, text, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, 6, Color(0.1, 0.06, 0.14)

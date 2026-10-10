@@ -41,11 +41,12 @@ The game started as pixel art and is now smooth HD 2D:
   widgets (`touch_*.gd`)
 - `data/rooms/<x>_<y>.txt` – the world: one 20x11 ASCII map per screen (see below)
 - `data/dialogue.json`, `data/characters.json`, `data/props.json` – conversations, people and props
+- `data/items.json`, `data/forage.json` – things to carry, and plants to pick
 - `assets/` – placeholder art: `textures/` (tileable ground materials) and `sprites/`
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway, dialogue, traffic, day and night)
+  walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -55,12 +56,13 @@ The game started as pixel art and is now smooth HD 2D:
 | --- | --- | --- |
 | Move | Arrow keys or WASD | Joystick (bottom left) |
 | Attack | Z | A |
-| Item | X | B |
+| Item (use the selected hotbar item) | X | B |
+| Select hotbar slot | 1-8 | tap the slot |
 | Interact / talk | C | X (A also talks when facing someone) |
 | Pause (also saves) | Esc | II (top right) |
 
 Touch controls show on touch devices and in the browser; on desktop the mouse acts as a
-finger. Item does nothing yet.
+finger.
 
 ## Combat
 
@@ -70,14 +72,18 @@ finger. Item does nothing yet.
   entrance with full health.
 - **Enemies:** the *pothound* (a stray dog that wanders and chases) and the *corbeau* (a vulture
   that hovers, shudders, swoops, then flies home). They respawn each time you enter a room.
+  Night brings more (see *Night dangers*).
 - **Pickups:** snacks (a "double") heal one heart and wait if you are at full health; coins
   add TT$. Enemies sometimes drop them, and they vanish after a few seconds.
 - Health and money are saved with the rest of the game.
 
 ## Building the world
 
-Each file in `data/rooms/` is one screen, named by its grid position (`1_1.txt` is column 1,
-row 1). Walking off an open edge scrolls to the neighbouring room, and the game saves.
+Each file in `data/rooms/` is one screen-sized room, named by its grid position (`1_1.txt` is
+column 1, row 1). The rooms join into one seamless world: the camera follows Chad, the room he
+is in and its eight neighbours are loaded (others are unloaded, so their enemies reset), and
+the ground blends across room edges. Grid cells with no room are filled with sea (south) or
+grass. Entering another room autosaves.
 
 | Char | Tile | Solid |
 | --- | --- | --- |
@@ -104,12 +110,14 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 
 | Kind | Id | What |
 | --- | --- | --- |
-| `dog`, `corbeau` | | enemies |
+| `dog`, `corbeau`, `bandit`, `soucouyant` | | enemies |
 | `snack`, `coin` | | pickups |
 | `npc` | a character from `data/characters.json` | someone to talk to |
 | `sign` | a conversation from `data/dialogue.json` | a sign to read |
 | `prop` | a prop from `data/props.json` | a big solid thing (boat, food truck, gas station, shop, utility pole, parked car), optionally readable |
 | `traffic` | `up`, `down`, `left` or `right` | a lane of cars driving through that cell's column/row; cars hurt and knock back |
+| `forage` | a plant from `data/forage.json` | something to pick (mango tree, coconut palm, chadon beni, pepper bush) |
+| `night` | `bandit`, `dog`, `soucouyant` or `corbeau` | an enemy that comes out after dark (see *Night dangers*) |
 
 ```
 npc 8 4 ibis
@@ -142,9 +150,31 @@ finish the line, then again for the next one.
 Utility poles (`prop <x> <y> pole`) are joined by power lines automatically: along each row of
 poles, and across the road to the pole on the other side.
 
+## Items and foraging
+
+- **Bag and hotbar:** Chad carries 12 slots of items (stacks of up to 99); the first 8 show in
+  the hotbar at the bottom of the screen. Tap a slot or press 1-8 to select it; **Item**
+  (B / X key) uses it. For now that means eating food to heal (`heal` in `data/items.json`).
+- **Foraging:** walk up to a ripe plant and press interact. Mango trees, coconut palms,
+  chadon beni and pepper bushes give items and grow back a few game days later
+  (`regrow_days` in `data/forage.json`). Picked plants show bare until then.
+- The bag, the day number and which plants were picked are saved.
+
+## Fishing
+
+The fisherman on the wharf pier gives Chad a fishing rod the first time they talk (dialogue
+lines can hand over items with `"give"`). Select the rod in the hotbar, face the water and
+press **Item** to cast. After a bite, the catch minigame starts: hold **A** (or keep a finger
+on the screen) to lift the green zone, let go to let it fall, and keep the fish inside it until
+the gold bar fills. Which fish bite depends on the time of day: red snapper and carite by day,
+kingfish around dusk and night, flying fish in the morning, cavalli any time, and now and
+then somebody's slipper. Fish are items with a `"fish"` block in `data/items.json` (`times`,
+`difficulty`, `weight`).
+
 ## Day and night
 
-A full day takes 12 real minutes (`DayNight.SECONDS_PER_DAY`); a new game starts at 7 am and
+A full day takes 12 real minutes (`DayNight.SECONDS_PER_DAY`), and days are counted (Day 1,
+Day 2...); a new game starts at 7 am on day 1 and
 the clock stops while the game is paused or in a conversation. The world is tinted through
 dawn, day, dusk and night (the HUD is not), and the time shows under the money with a sun or
 moon. At night, lights come on: food-truck windows, the gas-station canopy, street lamps on the
@@ -152,7 +182,29 @@ poles and car headlights. Add a lamp to any prop with `"light": [x, y, size, "#c
 `data/props.json`. Characters can say different things at night: the pseudo-flag `night` works
 in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is saved.
 
-For screenshots, the Web build also takes `&time=21` (e.g. `index.html?room=2_0&time=21`).
+For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room) and
+`&time=21` and `&give=fishing_rod` (e.g. `index.html?room=0_1&at=10_8&time=17&give=fishing_rod`).
+
+## Night dangers
+
+The streets are riskier after dark. Each `night` spot in a room file lets one enemy out at
+nightfall, as long as the spot is not under a lamp and Chad is not standing right on it; once
+beaten it stays gone until the next night, and at dawn whatever is left slips away. A warning
+("Night. Stick to the lights.") floats up when night falls. The wharf has no night spots.
+
+- **Bandit:** creeps after Chad through the dark and, on contact, snatches half his money (or
+  the most valuable non-tool item in his bag if his pockets are empty). He doesn't hurt Chad.
+  He stops to gloat, then runs with a loot bag; hit him before he gets away (about three
+  seconds) to get it all back. He never steps into lamplight and ignores Chad while Chad
+  stands in it, so lit streets are safe.
+- **Soucouyant:** a glowing fireball from Trinidad folklore that hovers and swoops like a
+  corbeau. Its glow lets you see it coming.
+- **Night dogs:** extra pothounds roam the dark edges of town.
+
+Lamps on props (street lamps, food trucks, the gas station) are the safe ones
+(`NightLight.safe`); car headlights don't count. The bright middle of each glow
+(`NightLight.SAFE_FRACTION` of its size) is what counts as lit. The limer, the doubles auntie,
+the seafood man, the fisherman and the ibis all warn about the dark.
 
 ## Saving
 

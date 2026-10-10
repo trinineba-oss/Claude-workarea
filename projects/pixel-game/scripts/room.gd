@@ -53,13 +53,26 @@ const SCENERY := {
 const FLOWERS := preload("res://assets/sprites/flowers.png")
 
 var coords := Vector2i.ZERO
+## True for the plain sea/grass rooms that fill gaps at the edges of the world.
+var filler := false
 
 
-func build(room_coords: Vector2i, lines: PackedStringArray, things: Array = []) -> void:
+## `padded` is the map with a one-tile border from the neighbouring rooms (see
+## WorldMap.padded_rows); without it the room's own edge tiles are repeated.
+func build(
+	room_coords: Vector2i,
+	lines: PackedStringArray,
+	things: Array = [],
+	padded: PackedStringArray = PackedStringArray(),
+	is_filler := false
+) -> void:
 	coords = room_coords
+	filler = is_filler
 	position = WorldMap.room_origin(coords)
 	y_sort_enabled = true
-	add_child(_make_ground(lines))
+	add_child(_make_ground(padded if not padded.is_empty() else _pad(lines)))
+	if filler:
+		return
 	add_child(_make_collision(lines))
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(coords)
@@ -71,6 +84,8 @@ func build(room_coords: Vector2i, lines: PackedStringArray, things: Array = []) 
 	for thing in things:
 		var node := Entities.create(thing["kind"], thing.get("arg", ""))
 		node.position = _cell_centre(thing["cell"])
+		if node is Forage:
+			node.key = "%d_%d_%d_%d" % [coords.x, coords.y, thing["cell"].x, thing["cell"].y]
 		add_child(node)
 	_add_wires()
 
@@ -99,12 +114,15 @@ func _add_wires() -> void:
 	add_child(wires)
 
 
-func _make_ground(lines: PackedStringArray) -> Sprite2D:
-	var weights := Image.create(WorldMap.COLS, WorldMap.ROWS, false, Image.FORMAT_RGBA8)
-	var weights2 := Image.create(WorldMap.COLS, WorldMap.ROWS, false, Image.FORMAT_RGBA8)
-	for y in lines.size():
-		for x in lines[y].length():
-			var pair: Array = WEIGHTS[Tiles.ground_at(lines, x, y)]
+## Ground for the padded map (COLS + 2 by ROWS + 2): the sprite shows only the inner area,
+## but linear filtering blends edge tiles with the border, so rooms join without seams.
+func _make_ground(padded: PackedStringArray) -> Sprite2D:
+	var grid := Vector2i(WorldMap.COLS + 2, WorldMap.ROWS + 2)
+	var weights := Image.create(grid.x, grid.y, false, Image.FORMAT_RGBA8)
+	var weights2 := Image.create(grid.x, grid.y, false, Image.FORMAT_RGBA8)
+	for y in grid.y:
+		for x in grid.x:
+			var pair: Array = WEIGHTS[Tiles.ground_at(padded, x, y)]
 			weights.set_pixel(x, y, pair[0])
 			weights2.set_pixel(x, y, pair[1])
 	var material := ShaderMaterial.new()
@@ -113,11 +131,16 @@ func _make_ground(lines: PackedStringArray) -> Sprite2D:
 		material.set_shader_parameter(param, GROUND_TEXTURES[param])
 	material.set_shader_parameter("weights2", ImageTexture.create_from_image(weights2))
 	material.set_shader_parameter("room_origin", position)
-	material.set_shader_parameter("room_size", WorldMap.room_size())
+	material.set_shader_parameter("grid_size", Vector2(grid))
+	material.set_shader_parameter("tile_size", float(WorldMap.TILE))
 	var ground := Sprite2D.new()
 	ground.name = "Ground"
 	ground.texture = ImageTexture.create_from_image(weights)
 	ground.centered = false
+	ground.region_enabled = true
+	ground.region_rect = Rect2(Vector2.ONE, Vector2(WorldMap.COLS, WorldMap.ROWS))
+	ground.position = Vector2.ZERO
+	ground.offset = Vector2.ZERO
 	ground.scale = Vector2.ONE * WorldMap.TILE
 	ground.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	ground.z_index = -10
@@ -164,6 +187,14 @@ func _add_scenery(kind: String, cell: Vector2i, rng: RandomNumberGenerator) -> v
 	sprite.flip_h = rng.randf() < 0.5 and kind in ["tree", "bush"]
 	node.add_child(sprite)
 	add_child(node)
+
+
+static func _pad(lines: PackedStringArray) -> PackedStringArray:
+	var padded := PackedStringArray()
+	for y in range(-1, lines.size() + 1):
+		var row := lines[clampi(y, 0, lines.size() - 1)]
+		padded.append(row[0] + row + row[row.length() - 1])
+	return padded
 
 
 static func _cell_centre(cell: Vector2i) -> Vector2:
