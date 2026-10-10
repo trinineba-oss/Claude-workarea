@@ -1,10 +1,10 @@
 # Game Design (draft v3)
 
-Working title: **Gyro's Awakening** (a parody of *Link's Awakening*; easy to change).
+Title: **Chad and the Legendary Lamb Gyro** (a parody of *Link's Awakening*). The hero is **Chad**.
 
 ## Pitch
 
-A hero washes up at **San Fernando Wharf** and finds a strange, dreamlike
+Chad washes up at **San Fernando Wharf** and finds a strange, dreamlike
 **San Fernando, Trinidad**. The **Legendary Lamb Gyro** waits at the top of San Fernando
 Hill, and only the **Gyro God**, sleeping inside a giant roti, can release it. It is a top-down
 adventure in the spirit of *Link's Awakening*: a small world full of odd locals, secrets behind
@@ -27,7 +27,7 @@ opinion about everything.
 
 ## Story beats
 
-1. **Washed up at the wharf.** The hero wakes on San Fernando Wharf beside a wrecked boat, hungry. A
+1. **Washed up at the wharf.** Chad wakes on San Fernando Wharf beside a wrecked boat, hungry. A
    scarlet ibis ("Ibis", the owl-style guide, or a gloomy corbeau for a funnier tone) explains
    the world.
 2. **The legend.** The Legendary Lamb Gyro rests atop San Fernando Hill, sealed by the
@@ -38,7 +38,7 @@ opinion about everything.
 5. **The hill.** With all four seasonings the hero wakes the Gyro God and reaches the gyro.
 6. **The twist.** The whole thing was a dream. The hero dozed off at **Cross Crossing**
    while waiting for a gyro. The final scene: the street vendor shakes them awake ("Boss,
-   yuh gyro ready!"), the hero collects an ordinary, delicious gyro, and the credits roll
+   yuh gyro ready!" — or "Chad! Yuh gyro ready!"), Chad collects an ordinary, delicious gyro, and the credits roll
    over the busy food stretch. Bittersweet, then funny. The vendor has been in the dream
    all along, in a different role (the shopkeeper, the riddle men's cook, or the Gyro God's
    voice; your call).
@@ -152,8 +152,9 @@ After the slice: Temples 2-4, the trading quest, minigames, the finale and the t
    especially what you would find at Cross Crossing (which stalls, which foods, what the
    atmosphere is like) and what the wharf looks like.
 2. **Dialect level:** light flavor, or heavy Trini English in dialogue (you would review it)?
-3. Hero: name, look, and whether they speak (Link's Awakening's hero is silent).
-4. Final title (the Trini angle could change it).
+3. ~~Chad's look~~ Decided: based on the owner (short dark hair, thick brows, five o'clock shadow,
+   deadpan stare, grey tee, thin chain). Still open: does Chad speak (Link's Awakening's hero is silent)?
+4. ~~Final title~~ Decided: *Chad and the Legendary Lamb Gyro*.
 5. Art source: your own, a free pack you upload, or placeholders for now.
 6. Music: do you have any, or should we plan simple original tracks?
 

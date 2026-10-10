@@ -35,6 +35,7 @@ class Canvas:
     def poly(self, points, fill, outline=3.0):
         self.parts.append(("poly", (points,), fill, outline))
 
+    # Details are painted straight onto the image (no blending), so use opaque colours.
     def detail_ellipse(self, cx, cy, rx, ry, fill):
         self.details.append(("ellipse", (cx, cy, rx, ry), fill))
 
@@ -135,24 +136,36 @@ s_rgba = Image.new("RGBA", (32, 32), (255, 255, 255, 0))
 s_rgba.putalpha(spark)
 s_rgba.save(f"{OUT}/sprites/spark.png")
 
-# ---- hero: 64x84, anchor = feet at bottom centre ---------------------------------------------
+# ---- Chad, the hero: 64x84, anchor = feet at bottom centre ------------------------------------
+# Based on the owner's look: very short dark hair, thick straight brows, a
+# five o'clock shadow, a deadpan heavy-lidded stare, grey crew-neck tee and a thin chain.
 c = Canvas(64, 84)
-SKIN, SHIRT, PANTS, CAP = (244, 198, 152, 255), (64, 112, 214, 255), (52, 58, 86, 255), (214, 58, 58, 255)
-c.rrect(21, 66, 30, 81, 4, PANTS)
-c.rrect(34, 66, 43, 81, 4, PANTS)
-c.ellipse(16, 56, 6, 6, SKIN)
-c.ellipse(48, 56, 6, 6, SKIN)
-c.rrect(18, 42, 46, 72, 10, SHIRT)
-c.ellipse(32, 28, 20, 19, SKIN)
-c.poly([(12, 26), (14, 12), (24, 5), (40, 5), (50, 12), (52, 26)], CAP)
-c.rrect(10, 22, 54, 28, 3, (190, 44, 44, 255))
-c.detail_ellipse(25, 34, 2.6, 3.4, INK)
-c.detail_ellipse(39, 34, 2.6, 3.4, INK)
-c.detail_ellipse(21, 40, 3.4, 2.0, (240, 150, 140, 200))
-c.detail_ellipse(43, 40, 3.4, 2.0, (240, 150, 140, 200))
-c.detail_line([(28, 43), (32, 45), (36, 43)], INK, 1.6)
-c.detail_ellipse(26, 9, 6, 2.5, (240, 110, 110, 255))
-c.detail_line([(22, 50), (22, 64)], (90, 140, 230, 255), 2.5)
+SKIN, SHIRT, COLLAR = (186, 126, 88, 255), (104, 108, 116, 255), (58, 62, 74, 255)
+JEANS, HAIR = (44, 60, 96, 255), (32, 26, 26, 255)
+c.rrect(21, 66, 30, 81, 4, JEANS)
+c.rrect(34, 66, 43, 81, 4, JEANS)
+c.ellipse(15, 56, 6, 6, SKIN)
+c.ellipse(49, 56, 6, 6, SKIN)
+c.rrect(17, 42, 47, 72, 10, SHIRT)
+c.ellipse(12.5, 30, 3.5, 5, SKIN)
+c.ellipse(51.5, 30, 3.5, 5, SKIN)
+c.ellipse(32, 28, 19, 20, SKIN)
+c.poly([(14, 24), (15, 14), (22, 7), (32, 5), (42, 7), (49, 14), (50, 24), (46, 17), (39, 14), (32, 15), (25, 14), (18, 17)], HAIR, outline=2.5)
+STUBBLE = (158, 110, 84, 255)  # five o'clock shadow: a faint grey-brown tint, no beard
+c.detail_ellipse(32, 41, 15, 8.5, STUBBLE)  # jaw and chin
+c.detail_ellipse(32, 35.5, 14.5, 4.5, SKIN)  # cheeks stay clear
+c.detail_ellipse(32, 39, 4.5, 1.4, STUBBLE)  # upper lip
+c.detail_line([(29, 43), (35, 43)], (60, 36, 32, 255), 1.6)  # flat, unimpressed mouth
+c.detail_line([(20, 25), (29, 25.5)], HAIR, 3.2)  # thick straight brows
+c.detail_line([(35, 25.5), (44, 25)], HAIR, 3.2)
+for x in (25, 39):
+    c.detail_ellipse(x, 31, 3.2, 2.6, (250, 246, 240, 255))
+    c.detail_ellipse(x, 31.6, 1.9, 1.9, INK)
+    c.detail_ellipse(x, 29.6, 3.6, 1.6, SKIN)  # heavy upper lid: the deadpan stare
+    c.detail_line([(x - 3.6, 30.2), (x + 3.6, 30.2)], (90, 58, 44, 255), 1.1)
+c.detail_line([(32, 31), (33, 36), (31, 37)], (150, 98, 68, 255), 1.4)  # nose
+c.detail_line([(23, 45), (27, 48.5), (32, 49.5), (37, 48.5), (41, 45)], COLLAR, 3.5)  # crew neck
+c.detail_line([(26, 49), (32, 54), (38, 49)], (226, 212, 160, 255), 1.0)  # thin chain
 c.save(f"{OUT}/sprites/hero.png")
 
 # ---- pothound: 76x58, facing right, anchor = feet at bottom centre --------------------------------

@@ -1,4 +1,4 @@
-# Gyro's Awakening (working title)
+# Chad and the Legendary Lamb Gyro
 
 A 2D top-down adventure for Android, built with [Godot](https://godotengine.org) 4.7
 (GL Compatibility renderer). A Link's Awakening-style parody set in San Fernando,
@@ -135,7 +135,7 @@ finish the line, then again for the next one.
   (the first entry whose `if` / `unless` flag conditions hold).
 - `data/props.json` lists props: sprite, solid footprint, an optional awning label and an
   optional conversation.
-- On a new game the ibis welcomes the hero on the wharf (once).
+- On a new game the ibis welcomes Chad on the wharf (once).
 
 ## Saving
 
