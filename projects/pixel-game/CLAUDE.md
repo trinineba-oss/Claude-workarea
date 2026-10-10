@@ -11,5 +11,7 @@
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
 - The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.
 - Design lives in `DESIGN.md` (Zelda/Link's Awakening-style parody about the Legendary
-  Lamb Gyro). Follow its tone pillars and milestones; update it when decisions change.
+  Lamb Gyro, set in San Fernando, Trinidad). Follow its tone pillars and milestones; update it when decisions change.
+- Keep local references respectful and accurate; dialogue text belongs in data files for
+  review by someone from Trinidad. Use invented shop and character names, not real brands.
 - Never use Nintendo names, sprites or music (see the Legal section of `DESIGN.md`).

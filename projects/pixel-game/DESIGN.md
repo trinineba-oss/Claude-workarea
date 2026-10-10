@@ -1,132 +1,146 @@
-# Game Design (draft v1)
+# Game Design (draft v2)
 
 Working title: **Gyro's Awakening** (a parody of *Link's Awakening*; easy to change).
 
 ## Pitch
 
-A hero washes up on a strange island and must wake the sleeping **Gyro God** to claim the
-**Legendary Lamb Gyro**, the prize at the top of the island's mountain. It is a top-down
-adventure in the spirit of *Link's Awakening*: a small, dreamy island full of odd
-villagers, secrets behind every bush, and a faintly melancholy mood, played completely
-straight while the premise is ridiculous.
+A hero washes up on the shore of the Gulf of Paria and finds a strange, dreamlike
+**San Fernando, Trinidad**. The **Legendary Lamb Gyro** waits at the top of San Fernando
+Hill, and only the **Gyro God**, sleeping inside a giant roti, can release it. It is a top-down
+adventure in the spirit of *Link's Awakening*: a small world full of odd locals, secrets behind
+every bush, and a faintly melancholy mood, played completely straight while the premise
+is ridiculous. The humor is local: food, liming, maxi taxis, and the way everyone has an
+opinion about everything.
 
 ## Tone pillars
 
 1. **Parody with a straight face.** Everyone treats the sandwich quest as sacred. The
-   humor comes from epic seriousness applied to food, not from winking constantly.
-2. **Link's Awakening whimsy.** Quirky townsfolk, talking animals, a dreamlike island,
+   humor comes from epic seriousness applied to everyday life, not from winking constantly.
+2. **Link's Awakening whimsy.** Quirky townsfolk, talking animals, a dreamlike world,
    short punchy dialogue, small sad-sweet moments between the jokes.
-3. **Affectionate, not mean.** We borrow structure and beats, never Nintendo's names,
-   characters, art, or music (see *Legal*).
+3. **Affectionate and local.** We celebrate Trinidad, we do not caricature it. Dialect is
+   used lightly and written or reviewed by someone from there. Trinidad is a mix of many
+   cultures; jokes punch at situations (traffic, gossip, queues, pepper), never at groups.
 4. **Respect the player's time.** Short rooms, generous saves, no padding.
+5. **Original, not borrowed.** We borrow structure and beats, never Nintendo's names,
+   characters, art, or music, and never real brands or real people (see *Legal*).
 
 ## Story beats
 
-1. **Washed ashore.** The hero wakes on a beach beside a wrecked delivery boat, with a
-   rumbling stomach. A seagull ("Gull-ible", the owl-style guide) explains the island.
-2. **The legend.** The Legendary Lamb Gyro rests on the mountain, sealed by the Gyro
-   God, who sleeps inside a giant pita. Four **sacred spices** wake it.
-3. **Four temples**, one spice each, each with a new item and a boss.
-4. **The rival.** A smug kebab lord ("Doner Dread") is hunting the same prize and shows
+1. **Washed ashore.** The hero wakes on the Gulf shore beside a wrecked boat, hungry. A
+   scarlet ibis ("Ibis", the owl-style guide, or a gloomy corbeau for a funnier tone) explains
+   the world.
+2. **The legend.** The Legendary Lamb Gyro rests atop San Fernando Hill, sealed by the
+   Gyro God, who sleeps inside a giant roti. Four **sacred seasonings** wake it.
+3. **Four temples**, one seasoning each, each with a new item and a boss.
+4. **The rival.** A smug fast-food baron ("Doner Dread") is chasing the same prize and shows
    up at each temple one step ahead, gloating.
-5. **The mountain.** With all four spices the hero wakes the Gyro God and reaches the gyro.
-6. **The twist.** The island is the hero's dream at a diner while waiting for an order.
-   The final gag: the waiter arrives with the (ordinary, delicious) gyro and the
-   credits roll over the empty island. Bittersweet, then funny.
+5. **The hill.** With all four seasonings the hero wakes the Gyro God and reaches the gyro.
+6. **The twist.** The whole thing is the hero's dream while waiting for an order at a roti
+   shop or doubles stand. The final gag: the vendor calls "Your order ready!" and hands over
+   an ordinary, delicious gyro while the credits roll over the empty streets. Bittersweet, then funny.
 
-## World
+## World (San Fernando, stylized)
 
-| Area | Role | Notes |
+Real places are inspiration; layouts are invented. **Please correct these with your own
+knowledge of the city.**
+
+| Area | Role | Ideas |
 | --- | --- | --- |
-| Beach | Tutorial | Movement, bushes, first pickup, the gull's lessons |
-| Pita Village | Hub | Shop, house, NPCs, save point, trading quest start |
-| Meadow and Olive Grove | Overworld 1 | First enemies, secret caves |
-| Temple 1: Taverna | Dungeon 1 | Oregano. Teaches keys, doors and basic combat. |
-| Temples 2-4 | Dungeons | Feta Cave, Olive Grove Tower, Rotisserie Tower (after slice) |
-| Gyro Mountain | Finale | Opens after four spices |
+| Gulf shore | Tutorial, start | Wrecked boat, crabs, mud flats, the gull/ibis guide |
+| Harris Promenade | Hub | Shops, benches, NPCs, save point, maxi taxi stop |
+| High Street and market | Overworld | Vendors, the trading quest, the rum-shop riddle men |
+| Skinner Park | Overworld / minigame | A cricket or football minigame |
+| Temples 1-4 | Dungeons | Ideas: quarry caves, the market at night, the refinery tower, the old wharf |
+| San Fernando Hill | Finale | Opens after four seasonings |
 
-Overworld is a grid of screen-sized rooms (like the original), scrolling room to room.
+The overworld is a grid of screen-sized rooms (as built in milestone 1).
 
 ## Link's-Awakening-style set pieces, reimagined
 
-- **Shopkeeper rule:** the shop is cheerfully safe until you try to steal; the gag is the
-  punishment, not violence.
-- **Chain-chomp ally:** a goat on a long chain who guards a path.
-- **Trading quest:** a chain of absurd swaps (napkin, then a lemon, then a lost sandal ...)
+- **Shopkeeper rule:** the doubles vendor is cheerful until you try to skip the line or steal;
+  the gag is the punishment, not violence.
+- **Maxi taxis:** colorful minibuses as fast travel between hubs (the ocarina/telephone idea).
+- **Chain-chomp ally:** a pothound on a long rope who guards a path.
+- **Trading quest:** a chain of absurd favors (a bag of ice, a sno-cone, a lost slipper ...)
   ending in a useful reward.
-- **Claw-machine minigame:** grab prizes (souvlaki skewers) from a crane machine.
-- **Telephone-booth hints:** a wandering villager who gives clues and terrible puns.
+- **Rum-shop riddle men:** a group of "liming" locals who give clues and terrible advice.
 - **Sleeping god:** the final boss sequence is waking the Gyro God, not killing it.
 
-## Items and combat
+## Items and combat (ideas, your call)
 
 | Role | Item |
 | --- | --- |
-| Sword | Skewer (starter; hold to charge a spin) |
-| Shield | Spatula or pan lid |
-| Health | Pita slices (hearts); tzatziki and fries heal |
-| Dungeon items | Olive boomerang, lemon bombs, feta hookshot, oregano-dust lantern |
-| Currency | Drachmas (coins) |
+| Sword | Cutlass (starter; hold to charge a spin) |
+| Shield | Tawa (the roti griddle) |
+| Health | "Doubles" as hearts; coconut water and pepper sauce heal |
+| Dungeon items | Coconut boomerang, wiri-wiri pepper bombs, flambeau lantern, bamboo grapple |
+| Currency | Dollars (TT$) |
 
-Enemies: seagulls (swooping), pigeon mobs, angry onions (tear-gas), sentient meatballs
-(roll), kebab guards. Bosses are themed on the temple (e.g., a giant feta block that splits).
+Enemies: corbeaux (swoop), stray dogs, mosquitoes, nosy neighbours (the "maco": follows and
+gossips), jumbies and soucouyant fireballs (comic, not scary), steups teens (a teeth-suck
+shockwave). Bosses are themed on the temple.
 
 ## Controls and UI (phone, landscape)
 
 - Left: **virtual joystick**. Right: **Attack** (A), **Item** (B), **Interact/Shield** (X),
   small **Pause**.
-- Base resolution stays 320x180. The game extends the visible area on wider phones and
-  the controls sit in that extra space so they do not cover the action.
-- Buttons are at least 48 dp, semi-transparent, repositionable in settings.
+- Base resolution is 320x176 (rooms are 20x11 tiles). The game extends the visible area on
+  wider phones; the controls currently overlap about 30 px of the playfield on 20:9 phones.
+- Buttons are at least 48 dp, semi-transparent, repositionable in settings later.
 - Keyboard and gamepad also work, for testing and the Web build.
-- Health shown top-left as pita slices; current item icons top-right.
+- Health shown top-left; current item icons top-right.
 
 ## Progression and length
 
 - A full game is about 4 to 6 hours; the first **vertical slice is about 30 minutes**:
-  beach, village, a small overworld, Temple 1, its boss, and the first spice.
-- Saving: automatic on room change plus manual save points, stored in `user://`.
-- Gating is by items and spices (as in the original), never by grinding.
+  shore, Promenade, a small overworld, Temple 1, its boss, and the first seasoning.
+- Saving: automatic on room change, pause and app background, stored in `user://`.
+- Gating is by items and seasonings (as in the original), never by grinding.
 
 ## Art and audio direction
 
-- 16x16 tiles and sprites, a small fixed palette (about 24 colors) with a warm
-  Mediterranean look: whitewash, terracotta, sea blue, olive green.
-- Original chiptune-style music, with a dreamy, slightly detuned feel for the overworld.
+- 16x16 tiles and sprites, a small fixed palette with a hot, saturated Caribbean look:
+  flamboyant red and poui yellow blooms, mango green, concrete pastels, sea blue.
+- Music: chiptune with **steelpan** timbres, soca and calypso rhythms for lively areas, a dreamy
+  slightly detuned pan lullaby for the overworld; parang flavor for a festive area.
 - Placeholder art in early milestones; real art replaces it later.
 
 ## Technical plan (Godot 4.7)
 
-- `TileMapLayer` for rooms; a room-based camera that scrolls between screens.
+- `TileMapLayer` rooms from ASCII maps in `data/rooms/`; room-based camera (done).
 - Player and enemies as `CharacterBody2D` with simple state machines.
-- Dialogue: data-driven (JSON or Godot resources) with a typewriter text box.
-- Virtual controls: custom `TouchScreenButton` and joystick scene, wired to the input map.
-- Save system: a single JSON file (`user://save.json`) with a version number.
-- Tests: extend the headless smoke test per system (movement, combat, save and load).
-- Watch memory: keep sprite sheets in few atlases; stream long music.
+- Dialogue: data-driven (JSON or Godot resources) with a typewriter text box; text kept in
+  data files so a local reviewer can edit the dialect without touching code.
+- Virtual controls and save system are built (milestone 1).
+- Tests: extend the headless tests per system. Watch memory: few atlases, stream music.
 
 ## Milestones (each ends in a playable build and a passing `make test`)
 
 1. **Foundation (done):** tile rooms, scrolling room-to-room camera, collisions, virtual
-   controls, input map, save and load. Known gap: on 20:9 phones the controls overlap
-   about 30 px of the playfield edges; revisit the layout in the polish milestone.
-2. **Combat:** skewer attack, health and damage, knockback, two enemy types, pickups.
-3. **World and dialogue:** beach, Pita Village, NPCs, text box, signs, the gull guide.
+   controls, input map, save and load. Known gap: controls overlap the playfield edges on
+   20:9 phones; revisit in the polish milestone.
+2. **Combat:** cutlass attack, health and damage, knockback, two enemy types, pickups.
+3. **World and dialogue:** the shore, Promenade, NPCs, text box, signs, the guide.
 4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.
-5. **Boss and slice ending:** Temple 1 boss, first spice, hint of the rival.
+5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.
 6. **Polish:** sound effects, music, hit effects, menus, settings, low-end phone testing.
 
 After the slice: Temples 2-4, the trading quest, minigames, the finale and the twist ending.
 
 ## Open questions
 
-1. Hero: name, look, and whether they speak (Link's Awakening hero is silent).
-2. Final title.
-3. Art source: your own, a free pack you upload, or my placeholders for now.
-4. Music: do you have any, or should we plan on simple original tracks?
+1. **Local knowledge:** the landmarks, foods, slang and jokes you most want in the game.
+2. **Dialect level:** light flavor, or heavy Trini English in dialogue (you would review it)?
+3. Hero: name, look, and whether they speak (Link's Awakening's hero is silent).
+4. Final title (the Trini angle could change it).
+5. Art source: your own, a free pack you upload, or placeholders for now.
+6. Music: do you have any, or should we plan simple original tracks?
 
 ## Legal
 
 This is a parody that borrows structure, not content. Do not use the names Zelda, Link,
 Hyrule, Koholint, or Nintendo's sprites, music, or logos in the game or its store listing.
-Keep the title and characters distinct enough that nobody mistakes it for an official game.
+Use invented names for shops and characters, never real brands or real people. Real public
+places are fine as loose inspiration. Keep the title and characters distinct enough that
+nobody mistakes it for an official game.
