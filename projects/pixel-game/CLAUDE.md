@@ -8,3 +8,6 @@
 - After adding assets, run `godot --headless --path projects/pixel-game --import` so the
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
 - The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.
+- Design lives in `DESIGN.md` (Zelda/Link's Awakening-style parody about the Legendary
+  Lamb Gyro). Follow its tone pillars and milestones; update it when decisions change.
+- Never use Nintendo names, sprites or music (see the Legal section of `DESIGN.md`).
