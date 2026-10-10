@@ -20,11 +20,14 @@ touching the screen, and collect coins.
 - `scenes/` – `game.tscn` (main scene), `player.tscn`, `touch_controls.tscn`
 - `scripts/` – GDScript: `game.gd` (rooms, transitions, autosave, pause), `world_map.gd`
   and `room.gd` (map loading and tiles), `tiles.gd` (tile legend and shared TileSet),
-  `player.gd`, `save_game.gd`, and the touch widgets (`touch_*.gd`)
+  `player.gd`, `cutlass.gd`, `enemy.gd` (+ `pothound.gd`, `corbeau.gd`), `pickup.gd`,
+  `entities.gd` (what can be placed in rooms), `status_bar.gd`, `save_game.gd`, and the touch
+  widgets (`touch_*.gd`)
 - `data/rooms/<x>_<y>.txt` – the world: one 20x11 ASCII map per screen (see below)
 - `assets/` – placeholder art (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
-- `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game)
+- `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
+  walking through every doorway)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -39,7 +42,19 @@ touching the screen, and collect coins.
 | Pause (also saves) | Esc | II (top right) |
 
 Touch controls show on touch devices and in the browser; on desktop the mouse acts as a
-finger. Attack, item and interact are wired to input actions but do nothing yet (milestone 2).
+finger. Item and interact are wired to input actions but do nothing yet.
+
+## Combat
+
+- **Cutlass (attack):** a short swing in the direction you last moved; it hits each enemy once.
+- **Health:** three "doubles" (6 halves). Enemies hurt on touch (one half), knock you back and
+  give you a second of invincibility. At zero you faint, then get back up at the room
+  entrance with full health.
+- **Enemies:** the *pothound* (a stray dog that wanders and chases) and the *corbeau* (a vulture
+  that hovers, shudders, swoops, then flies home). They respawn each time you enter a room.
+- **Pickups:** snacks (a "double") heal one heart and wait if you are at full health; coins
+  add TT$. Enemies sometimes drop them, and they vanish after a few seconds.
+- Health and money are saved with the rest of the game.
 
 ## Building the world
 
@@ -59,8 +74,19 @@ row 1). Walking off an open edge scrolls to the neighbouring room, and the game 
 | `b` | bush | yes |
 | `T` | tree | yes |
 
+After the 11 map rows, a room file can list objects, one per line as `<kind> <x> <y>` (tile
+coordinates; lines starting with `;` are comments). Kinds: `dog`, `corbeau`, `snack`, `coin`.
+
+```
+dog 12 5
+corbeau 14 2
+coin 4 2
+```
+
 Rules (checked by `make test`): every file has 11 rows of 20 characters; openings on shared
-edges must line up exactly with the neighbour; an edge with no neighbour must be solid.
+edges must line up exactly with the neighbour; an edge with no neighbour must be solid;
+objects must be a known kind, inside the room and on a non-solid tile. A separate test walks
+through every doorway to make sure none is blocked.
 
 ## Saving
 

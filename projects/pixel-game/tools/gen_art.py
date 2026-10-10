@@ -58,6 +58,106 @@ write_png("assets/sprites/player.png", player_rows)
 write_png("assets/sprites/icon.png", player_rows, scale=4)
 
 
+# ---- enemies and pickups -----------------------------------------------------
+def sprite(path, art, pal, scale=1):
+    rows = [[pal[c] for c in line] for line in art]
+    write_png(path, rows, scale)
+
+
+EK = (24, 20, 37, 255)
+CORBEAU = [
+    "................",
+    "................",
+    "......KKKK......",
+    ".....KPPPPK.....",
+    ".....KPWPPKYY...",
+    ".....KPPPPYYK...",
+    "..KK..KKKK.KK...",
+    ".KGGKKGGGGKKGGK.",
+    "KGGGGKGGGGKGGGGK",
+    "KGGGGGGGGGGGGGGK",
+    ".KGGGGGGGGGGGGK.",
+    "..KKGGGGGGGGKK..",
+    "....KKGGGGKK....",
+    "......KYYK......",
+    "......Y..Y......",
+    "................",
+]
+sprite(
+    "assets/sprites/corbeau.png",
+    CORBEAU,
+    {
+        ".": T,
+        "K": EK,
+        "G": (62, 58, 78, 255),
+        "P": (214, 128, 128, 255),
+        "W": (255, 255, 255, 255),
+        "Y": (240, 200, 80, 255),
+    },
+)
+
+DOG = [
+    "................",
+    "................",
+    "................",
+    "..............K.",
+    ".............KDK",
+    "...........KKDDK",
+    "..KK......KDDDDK",
+    ".KDDK....KDDDDWK",
+    "..KDDKKKKDDDDDNK",
+    "..KDDDDDDDDDDKKK",
+    "..KDDDDDDDDDDK..",
+    "..KDLLLLLDDDDK..",
+    "..KDDKKDDDKKDK..",
+    "..KKK.KK.KKKK...",
+    "................",
+    "................",
+]
+sprite(
+    "assets/sprites/dog.png",
+    DOG,
+    {
+        ".": T,
+        "K": EK,
+        "D": (160, 108, 64, 255),
+        "L": (214, 168, 112, 255),
+        "W": (255, 255, 255, 255),
+        "N": (40, 30, 30, 255),
+    },
+)
+
+SNACK = [  # a "double": two bara around curried channa
+    "........",
+    ".KKKKKK.",
+    "KBBBBBBK",
+    "KOOOOOOK",
+    "KBBBBBBK",
+    ".KKKKKK.",
+    "........",
+    "........",
+]
+sprite(
+    "assets/sprites/snack.png",
+    SNACK,
+    {".": T, "K": (110, 70, 30, 255), "B": (238, 196, 112, 255), "O": (226, 110, 30, 255)},
+)
+COIN = [
+    "..KKKK..",
+    ".KYYYYK.",
+    "KYYLLYYK",
+    "KYLYYYYK",
+    "KYLYYYYK",
+    "KYYYYYYK",
+    ".KYYYYK.",
+    "..KKKK..",
+]
+sprite(
+    "assets/sprites/coin.png",
+    COIN,
+    {".": T, "K": (120, 84, 20, 255), "Y": (250, 206, 60, 255), "L": (255, 244, 170, 255)},
+)
+
 # ---- overworld tiles: 9 tiles in a row --------------------------------------
 def rgb(r, g, b):
     return (r, g, b, 255)

@@ -19,7 +19,7 @@ test:
 		godot --headless --path $$p --import >/dev/null 2>&1; \
 		for t in $$p/tests/*_test.gd; do \
 			echo "  $$(basename $$t)"; \
-			godot --headless --path $$p --script res://tests/$$(basename $$t) || exit 1; \
+			timeout 120 godot --headless --path $$p --script res://tests/$$(basename $$t) || exit 1; \
 		done; \
 	done
 

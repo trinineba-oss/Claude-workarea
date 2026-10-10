@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
 [ext_resource type="PackedScene" path="res://scenes/touch_controls.tscn" id="3_touch"]
 [ext_resource type="Script" path="res://scripts/pause_overlay.gd" id="4_pause"]
+[ext_resource type="Script" path="res://scripts/status_bar.gd" id="5_status"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
@@ -19,6 +20,28 @@ process_mode = 3
 layer = 10
 
 [node name="TouchControls" parent="HUD" instance=ExtResource("3_touch")]
+
+[node name="StatusBar" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 4.0
+offset_top = 2.0
+offset_right = 104.0
+offset_bottom = 30.0
+mouse_filter = 2
+script = ExtResource("5_status")
+
+[node name="FaintLabel" type="Label" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 8
+text = "You fainted..."
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PauseOverlay" type="ColorRect" parent="HUD"]
 visible = false

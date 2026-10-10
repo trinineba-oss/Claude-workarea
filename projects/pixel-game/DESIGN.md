@@ -128,7 +128,8 @@ shockwave). Bosses are themed on the temple.
 1. **Foundation (done):** tile rooms, scrolling room-to-room camera, collisions, virtual
    controls, input map, save and load. Known gap: controls overlap the playfield edges on
    20:9 phones; revisit in the polish milestone.
-2. **Combat:** cutlass attack, health and damage, knockback, two enemy types, pickups.
+2. **Combat (done):** cutlass attack, health as doubles, knockback, two enemy types (pothound,
+   corbeau), pickups, fainting and respawn. Tuning (damage, speeds, drop rates) is a first guess.
 3. **World and dialogue:** the wharf, Promenade, NPCs, text box, signs, the guide.
 4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.
 5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.

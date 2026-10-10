@@ -1,15 +1,18 @@
 class_name WorldMap
 extends RefCounted
-## All rooms of the world, loaded from data/rooms/<x>_<y>.txt (20x11 characters each;
-## see Tiles for the legend). Rooms form a grid; walking off an open edge moves to
-## the neighbouring room.
+## All rooms of the world, loaded from data/rooms/<x>_<y>.txt: 11 map rows of 20 characters
+## (see Tiles for the legend), then optional object lines `<kind> <x> <y>` (see Entities),
+## e.g. `dog 12 5`. Rooms form a grid; walking off an open edge moves to the neighbouring room.
 
 const COLS := 20
 const ROWS := 11
 const TILE := Tiles.SIZE
 const START := "@"
 
-var rooms: Dictionary = {}  # Vector2i -> PackedStringArray
+var rooms: Dictionary = {}  # Vector2i -> PackedStringArray (map rows)
+var objects: Dictionary = {}  # Vector2i -> Array of {"kind": String, "cell": Vector2i}
+
+var _parse_problems := PackedStringArray()
 
 
 static func load_dir(dir_path: String) -> WorldMap:
@@ -25,7 +28,9 @@ static func load_dir(dir_path: String) -> WorldMap:
 		for line in text.split("\n"):
 			if not line.strip_edges().is_empty():
 				lines.append(line.strip_edges(false, true))
-		world.rooms[Vector2i(int(parts[0]), int(parts[1]))] = lines
+		var coords := Vector2i(int(parts[0]), int(parts[1]))
+		world.rooms[coords] = lines.slice(0, ROWS)
+		world._parse_objects(coords, lines.slice(ROWS))
 	return world
 
 
@@ -43,6 +48,10 @@ func has_room(coords: Vector2i) -> bool:
 
 func rows(coords: Vector2i) -> PackedStringArray:
 	return rooms[coords]
+
+
+func objects_in(coords: Vector2i) -> Array:
+	return objects.get(coords, [])
 
 
 ## Room that contains the player start marker, or (0, 0) if there is none.
@@ -64,7 +73,7 @@ func start_position() -> Vector2:
 
 ## Human-readable problems with the map data. Empty when the world is valid.
 func validate() -> PackedStringArray:
-	var problems := PackedStringArray()
+	var problems := _parse_problems.duplicate()
 	var starts := 0
 	for coords in rooms:
 		var lines: PackedStringArray = rooms[coords]
@@ -90,6 +99,40 @@ func validate() -> PackedStringArray:
 		problems.append("expected exactly one start marker '@', found %d" % starts)
 	if problems.is_empty():
 		problems.append_array(_edge_problems())
+		problems.append_array(_object_problems())
+	return problems
+
+
+func _parse_objects(coords: Vector2i, lines: PackedStringArray) -> void:
+	var list := []
+	for line in lines:
+		var text := line.strip_edges()
+		if text.is_empty() or text.begins_with(";"):
+			continue
+		var parts := text.split(" ", false)
+		if parts.size() != 3 or not (parts[1].is_valid_int() and parts[2].is_valid_int()):
+			_parse_problems.append("room %s: bad object line '%s'" % [coords, text])
+			continue
+		list.append({"kind": parts[0], "cell": Vector2i(int(parts[1]), int(parts[2]))})
+	if not list.is_empty():
+		objects[coords] = list
+
+
+func _object_problems() -> PackedStringArray:
+	var problems := PackedStringArray()
+	for coords in objects:
+		for obj in objects[coords]:
+			var cell: Vector2i = obj["cell"]
+			if not Entities.is_known(obj["kind"]):
+				problems.append("room %s: unknown object '%s'" % [coords, obj["kind"]])
+			elif cell.x < 0 or cell.x >= COLS or cell.y < 0 or cell.y >= ROWS:
+				problems.append(
+					"room %s: %s at %s is outside the room" % [coords, obj["kind"], cell]
+				)
+			elif Tiles.is_solid(rooms[coords][cell.y][cell.x]):
+				problems.append(
+					"room %s: %s at %s is on a solid tile" % [coords, obj["kind"], cell]
+				)
 	return problems
 
 

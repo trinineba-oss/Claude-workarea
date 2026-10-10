@@ -9,3 +9,7 @@ sssssssssssssssssss#
 #ss~~ssssssssss~~ss#
 ~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~
+
+corbeau 14 2
+dog 9 5
+snack 4 6
