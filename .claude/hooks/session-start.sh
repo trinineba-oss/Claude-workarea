@@ -21,6 +21,31 @@ for pkg in shellcheck-py shfmt-py; do
   fi
 done
 
+# --- Godot engine (+ export templates, gdtoolkit) for Godot projects ---
+# Godot's own download hosts are blocked in cloud sessions, but the Nix binary
+# cache is reachable, so install from a pinned nixpkgs snapshot.
+NIXPKGS="https://releases.nixos.org/nixos/unstable/nixos-26.11pre1087755.e7439b6b14ad/nixexprs.tar.xz"
+GODOT_CACHE="$HOME/.cache/godot-nix"
+if compgen -G "$ROOT/projects/*/project.godot" >/dev/null; then
+  if command -v nix-build >/dev/null 2>&1; then
+    mkdir -p "$GODOT_CACHE" "$HOME/.local/bin"
+    log "godot: nix-build engine and export templates"
+    nix-build "$NIXPKGS" -A godot -o "$GODOT_CACHE/engine" >&2
+    nix-build "$NIXPKGS" -A godot_4_7-export-templates-bin -o "$GODOT_CACHE/templates" >&2
+    ln -sf "$GODOT_CACHE/engine/bin/godot" "$HOME/.local/bin/godot"
+    mkdir -p "$HOME/.local/share/godot/export_templates"
+    for tpl in "$GODOT_CACHE"/templates/share/godot/export_templates/*; do
+      ln -sfn "$(readlink -f "$tpl")" "$HOME/.local/share/godot/export_templates/$(basename "$tpl")"
+    done
+  else
+    log "warning: nix not found, skipping Godot install"
+  fi
+  if ! command -v gdlint >/dev/null 2>&1; then
+    log "installing gdtoolkit"
+    uv tool install --quiet gdtoolkit >&2 || log "warning: could not install gdtoolkit"
+  fi
+fi
+
 # --- Per-project dependencies under projects/<name>/ ---
 shopt -s nullglob
 for dir in "$ROOT"/projects/*/; do
