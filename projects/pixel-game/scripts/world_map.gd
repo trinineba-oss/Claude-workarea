@@ -51,6 +51,62 @@ func rows(coords: Vector2i) -> PackedStringArray:
 	return rooms[coords]
 
 
+## The room that contains a world position.
+static func room_at(pos: Vector2) -> Vector2i:
+	var size := room_size()
+	return Vector2i(floori(pos.x / size.x), floori(pos.y / size.y))
+
+
+## Map character at a global tile position. Cells with no room are filled with sea in the
+## south and grass elsewhere, so the edges of the world never look empty.
+func tile_at(cell: Vector2i) -> String:
+	var coords := Vector2i(floori(float(cell.x) / COLS), floori(float(cell.y) / ROWS))
+	if not rooms.has(coords):
+		return filler_tile(coords)
+	var lines: PackedStringArray = rooms[coords]
+	return lines[posmod(cell.y, ROWS)][posmod(cell.x, COLS)]
+
+
+## Map rows for a room, or plain filler rows for a cell with no room.
+func rows_or_filler(coords: Vector2i) -> PackedStringArray:
+	if rooms.has(coords):
+		return rooms[coords]
+	var lines := PackedStringArray()
+	for y in ROWS:
+		lines.append(filler_tile(coords).repeat(COLS))
+	return lines
+
+
+## This room's map with a one-tile border taken from the neighbouring rooms, so ground
+## materials can blend across room edges.
+func padded_rows(coords: Vector2i) -> PackedStringArray:
+	var lines := PackedStringArray()
+	var top_left := Vector2i(coords.x * COLS, coords.y * ROWS) - Vector2i.ONE
+	for y in ROWS + 2:
+		var line := ""
+		for x in COLS + 2:
+			line += tile_at(top_left + Vector2i(x, y))
+		lines.append(line)
+	return lines
+
+
+func filler_tile(coords: Vector2i) -> String:
+	return "~" if coords.y >= 1 else "."
+
+
+## Smallest rectangle of room coordinates that holds every room.
+func bounds() -> Rect2i:
+	var rect := Rect2i()
+	var first := true
+	for coords: Vector2i in rooms:
+		if first:
+			rect = Rect2i(coords, Vector2i.ONE)
+			first = false
+		else:
+			rect = rect.merge(Rect2i(coords, Vector2i.ONE))
+	return rect
+
+
 func objects_in(coords: Vector2i) -> Array:
 	return objects.get(coords, [])
 

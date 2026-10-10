@@ -71,6 +71,24 @@ corn soup, hot dogs, doubles...). Trucks use generic food names, never the real 
 
 The overworld is a grid of screen-sized rooms (as built in milestone 1).
 
+## Sandbox layer (Stardew-style, hybrid)
+
+Decided: the gyro quest stays the spine, with a Stardew-style life around it. Chad can spend
+his days however he likes, and the sandbox feeds the quest (the four sacred seasonings come
+from foraging, fishing, cooking and friendships, alongside or instead of temples).
+
+- **Open world (built):** the camera follows Chad and the rooms join seamlessly; the room he is
+  in and its neighbours are loaded, ground blends across room edges, and empty cells at the
+  edge of the world are filled with sea or grass.
+- **Items and foraging:** an inventory and hotbar; mangoes, coconuts, chadon beni and peppers
+  to pick around town, growing back each day (a day counter on the clock).
+- **Fishing at the wharf:** a timing minigame on the pier; different fish by time of day.
+- **Cooking and Chad's own food truck:** recipes from ingredients; Chad parks his own truck on
+  Lady Hailes Avenue; dishes left in it sell overnight for TT$.
+- **Friendships and schedules:** a daily chat and gifts raise hearts (likes and dislikes per
+  person); friends give recipes and secrets; vendors keep daily routines (fishing or liming by
+  day, at their trucks after dark).
+
 ## Link's-Awakening-style set pieces, reimagined
 
 - **Shopkeeper rule:** a Cross Crossing vendor is cheerful until you try to skip the line or steal;
@@ -140,7 +158,8 @@ shockwave). Bosses are themed on the temple.
 
 ## Milestones (each ends in a playable build and a passing `make test`)
 
-1. **Foundation (done):** tile rooms, scrolling room-to-room camera, collisions, virtual
+1. **Foundation (done):** tile rooms, room-to-room camera (now replaced by the free-scrolling
+   world, see *Sandbox layer*), collisions, virtual
    controls, input map, save and load. Known gap: controls overlap the playfield edges on
    20:9 phones; revisit in the polish milestone.
 2. **Combat (done):** cutlass attack, health as doubles, knockback, two enemy types (pothound,

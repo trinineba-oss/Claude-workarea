@@ -1,15 +1,15 @@
 class_name Game
 extends Node2D
-## The adventure: one room at a time, with a scrolling transition between rooms,
-## autosave on every room change, and pause.
+## The adventure: a free-scrolling world streamed room by room (the room Chad is in and its
+## neighbours stay loaded), autosave whenever he enters another room, and pause.
 
-signal transition_finished
+signal room_changed(coords: Vector2i)
 signal conversation_finished(id: String)
 
-const TRANSITION_SECONDS := 0.5
-## How far the hero is carried into the next room during a transition.
-const PUSH_IN := 96.0
 const ROOMS_DIR := "res://data/rooms"
+## Rooms within this many rooms of Chad stay loaded, so the camera never shows a gap.
+const LOAD_RADIUS := 1
+const CAMERA_SMOOTHING := 7.0
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
 
@@ -22,8 +22,7 @@ var flags: Dictionary = {}
 var world: WorldMap
 var coords := Vector2i.ZERO
 
-var _room: Room
-var _transitioning := false
+var _loaded: Dictionary = {}  # Vector2i -> Room
 var _entry_position := Vector2.ZERO
 
 @onready var day_night: DayNight = $DayNight
@@ -57,32 +56,30 @@ func _ready() -> void:
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
-	_room = _make_room(coords)
-	_camera.position = _room_center(coords)
+	_setup_camera()
+	_refresh_rooms()
+	_snap_camera()
 	if play_intro and not flags.get("intro_done", false):
 		_play_intro.call_deferred()
 
 
 func _physics_process(_delta: float) -> void:
-	if _transitioning:
+	var now := WorldMap.room_at(_player.position)
+	if now == coords:
 		return
-	var local := _player.position - WorldMap.room_origin(coords)
-	var size := WorldMap.room_size()
-	var dir := Vector2i.ZERO
-	if local.x < 0.0:
-		dir = Vector2i.LEFT
-	elif local.x >= size.x:
-		dir = Vector2i.RIGHT
-	elif local.y < 0.0:
-		dir = Vector2i.UP
-	elif local.y >= size.y:
-		dir = Vector2i.DOWN
-	if dir == Vector2i.ZERO:
-		return
-	if world.has_room(coords + dir):
-		_transition(dir)
+	if world.has_room(now):
+		coords = now
+		_entry_position = _player.position
+		_refresh_rooms()
+		save_game()
+		room_changed.emit(coords)
 	else:
+		# Edges toward empty cells are solid, so this only guards against teleports.
 		_player.position = _clamp_to_room(_player.position, coords, 4.0)
+
+
+func _process(_delta: float) -> void:
+	_camera.position = _player.position
 
 
 func _notification(what: int) -> void:
@@ -94,13 +91,25 @@ func _notification(what: int) -> void:
 
 ## Jumps straight to a room, e.g. for fast travel (maxi taxis) or tests.
 func go_to(room_coords: Vector2i, pos: Vector2) -> void:
-	_room.free()
+	for room: Room in _loaded.values():
+		room.free()
+	_loaded.clear()
 	coords = room_coords
-	_room = _make_room(coords)
 	_player.position = pos
 	_entry_position = pos
-	_camera.position = _room_center(coords)
+	_refresh_rooms()
+	_snap_camera()
 	save_game()
+
+
+## The room Chad is in.
+func current_room() -> Room:
+	return _loaded.get(coords)
+
+
+## Every loaded room, including filler rooms at the edges of the world.
+func loaded_rooms() -> Array:
+	return _loaded.values()
 
 
 ## Plays a conversation from data/dialogue.json, pausing the game until it ends.
@@ -132,10 +141,6 @@ func dialogue_state() -> Dictionary:
 
 func is_talking() -> bool:
 	return _dialogue.is_open()
-
-
-func is_transitioning() -> bool:
-	return _transitioning
 
 
 func save_game() -> void:
@@ -170,33 +175,46 @@ func _restore(data: Dictionary) -> bool:
 	return true
 
 
-func _transition(dir: Vector2i) -> void:
-	var target := coords + dir
-	_transitioning = true
-	_player.frozen = true
-	var old_room := _room
-	_room = _make_room(target)
-	old_room.process_mode = Node.PROCESS_MODE_DISABLED
-	_room.process_mode = Node.PROCESS_MODE_DISABLED
-	var player_end := _clamp_to_room(_player.position + Vector2(dir) * PUSH_IN, target, 32.0)
-	var tween := create_tween().set_parallel(true)
-	tween.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(_camera, "position", _room_center(target), TRANSITION_SECONDS)
-	tween.tween_property(_player, "position", player_end, TRANSITION_SECONDS)
-	await tween.finished
-	old_room.queue_free()
-	_room.process_mode = Node.PROCESS_MODE_INHERIT
-	coords = target
-	_entry_position = _player.position
-	_player.frozen = false
-	_transitioning = false
-	save_game()
-	transition_finished.emit()
+func _refresh_rooms() -> void:
+	var wanted := {}
+	for dy in range(-LOAD_RADIUS, LOAD_RADIUS + 1):
+		for dx in range(-LOAD_RADIUS, LOAD_RADIUS + 1):
+			wanted[coords + Vector2i(dx, dy)] = true
+	for room_coords: Vector2i in _loaded.keys():
+		if not wanted.has(room_coords):
+			_loaded[room_coords].queue_free()
+			_loaded.erase(room_coords)
+	for room_coords: Vector2i in wanted:
+		if not _loaded.has(room_coords):
+			_loaded[room_coords] = _make_room(room_coords)
+
+
+func _setup_camera() -> void:
+	var rect := world.bounds()
+	var size := WorldMap.room_size()
+	_camera.limit_left = int(rect.position.x * size.x)
+	_camera.limit_top = int(rect.position.y * size.y)
+	_camera.limit_right = int(rect.end.x * size.x)
+	_camera.limit_bottom = int(rect.end.y * size.y)
+	_camera.position_smoothing_enabled = true
+	_camera.position_smoothing_speed = CAMERA_SMOOTHING
+
+
+func _snap_camera() -> void:
+	_camera.position = _player.position
+	_camera.reset_smoothing()
 
 
 func _make_room(room_coords: Vector2i) -> Room:
 	var room := Room.new()
-	room.build(room_coords, world.rows(room_coords), world.objects_in(room_coords))
+	var real := world.has_room(room_coords)
+	room.build(
+		room_coords,
+		world.rows_or_filler(room_coords),
+		world.objects_in(room_coords) if real else [],
+		world.padded_rows(room_coords),
+		not real
+	)
 	_rooms.add_child(room)
 	return room
 
@@ -212,8 +230,8 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 	)
 
 
-## Developer aid for the Web build: `index.html?room=0_0` starts in that room and `&time=21`
-## at that hour (used to take screenshots). Ignored everywhere else.
+## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
+## that tile, and `&time=21` at that hour (used to take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
@@ -228,6 +246,12 @@ func _apply_debug_start() -> void:
 	if world.has_room(target):
 		coords = target
 		_player.position = _room_center(target)
+		var at := RegEx.create_from_string("at=(\\d+)_(\\d+)").search(query)
+		if at != null:
+			var cell := Vector2(int(at.get_string(1)), int(at.get_string(2)))
+			_player.position = (
+				WorldMap.room_origin(target) + (cell + Vector2(0.5, 0.5)) * WorldMap.TILE
+			)
 
 
 func _play_intro() -> void:
@@ -249,8 +273,8 @@ func _on_player_died() -> void:
 	_faint_label.visible = true
 	await get_tree().create_timer(FAINT_SECONDS).timeout
 	_faint_label.visible = false
-	_room.queue_free()
-	_room = _make_room(coords)
+	_loaded[coords].queue_free()
+	_loaded[coords] = _make_room(coords)
 	_player.position = _entry_position
 	_player.revive()
 	save_game()

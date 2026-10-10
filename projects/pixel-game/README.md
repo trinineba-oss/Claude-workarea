@@ -76,8 +76,11 @@ finger. Item does nothing yet.
 
 ## Building the world
 
-Each file in `data/rooms/` is one screen, named by its grid position (`1_1.txt` is column 1,
-row 1). Walking off an open edge scrolls to the neighbouring room, and the game saves.
+Each file in `data/rooms/` is one screen-sized room, named by its grid position (`1_1.txt` is
+column 1, row 1). The rooms join into one seamless world: the camera follows Chad, the room he
+is in and its eight neighbours are loaded (others are unloaded, so their enemies reset), and
+the ground blends across room edges. Grid cells with no room are filled with sea (south) or
+grass. Entering another room autosaves.
 
 | Char | Tile | Solid |
 | --- | --- | --- |
@@ -152,7 +155,8 @@ poles and car headlights. Add a lamp to any prop with `"light": [x, y, size, "#c
 `data/props.json`. Characters can say different things at night: the pseudo-flag `night` works
 in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is saved.
 
-For screenshots, the Web build also takes `&time=21` (e.g. `index.html?room=2_0&time=21`).
+For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room) and
+`&time=21` (e.g. `index.html?room=2_0&at=10_5&time=21`).
 
 ## Saving
 

@@ -1,7 +1,8 @@
 class_name Traffic
 extends Node2D
 ## A lane of cars driving across the room in one direction. Cars hurt and knock back the
-## hero; they ignore walls and disappear past the edge of the room.
+## hero and ignore walls. They fade in on the room's first tile and out on its last, so they
+## never drive past the end of the road into the neighbouring room.
 
 const DIRECTIONS := {
 	"down": Vector2.DOWN, "up": Vector2.UP, "left": Vector2.LEFT, "right": Vector2.RIGHT
@@ -39,15 +40,16 @@ func spawn_car() -> Car:
 	var car := Car.new()
 	car.setup(CARS.pick_random(), direction * randf_range(SPEED_MIN, SPEED_MAX))
 	var size := WorldMap.room_size()
+	var half := WorldMap.TILE / 2.0
 	var start := position
-	if direction.y > 0.0:
-		start.y = -80.0
-	elif direction.y < 0.0:
-		start.y = size.y + 80.0
-	elif direction.x > 0.0:
-		start.x = -80.0
+	var end := position
+	if direction.y != 0.0:
+		start.y = half if direction.y > 0.0 else size.y - half
+		end.y = size.y - half if direction.y > 0.0 else half
 	else:
-		start.x = size.x + 80.0
+		start.x = half if direction.x > 0.0 else size.x - half
+		end.x = size.x - half if direction.x > 0.0 else half
 	car.position = start
+	car.end = end
 	get_parent().add_child(car)
 	return car

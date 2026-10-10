@@ -51,8 +51,6 @@ func _run() -> void:
 					game.coords == coords + dir,
 					"can walk from room %s through tile %s toward %s" % [coords, tile, dir]
 				)
-				while game.is_transitioning():
-					await physics_frame
 	_check(walks >= 20, "walked through %d doorways" % walks)
 	Engine.time_scale = 1.0
 	game.free()
