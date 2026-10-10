@@ -46,7 +46,7 @@ The game started as pixel art and is now smooth HD 2D:
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway, dialogue, traffic, day and night, inventory, foraging)
+  walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -158,6 +158,17 @@ poles, and across the road to the pole on the other side.
   (`regrow_days` in `data/forage.json`). Picked plants show bare until then.
 - The bag, the day number and which plants were picked are saved.
 
+## Fishing
+
+The fisherman on the wharf pier gives Chad a fishing rod the first time they talk (dialogue
+lines can hand over items with `"give"`). Select the rod in the hotbar, face the water and
+press **Item** to cast. After a bite, the catch minigame starts: hold **A** (or keep a finger
+on the screen) to lift the green zone, let go to let it fall, and keep the fish inside it until
+the gold bar fills. Which fish bite depends on the time of day: red snapper and carite by day,
+kingfish around dusk and night, flying fish in the morning, cavalli any time, and now and
+then somebody's slipper. Fish are items with a `"fish"` block in `data/items.json` (`times`,
+`difficulty`, `weight`).
+
 ## Day and night
 
 A full day takes 12 real minutes (`DayNight.SECONDS_PER_DAY`), and days are counted (Day 1,
@@ -170,7 +181,7 @@ poles and car headlights. Add a lamp to any prop with `"light": [x, y, size, "#c
 in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is saved.
 
 For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room) and
-`&time=21` (e.g. `index.html?room=2_0&at=10_5&time=21`).
+`&time=21` and `&give=fishing_rod` (e.g. `index.html?room=0_1&at=10_8&time=17&give=fishing_rod`).
 
 ## Saving
 

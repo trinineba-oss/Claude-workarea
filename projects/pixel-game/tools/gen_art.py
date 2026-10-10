@@ -580,6 +580,46 @@ herb_patch(f"{OUT}/sprites/chadon_beni_patch_picked.png", False, (66, 160, 72, 2
 herb_patch(f"{OUT}/sprites/pepper_bush.png", True, (48, 128, 60, 255), (222, 52, 40, 255))
 herb_patch(f"{OUT}/sprites/pepper_bush_picked.png", False, (48, 128, 60, 255))
 
+# ---- fishing: fish icons, rod, slipper, bobber ------------------------------------------------
+def fish_icon(path, body, fin, stripe=None, long=False):
+    c = Canvas(48, 48)
+    rx = 18 if long else 15
+    c.poly([(6, 16), (12, 24), (6, 32)], fin, outline=2)
+    c.ellipse(26, 24, rx, 10, body)
+    c.poly([(24, 14), (32, 8), (34, 16)], fin, outline=1.5)
+    if stripe:
+        c.detail_line([(14, 24), (40, 24)], stripe, 2.5)
+    c.detail_ellipse(36, 22, 2.4, 2.4, INK)
+    c.save(path)
+
+
+fish_icon(f"{OUT}/items/red_snapper.png", (226, 76, 70, 255), (196, 50, 50, 255))
+fish_icon(f"{OUT}/items/carite.png", (150, 170, 190, 255), (90, 110, 140, 255), (230, 200, 90, 255), long=True)
+fish_icon(f"{OUT}/items/kingfish.png", (110, 130, 160, 255), (60, 76, 110, 255), (200, 210, 230, 255), long=True)
+fish_icon(f"{OUT}/items/cavalli.png", (190, 196, 160, 255), (230, 200, 70, 255))
+fish_icon(f"{OUT}/items/flying_fish.png", (80, 130, 200, 255), (160, 210, 240, 255))
+
+
+def _rod(c):
+    c.detail_line([(8, 42), (40, 8)], (120, 80, 46, 255), 4)
+    c.detail_line([(40, 8), (42, 30)], (230, 230, 230, 255), 1.2)
+    c.ellipse(14, 36, 5, 5, (60, 60, 70, 255), outline=1.5)
+    c.ellipse(42, 32, 3, 3, (220, 60, 60, 255), outline=1)
+
+
+def _slipper(c):
+    c.rrect(10, 14, 38, 38, 12, (60, 140, 220, 255))
+    c.detail_line([(16, 22), (24, 28), (32, 22)], (250, 210, 60, 255), 3)
+
+
+icon(f"{OUT}/items/fishing_rod.png", _rod)
+icon(f"{OUT}/items/slipper.png", _slipper)
+
+c = Canvas(24, 24)  # bobber
+c.ellipse(12, 12, 8, 8, (240, 240, 240, 255))
+c.detail_line([(5, 12), (19, 12)], (220, 50, 50, 255), 6)
+c.save(f"{OUT}/sprites/bobber.png")
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

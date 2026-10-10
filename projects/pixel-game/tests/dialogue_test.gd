@@ -79,7 +79,7 @@ func _run() -> void:
 	box.advance()
 	_check(text.visible_characters == -1, "advancing shows the whole line")
 	box.advance()
-	_check(text.text.begins_with("Boy"), "a second advance in the same frame is ignored")
+	_check(text.text.begins_with("Catch anything"), "a second advance in the same frame is ignored")
 	await process_frame
 	box.advance()
 	await process_frame

@@ -29,6 +29,8 @@ var forage_state: Dictionary = {}
 var _loaded: Dictionary = {}  # Vector2i -> Room
 var _entry_position := Vector2.ZERO
 var _hotbar: Hotbar
+var _minigame: FishingMinigame
+var _fishing := false
 
 @onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
@@ -62,6 +64,9 @@ func _ready() -> void:
 	_hotbar.offset_top = -_hotbar.size.y - 20.0
 	_hotbar.offset_bottom = -20.0
 	_hotbar.bind(inventory)
+	_minigame = FishingMinigame.new()
+	_minigame.name = "FishingMinigame"
+	$HUD.add_child(_minigame)
 	_player.interact_requested.connect(_on_interact_requested)
 	_dialogue.line_shown.connect(_on_line_shown)
 	if not _restore(save.read()):
@@ -101,11 +106,14 @@ func _process(_delta: float) -> void:
 		use_selected_item()
 
 
-## Uses the item in the selected hotbar slot (for now: eat food to heal).
+## Uses the item in the selected hotbar slot: cast the rod, or eat food to heal.
 func use_selected_item() -> bool:
 	var id := _hotbar.selected_id()
 	if id == "":
 		return false
+	if id == "fishing_rod":
+		fish()
+		return true
 	var heal := int(GameData.item(id).get("heal", 0))
 	var above := _player.position + Vector2(0, -90)
 	if heal <= 0:
@@ -123,6 +131,74 @@ func use_selected_item() -> bool:
 ## The hotbar at the bottom of the screen.
 func hotbar() -> Hotbar:
 	return _hotbar
+
+
+## The catch minigame overlay.
+func fishing_minigame() -> FishingMinigame:
+	return _minigame
+
+
+func is_fishing() -> bool:
+	return _fishing
+
+
+## Where Chad's line would land: the centre of the tile in front of him if it is water.
+func water_in_front() -> Variant:
+	var spot := _player.position + _player.facing * 70.0 + Vector2(0, -8)
+	var cell := Vector2i((spot / WorldMap.TILE).floor())
+	if world.tile_at(cell) != "~":
+		return null
+	return (Vector2(cell) + Vector2(0.5, 0.5)) * WorldMap.TILE
+
+
+## Casts, waits for a bite, then plays the catch minigame. Returns the fish caught, or "".
+func fish(bite_seconds := -1.0) -> String:
+	if _fishing:
+		return ""
+	var spot: Variant = water_in_front()
+	var above := _player.position + Vector2(0, -90)
+	if spot == null:
+		Effects.float_text(self, above, "Face the water to fish", Color(1, 0.8, 0.6))
+		return ""
+	_fishing = true
+	_player.frozen = true
+	var bobber := Sprite2D.new()
+	bobber.texture = preload("res://assets/sprites/bobber.png")
+	bobber.position = spot
+	bobber.z_index = 2
+	add_child(bobber)
+	var bob := bobber.create_tween().set_loops()
+	bob.tween_property(bobber, "position:y", spot.y + 5.0, 0.5)
+	bob.tween_property(bobber, "position:y", spot.y, 0.5)
+	var wait := bite_seconds if bite_seconds >= 0.0 else randf_range(1.0, 2.5)
+	await get_tree().create_timer(wait, false).timeout
+	Effects.float_text(self, spot + Vector2(0, -30), "!", Color(1, 0.9, 0.3))
+	var id := GameData.pick_fish(day_night.hour)
+	var difficulty := float(GameData.item(id).get("fish", {}).get("difficulty", 1.0))
+	get_tree().paused = true
+	var touch_was_visible := _touch.visible
+	_touch.visible = false
+	_hotbar.visible = false
+	_minigame.start(id, difficulty)
+	var result: String = await _minigame.finished
+	_touch.visible = touch_was_visible
+	_hotbar.visible = true
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().paused = false
+	bobber.queue_free()
+	_player.frozen = false
+	_fishing = false
+	var name: String = GameData.item(id).get("name", id)
+	if result != "caught":
+		Effects.float_text(self, above, "It got away...", Color(0.8, 0.85, 1))
+		return ""
+	if inventory.add(id) > 0:
+		Effects.float_text(self, above, "Bag full! You let the %s go" % name, Color(1, 0.6, 0.5))
+		return ""
+	Effects.float_text(self, above, "+1 %s" % name, Color(1, 0.95, 0.6))
+	save_game()
+	return id
 
 
 func _notification(what: int) -> void:
@@ -289,11 +365,15 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
-## that tile, and `&time=21` at that hour (used to take screenshots). Ignored everywhere else.
+## that tile, `&time=21` at that hour, and `&give=fishing_rod` puts an item in the bag (used to
+## take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
+		if GameData.has_item(gift.get_string(1)):
+			inventory.add(gift.get_string(1))
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
@@ -350,6 +430,8 @@ func harvest(plant: Forage) -> int:
 func _on_line_shown(line: Dictionary) -> void:
 	if line.has("set_flag"):
 		flags[line["set_flag"]] = true
+	if line.has("give") and GameData.has_item(line["give"]):
+		inventory.add(line["give"])
 
 
 func _on_player_died() -> void:

@@ -1,5 +1,5 @@
 {
-  "_note": "DRAFT lines written by Claude. Every line needs review by someone from Trinidad (dialect, references, jokes). Each conversation is a list of lines; a line may set a story flag with \"set_flag\".",
+  "_note": "DRAFT lines written by Claude. Every line needs review by someone from Trinidad (dialect, references, jokes). Each conversation is a list of lines; a line may set a story flag with \"set_flag\". A line can also hand Chad an item with \"give\": \"<item id>\".",
   "conversations": {
     "ibis_intro": [
       {
@@ -41,7 +41,7 @@
     "fisherman": [
       {
         "speaker": "Fisherman",
-        "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."
+        "text": "Catch anything yet? If is a slipper, throw it back. Somebody looking for it."
       },
       {
         "speaker": "Fisherman",
@@ -201,6 +201,32 @@
       {
         "speaker": "Corn soup lady",
         "text": "Now is the proper time for corn soup. Cool breeze, hot soup. Perfect."
+      }
+    ],
+    "fisherman_rod": [
+      {
+        "speaker": "Fisherman",
+        "text": "Boy, the sea was real rough last night. You lucky you ent turn fish food."
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "Here, take this old rod. A man who could fish will never go hungry. Well, not for long."
+      },
+      {
+        "speaker": "",
+        "text": "You got a fishing rod! Select it, face the water and press B to cast.",
+        "give": "fishing_rod",
+        "set_flag": "has_rod"
+      },
+      {
+        "speaker": "Fisherman",
+        "text": "Hold steady when they bite. Snapper in the day, kingfish when the sun going down."
+      }
+    ],
+    "fisherman_night": [
+      {
+        "speaker": "Fisherman",
+        "text": "Night fishing is for kingfish and for thinking. Mostly thinking."
       }
     ]
   }

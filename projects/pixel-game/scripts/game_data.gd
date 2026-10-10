@@ -75,6 +75,32 @@ static func item_icon(id: String) -> Texture2D:
 	return _icons[id]
 
 
+## Items that can be caught (they have a "fish" block).
+static func fish_ids() -> Array:
+	return item_ids().filter(func(id): return item(id).has("fish"))
+
+
+static func fish_bites_at(id: String, hour: float) -> bool:
+	for span: Array in item(id).get("fish", {}).get("times", []):
+		if hour >= float(span[0]) and hour < float(span[1]):
+			return true
+	return false
+
+
+## A fish that bites at this hour, chosen by weight.
+static func pick_fish(hour: float, rng: RandomNumberGenerator = null) -> String:
+	var options := fish_ids().filter(func(id): return fish_bites_at(id, hour))
+	var total := 0.0
+	for id: String in options:
+		total += float(item(id)["fish"].get("weight", 1))
+	var roll := (rng.randf() if rng != null else randf()) * total
+	for id: String in options:
+		roll -= float(item(id)["fish"].get("weight", 1))
+		if roll <= 0.0:
+			return id
+	return options.back() if not options.is_empty() else ""
+
+
 static func forage(id: String) -> Dictionary:
 	if _forage == null or _forage.is_empty():
 		_forage = _without_notes(_read(FORAGE_PATH))

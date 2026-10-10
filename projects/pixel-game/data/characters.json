@@ -22,6 +22,14 @@
     "sprite": "npc_fisherman",
     "talk": [
       {
+        "unless": "has_rod",
+        "dialogue": "fisherman_rod"
+      },
+      {
+        "if": "night",
+        "dialogue": "fisherman_night"
+      },
+      {
         "dialogue": "fisherman"
       }
     ]

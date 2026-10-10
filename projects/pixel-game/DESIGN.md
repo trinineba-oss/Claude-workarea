@@ -83,9 +83,12 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Items and foraging (built):** a 12-slot bag with an 8-slot hotbar; eat food to heal;
   mango trees, coconut palms, chadon beni and pepper bushes around town that grow back after
   a few days (the clock now counts days).
-- **Fishing at the wharf:** a timing minigame on the pier; different fish by time of day.
-- **Cooking and Chad's own food truck:** recipes from ingredients; Chad parks his own truck on
-  Lady Hailes Avenue; dishes left in it sell overnight for TT$.
+- **Fishing at the wharf (built):** the fisherman gives Chad a rod; cast anywhere facing water;
+  a Stardew-style hold-to-lift catch minigame; snapper, carite, kingfish, cavalli, flying fish
+  and the odd slipper, by time of day. Fish can't be sold or cooked yet.
+- **Cooking and Chad's own food truck (food truck on hold, by request):** recipes from
+  ingredients; Chad parking his own truck on Lady Hailes Avenue and selling dishes is deferred
+  until the owner says otherwise.
 - **Friendships and schedules:** a daily chat and gifts raise hearts (likes and dislikes per
   person); friends give recipes and secrets; vendors keep daily routines (fishing or liming by
   day, at their trucks after dark).
