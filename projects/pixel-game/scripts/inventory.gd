@@ -64,6 +64,21 @@ func count(id: String) -> int:
 	return total
 
 
+## The most valuable thing in the bag that is not a tool, or "" (what a bandit grabs).
+func most_valuable() -> String:
+	var best := ""
+	var best_price := -1
+	for slot: Dictionary in slots:
+		if slot.is_empty():
+			continue
+		var item := GameData.item(slot["id"])
+		var price := int(item.get("price", 0))
+		if not item.get("tool", false) and price > best_price:
+			best = slot["id"]
+			best_price = price
+	return best
+
+
 func id_at(index: int) -> String:
 	return slots[index].get("id", "") if index >= 0 and index < slots.size() else ""
 

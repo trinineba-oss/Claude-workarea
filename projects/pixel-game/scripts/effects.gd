@@ -17,8 +17,8 @@ static func float_text(parent: Node, pos: Vector2, text: String, color := Color.
 	label.add_theme_color_override("font_color", color)
 	label.add_theme_color_override("font_outline_color", Color(0.1, 0.06, 0.14))
 	label.add_theme_constant_override("outline_size", 8)
-	label.position = pos + Vector2(-120, -40)
-	label.size = Vector2(240, 40)
+	label.position = pos + Vector2(-240, -40)
+	label.size = Vector2(480, 40)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	parent.add_child(label)
 	var tween := label.create_tween().set_parallel(true)

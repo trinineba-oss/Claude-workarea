@@ -620,6 +620,49 @@ c.ellipse(12, 12, 8, 8, (240, 240, 240, 255))
 c.detail_line([(5, 12), (19, 12)], (220, 50, 50, 255), 6)
 c.save(f"{OUT}/sprites/bobber.png")
 
+# ---- night dangers -------------------------------------------------------------------------------
+c = Canvas(64, 84)  # bandit: a cartoon sneak-thief (hood, eye mask, bandana), anchor = feet
+HOOD, HOOD_L, BANDANA = (52, 50, 66, 255), (78, 76, 96, 255), (176, 40, 52, 255)
+c.rrect(21, 66, 30, 81, 4, (34, 34, 44, 255))
+c.rrect(34, 66, 43, 81, 4, (34, 34, 44, 255))
+c.rrect(18, 78, 31, 83, 2.5, (230, 230, 236, 255), outline=1.5)  # sneakers
+c.rrect(33, 78, 46, 83, 2.5, (230, 230, 236, 255), outline=1.5)
+c.ellipse(15, 58, 6, 6, HOOD)
+c.ellipse(49, 58, 6, 6, HOOD)
+c.rrect(17, 42, 47, 72, 10, HOOD)
+c.ellipse(32, 28, 21, 21, HOOD)  # hood
+c.ellipse(32, 31, 15, 15, SKINS[1], outline=2)  # face in the hood
+c.poly([(17, 34), (47, 34), (44, 46), (32, 50), (20, 46)], BANDANA, outline=2)  # bandana
+c.detail_line([(16, 27), (48, 27)], INK, 7)  # eye mask
+c.detail_ellipse(25, 27, 3, 2.2, (250, 246, 240, 255))
+c.detail_ellipse(39, 27, 3, 2.2, (250, 246, 240, 255))
+c.detail_ellipse(26, 27.3, 1.5, 1.5, INK)  # shifty side-eye
+c.detail_ellipse(40, 27.3, 1.5, 1.5, INK)
+c.detail_ellipse(24, 46, 5, 3, HOOD_L)  # hoodie pocket
+c.detail_ellipse(40, 46, 5, 3, HOOD_L)
+c.detail_line([(26, 52), (38, 52)], HOOD_L, 2.5)
+c.detail_line([(28, 40), (31, 42), (35, 39)], (210, 90, 96, 255), 1.4)  # bandana fold
+c.save(f"{OUT}/sprites/bandit.png")
+
+c = Canvas(40, 40)  # loot bag carried over the bandit's head, anchor = centre
+c.ellipse(20, 24, 14, 13, (176, 136, 84, 255))
+c.poly([(13, 10), (27, 10), (24, 15), (16, 15)], (176, 136, 84, 255), outline=2)
+c.detail_line([(15, 14), (25, 14)], (110, 80, 50, 255), 2)
+c.detail_line([(20, 17), (20, 33)], (60, 120, 60, 255), 2)
+c.detail_line([(24, 20), (17, 22), (23, 27), (16, 30)], (60, 120, 60, 255), 2.5)  # a "$"
+c.save(f"{OUT}/sprites/loot_bag.png")
+
+c = Canvas(64, 64)  # soucouyant fireball, anchor = bottom centre (the game lifts it)
+c.poly([(32, 6), (44, 24), (52, 14), (54, 36), (32, 60), (10, 36), (12, 14), (20, 24)], (226, 70, 34, 255), outline=2)
+c.ellipse(32, 40, 18, 18, (246, 130, 40, 255), outline=0)
+c.detail_ellipse(32, 44, 12, 12, (252, 196, 70, 255))
+c.detail_ellipse(32, 47, 7, 7, (255, 240, 170, 255))
+c.detail_line([(24, 36), (29, 38)], INK, 2)  # cross little eyebrows
+c.detail_line([(40, 36), (35, 38)], INK, 2)
+c.detail_ellipse(27, 41, 2, 2.2, INK)
+c.detail_ellipse(37, 41, 2, 2.2, INK)
+c.save(f"{OUT}/sprites/soucouyant.png")
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

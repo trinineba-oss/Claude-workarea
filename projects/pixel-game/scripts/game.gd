@@ -12,6 +12,7 @@ const LOAD_RADIUS := 1
 const CAMERA_SMOOTHING := 7.0
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
+const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 
 ## Play the ibis's welcome the first time a game starts (tests turn this off).
 @export var play_intro := true
@@ -31,6 +32,7 @@ var _entry_position := Vector2.ZERO
 var _hotbar: Hotbar
 var _minigame: FishingMinigame
 var _fishing := false
+var _was_night := false
 
 @onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
@@ -44,6 +46,7 @@ var _fishing := false
 
 
 func _ready() -> void:
+	add_to_group("game")
 	world = WorldMap.load_dir(ROOMS_DIR)
 	for problem in world.validate():
 		push_error("world map: " + problem)
@@ -78,6 +81,7 @@ func _ready() -> void:
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
+	_was_night = day_night.is_night()
 	_setup_camera()
 	_refresh_rooms()
 	_snap_camera()
@@ -102,6 +106,12 @@ func _physics_process(_delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	_camera.position = _player.position
+	var night := day_night.is_night()
+	if night and not _was_night:
+		Effects.float_text(
+			self, _player.position + Vector2(0, -120), "Night. Stick to the lights.", NIGHT_COLOR
+		)
+	_was_night = night
 	if Input.is_action_just_pressed(&"item") and not _player.frozen and not is_talking():
 		use_selected_item()
 

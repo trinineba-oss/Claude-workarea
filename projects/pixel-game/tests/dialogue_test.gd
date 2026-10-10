@@ -124,6 +124,11 @@ func _run() -> void:
 	await _frames(1)
 	_check(box.is_open() and player.state != Player.State.ATTACK, "attack near the ibis talks")
 	_check(text.text.begins_with("Cross Crossing is up"), "later talks are the hint")
+	# The hint has three lines: skip the typing and move on, twice, then finish the last.
+	box.advance()
+	await process_frame
+	box.advance()
+	await process_frame
 	box.advance()
 	await process_frame
 	box.advance()

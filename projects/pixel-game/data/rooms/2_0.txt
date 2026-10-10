@@ -22,3 +22,4 @@ prop 13 2 parked_car_blue
 sign 1 5 sign_lady_hailes
 prop 7 9 pole
 prop 14 9 pole
+night 18 7 bandit

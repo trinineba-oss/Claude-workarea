@@ -86,6 +86,14 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Fishing at the wharf (built):** the fisherman gives Chad a rod; cast anywhere facing water;
   a Stardew-style hold-to-lift catch minigame; snapper, carite, kingfish, cavalli, flying fish
   and the odd slipper, by time of day. Fish can't be sold or cooked yet.
+- **Night dangers (built):** after dark, bandits creep out of the unlit parts of town and
+  snatch half of Chad's money (or his best catch) and run; one cutlass hit before they get away
+  takes it back. They will not step into lamplight, so street lamps and the food trucks are
+  safe ground, and crossing a dark stretch of Cipero Street at night is a gamble. Soucouyant
+  fireballs swoop over the beaches and the unlit east end, and extra pothounds roam. The tone
+  stays comic (a gloating bandit with a loot bag, never weapons or real violence), and the
+  jokes are about the situation (everyone's mother saying come home before dark), not about
+  any group of people.
 - **Cooking and Chad's own food truck (food truck on hold, by request):** recipes from
   ingredients; Chad parking his own truck on Lady Hailes Avenue and selling dishes is deferred
   until the owner says otherwise.
@@ -114,9 +122,9 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 | Dungeon items | Coconut boomerang, wiri-wiri pepper bombs, flambeau lantern, bamboo grapple |
 | Currency | Dollars (TT$) |
 
-Enemies: corbeaux (swoop), stray dogs, mosquitoes, nosy neighbours (the "maco": follows and
-gossips), jumbies and soucouyant fireballs (comic, not scary), steups teens (a teeth-suck
-shockwave). Bosses are themed on the temple.
+Enemies: corbeaux (swoop), stray dogs, night bandits (snatch and run; built), soucouyant
+fireballs (comic, not scary; built), mosquitoes, nosy neighbours (the "maco": follows and
+gossips), jumbies, steups teens (a teeth-suck shockwave). Bosses are themed on the temple.
 
 ## Controls and UI (phone, landscape)
 
@@ -144,7 +152,8 @@ shockwave). Bosses are themed on the temple.
   sea blue.
 - **Day and night cycle (built):** a 12-minute day; dusk and night tint the world, and food
   trucks, the gas station, street lamps and headlights light up. Night can change what people
-  say (the ibis sleeps; the food trucks come into their own after dark).
+  say (the ibis sleeps; the food trucks come into their own after dark), and the dark is
+  dangerous (see *Night dangers* above): stick to the lights.
 - 64 px tiles on a 1280x704 base resolution, scaled smoothly to any screen.
 - Music: chiptune with **steelpan** timbres, soca and calypso rhythms for lively areas, a dreamy
   slightly detuned pan lullaby for the overworld; parang flavor for a festive area.

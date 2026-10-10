@@ -4,15 +4,18 @@ extends RefCounted
 ## Some kinds take an argument: `npc <x> <y> <character>`, `sign <x> <y> <conversation>`,
 ## `prop <x> <y> <prop>` (ids from data/characters.json, data/dialogue.json, data/props.json),
 ## `traffic <x> <y> <up|down|left|right>` (a lane of cars through that cell),
-## `forage <x> <y> <plant>` (a plant to pick, from data/forage.json).
+## `forage <x> <y> <plant>` (a plant to pick, from data/forage.json),
+## `night <x> <y> <enemy>` (an enemy that comes out after dark: see NightSpawn.KINDS).
 
 const PICKUP := preload("res://scenes/pickup.tscn")
 const SCENES := {
+	"bandit": preload("res://scenes/bandit.tscn"),
 	"corbeau": preload("res://scenes/corbeau.tscn"),
 	"dog": preload("res://scenes/pothound.tscn"),
+	"soucouyant": preload("res://scenes/soucouyant.tscn"),
 }
 const PICKUPS := ["snack", "coin"]
-const WITH_ARGUMENT := ["npc", "sign", "prop", "traffic", "forage"]
+const WITH_ARGUMENT := ["npc", "sign", "prop", "traffic", "forage", "night"]
 
 
 static func is_known(kind: String) -> bool:
@@ -40,6 +43,12 @@ static func argument_problem(kind: String, arg: String) -> String:
 			return "" if Traffic.DIRECTIONS.has(arg) else "traffic needs up, down, left or right"
 		"forage":
 			return "" if GameData.has_forage(arg) else "unknown forage '%s'" % arg
+		"night":
+			return (
+				""
+				if arg in NightSpawn.KINDS
+				else "night needs one of %s" % ", ".join(NightSpawn.KINDS)
+			)
 	return ""
 
 
@@ -69,4 +78,8 @@ static func create(kind: String, arg: String = "") -> Node2D:
 			var plant := Forage.new()
 			plant.setup(arg)
 			return plant
+		"night":
+			var spot := NightSpawn.new()
+			spot.setup(arg)
+			return spot
 	return SCENES[kind].instantiate()

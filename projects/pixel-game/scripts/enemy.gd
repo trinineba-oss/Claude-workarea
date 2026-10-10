@@ -20,6 +20,7 @@ var health := 0
 var _knockback := Vector2.ZERO
 var _stun := 0.0
 var _age := 0.0
+var _leaving := false
 
 @onready var _sprite: Sprite2D = $Sprite2D
 @onready var _contact: Area2D = $Contact
@@ -36,6 +37,8 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _leaving:
+		return
 	if _stun > 0.0:
 		_stun -= delta
 		velocity = _knockback * maxf(_stun, 0.0) / KNOCKBACK_TIME
@@ -45,7 +48,7 @@ func _physics_process(delta: float) -> void:
 	_stay_in_room()
 	for body in _contact.get_overlapping_bodies():
 		if body is Player:
-			body.take_hit(contact_damage, global_position)
+			_touch_player(body)
 
 
 func take_hit(damage: int, from_position: Vector2) -> bool:
@@ -60,8 +63,30 @@ func take_hit(damage: int, from_position: Vector2) -> bool:
 	return true
 
 
+## Fades in where it stands (night spawns use this so nothing pops into view).
+func appear() -> void:
+	modulate.a = 0.0
+	create_tween().tween_property(self, "modulate:a", 1.0, 0.6)
+
+
+## Slips away without a fight or a drop (night creatures at dawn).
+func leave() -> void:
+	if _leaving or is_queued_for_deletion():
+		return
+	_leaving = true
+	health = 0
+	var tween := create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.8)
+	tween.tween_callback(queue_free)
+
+
 func _think(_delta: float) -> void:
 	velocity = Vector2.ZERO
+
+
+## Called every physics frame while touching Chad. Most enemies just hurt him.
+func _touch_player(player: Player) -> void:
+	player.take_hit(contact_damage, global_position)
 
 
 ## Default animation: a little hop while moving, facing the way it goes.

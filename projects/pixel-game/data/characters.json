@@ -39,6 +39,10 @@
     "sprite": "npc_limer",
     "talk": [
       {
+        "if": "night",
+        "dialogue": "limer_night"
+      },
+      {
         "dialogue": "limer"
       }
     ]
@@ -47,6 +51,10 @@
     "name": "Doubles auntie",
     "sprite": "npc_auntie",
     "talk": [
+      {
+        "if": "night",
+        "dialogue": "doubles_vendor_night"
+      },
       {
         "dialogue": "doubles_vendor"
       }
@@ -95,6 +103,10 @@
     "name": "Seafood man",
     "sprite": "npc_fisherman",
     "talk": [
+      {
+        "if": "night",
+        "dialogue": "seafood_man_night"
+      },
       {
         "dialogue": "seafood_man"
       }

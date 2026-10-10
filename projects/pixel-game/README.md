@@ -72,6 +72,7 @@ finger.
   entrance with full health.
 - **Enemies:** the *pothound* (a stray dog that wanders and chases) and the *corbeau* (a vulture
   that hovers, shudders, swoops, then flies home). They respawn each time you enter a room.
+  Night brings more (see *Night dangers*).
 - **Pickups:** snacks (a "double") heal one heart and wait if you are at full health; coins
   add TT$. Enemies sometimes drop them, and they vanish after a few seconds.
 - Health and money are saved with the rest of the game.
@@ -109,13 +110,14 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 
 | Kind | Id | What |
 | --- | --- | --- |
-| `dog`, `corbeau` | | enemies |
+| `dog`, `corbeau`, `bandit`, `soucouyant` | | enemies |
 | `snack`, `coin` | | pickups |
 | `npc` | a character from `data/characters.json` | someone to talk to |
 | `sign` | a conversation from `data/dialogue.json` | a sign to read |
 | `prop` | a prop from `data/props.json` | a big solid thing (boat, food truck, gas station, shop, utility pole, parked car), optionally readable |
 | `traffic` | `up`, `down`, `left` or `right` | a lane of cars driving through that cell's column/row; cars hurt and knock back |
 | `forage` | a plant from `data/forage.json` | something to pick (mango tree, coconut palm, chadon beni, pepper bush) |
+| `night` | `bandit`, `dog`, `soucouyant` or `corbeau` | an enemy that comes out after dark (see *Night dangers*) |
 
 ```
 npc 8 4 ibis
@@ -182,6 +184,27 @@ in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is save
 
 For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room) and
 `&time=21` and `&give=fishing_rod` (e.g. `index.html?room=0_1&at=10_8&time=17&give=fishing_rod`).
+
+## Night dangers
+
+The streets are riskier after dark. Each `night` spot in a room file lets one enemy out at
+nightfall, as long as the spot is not under a lamp and Chad is not standing right on it; once
+beaten it stays gone until the next night, and at dawn whatever is left slips away. A warning
+("Night. Stick to the lights.") floats up when night falls. The wharf has no night spots.
+
+- **Bandit:** creeps after Chad through the dark and, on contact, snatches half his money (or
+  the most valuable non-tool item in his bag if his pockets are empty). He doesn't hurt Chad.
+  He stops to gloat, then runs with a loot bag; hit him before he gets away (about three
+  seconds) to get it all back. He never steps into lamplight and ignores Chad while Chad
+  stands in it, so lit streets are safe.
+- **Soucouyant:** a glowing fireball from Trinidad folklore that hovers and swoops like a
+  corbeau. Its glow lets you see it coming.
+- **Night dogs:** extra pothounds roam the dark edges of town.
+
+Lamps on props (street lamps, food trucks, the gas station) are the safe ones
+(`NightLight.safe`); car headlights don't count. The bright middle of each glow
+(`NightLight.SAFE_FRACTION` of its size) is what counts as lit. The limer, the doubles auntie,
+the seafood man, the fisherman and the ibis all warn about the dark.
 
 ## Saving
 
