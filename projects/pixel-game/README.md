@@ -35,14 +35,17 @@ The game started as pixel art and is now smooth HD 2D:
 - `scripts/` – GDScript: `game.gd` (rooms, transitions, autosave, pause), `world_map.gd`
   and `room.gd` (map loading and tiles), `tiles.gd` (tile legend and shared TileSet),
   `player.gd`, `cutlass.gd`, `enemy.gd` (+ `pothound.gd`, `corbeau.gd`), `pickup.gd`,
-  `entities.gd` (what can be placed in rooms), `effects.gd` (particles), `status_bar.gd`, `save_game.gd`, and the touch
+  `entities.gd` (what can be placed in rooms), `effects.gd` (particles), `status_bar.gd`,
+  `game_data.gd` (loads `data/*.json`), `dialogue_box.gd`, `interactable.gd` (+ `npc.gd`,
+  `signpost.gd`, `prop.gd`), `save_game.gd`, and the touch
   widgets (`touch_*.gd`)
 - `data/rooms/<x>_<y>.txt` – the world: one 20x11 ASCII map per screen (see below)
+- `data/dialogue.json`, `data/characters.json`, `data/props.json` – conversations, people and props
 - `assets/` – placeholder art: `textures/` (tileable ground materials) and `sprites/`
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway)
+  walking through every doorway, dialogue)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -53,11 +56,11 @@ The game started as pixel art and is now smooth HD 2D:
 | Move | Arrow keys or WASD | Joystick (bottom left) |
 | Attack | Z | A |
 | Item | X | B |
-| Interact | C | X |
+| Interact / talk | C | X (A also talks when facing someone) |
 | Pause (also saves) | Esc | II (top right) |
 
 Touch controls show on touch devices and in the browser; on desktop the mouse acts as a
-finger. Item and interact are wired to input actions but do nothing yet.
+finger. Item does nothing yet.
 
 ## Combat
 
@@ -79,31 +82,60 @@ row 1). Walking off an open edge scrolls to the neighbouring room, and the game 
 | Char | Tile | Solid |
 | --- | --- | --- |
 | `.` | grass | no |
-| `,` | flowers | no |
+| `,` | grass with flowers | no |
 | `s` | sand | no |
-| `p` | path | no |
-| `=` | stone floor | no |
-| `@` | player start (sand); exactly one in the world | no |
+| `p` | dirt path | no |
+| `=` | paving / stone floor | no |
+| `w` | dock planks | no |
+| `r` | road | no |
+| `@` | player start (dock planks); exactly one in the world | no |
 | `~` | water | yes |
-| `#` | rock wall | yes |
+| `#` | rock wall (also stands in for buildings for now) | yes |
 | `b` | bush | yes |
 | `T` | tree | yes |
+| `c` | crate | yes |
+| `o` | bollard | yes |
 
-After the 11 map rows, a room file can list objects, one per line as `<kind> <x> <y>` (tile
-coordinates; lines starting with `;` are comments). Kinds: `dog`, `corbeau`, `snack`, `coin`.
+After the 11 map rows, a room file can list objects, one per line as `<kind> <x> <y> [id]`
+(tile coordinates; lines starting with `;` are comments):
+
+| Kind | Id | What |
+| --- | --- | --- |
+| `dog`, `corbeau` | | enemies |
+| `snack`, `coin` | | pickups |
+| `npc` | a character from `data/characters.json` | someone to talk to |
+| `sign` | a conversation from `data/dialogue.json` | a sign to read |
+| `prop` | a prop from `data/props.json` | a big solid thing (boat, food stall), optionally readable |
 
 ```
-dog 12 5
-corbeau 14 2
-coin 4 2
+npc 8 4 ibis
+sign 10 2 sign_wharf
+prop 12 8 boat
+dog 15 8
 ```
 
 Rules (checked by `make test`): every file has 11 rows of 20 characters; openings on shared
 edges must line up exactly with the neighbour; an edge with no neighbour must be solid;
-objects must be a known kind, inside the room and on a non-solid tile. A separate test walks
+objects must be a known kind with a valid id, inside the room and on a non-solid tile. A separate test walks
 through every doorway to make sure none is blocked.
 
 For screenshots of a specific room, open the Web build with `index.html?room=0_0`.
+
+## Talking
+
+Walk up to someone (or a sign, or the boat) and face them: a speech bubble appears. Press
+**Interact** (X / C), or **Attack** (A / Z), which talks instead of swinging when someone is
+in front of you. The game pauses during a conversation; tap the screen or press a button to
+finish the line, then again for the next one.
+
+- `data/dialogue.json` holds every line. **All of it is draft text** written in light Trini
+  English and needs review by someone from Trinidad. A line can set a story flag
+  (`"set_flag": "intro_done"`); flags are saved.
+- `data/characters.json` lists who is who: name, sprite, and which conversation they start
+  (the first entry whose `if` / `unless` flag conditions hold).
+- `data/props.json` lists props: sprite, solid footprint, an optional awning label and an
+  optional conversation.
+- On a new game the ibis welcomes the hero on the wharf (once).
 
 ## Saving
 

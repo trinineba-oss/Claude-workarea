@@ -4,6 +4,7 @@ extends Node2D
 ## autosave on every room change, and pause.
 
 signal transition_finished
+signal conversation_finished(id: String)
 
 const TRANSITION_SECONDS := 0.5
 ## How far the hero is carried into the next room during a transition.
@@ -12,7 +13,12 @@ const ROOMS_DIR := "res://data/rooms"
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
 
+## Play the ibis's welcome the first time a game starts (tests turn this off).
+@export var play_intro := true
+
 var save := SaveGame.new()
+## Story flags set by conversations ("intro_done", ...). Saved with the game.
+var flags: Dictionary = {}
 var world: WorldMap
 var coords := Vector2i.ZERO
 
@@ -26,6 +32,8 @@ var _entry_position := Vector2.ZERO
 @onready var _pause: PauseOverlay = $HUD/PauseOverlay
 @onready var _status: StatusBar = $HUD/StatusBar
 @onready var _faint_label: Label = $HUD/FaintLabel
+@onready var _dialogue: DialogueBox = $HUD/DialogueBox
+@onready var _touch: TouchControls = $HUD/TouchControls
 
 
 func _ready() -> void:
@@ -36,6 +44,9 @@ func _ready() -> void:
 	_player.health_changed.connect(_status.set_health)
 	_player.money_changed.connect(_status.set_money)
 	_player.died.connect(_on_player_died)
+	_player.story_flags = flags
+	_player.interact_requested.connect(_on_interact_requested)
+	_dialogue.line_shown.connect(_on_line_shown)
 	if not _restore(save.read()):
 		coords = world.start_room()
 		_player.position = world.start_position()
@@ -45,6 +56,8 @@ func _ready() -> void:
 	_entry_position = _player.position
 	_room = _make_room(coords)
 	_camera.position = _room_center(coords)
+	if play_intro and not flags.get("intro_done", false):
+		_play_intro.call_deferred()
 
 
 func _physics_process(_delta: float) -> void:
@@ -87,6 +100,30 @@ func go_to(room_coords: Vector2i, pos: Vector2) -> void:
 	save_game()
 
 
+## Plays a conversation from data/dialogue.json, pausing the game until it ends.
+func talk(id: String, with: Interactable = null) -> void:
+	if id == "" or _dialogue.is_open() or not GameData.has_conversation(id):
+		return
+	if with != null:
+		with.on_talk(_player)
+	get_tree().paused = true
+	var touch_was_visible := _touch.visible
+	_touch.visible = false
+	_dialogue.start(GameData.conversation(id))
+	await _dialogue.finished
+	_touch.visible = touch_was_visible
+	# Let the button press that closed the box go stale before the hero can act on it.
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().paused = false
+	save_game()
+	conversation_finished.emit(id)
+
+
+func is_talking() -> bool:
+	return _dialogue.is_open()
+
+
 func is_transitioning() -> bool:
 	return _transitioning
 
@@ -97,6 +134,7 @@ func save_game() -> void:
 		"position": [_player.position.x, _player.position.y],
 		"health": _player.health,
 		"money": _player.money,
+		"flags": flags,
 	}
 	save.write(data)
 
@@ -114,6 +152,9 @@ func _restore(data: Dictionary) -> bool:
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
+	var saved_flags: Variant = data.get("flags", {})
+	if saved_flags is Dictionary:
+		flags.merge(saved_flags, true)
 	return true
 
 
@@ -172,6 +213,21 @@ func _apply_debug_start() -> void:
 	if world.has_room(target):
 		coords = target
 		_player.position = _room_center(target)
+
+
+func _play_intro() -> void:
+	await get_tree().create_timer(0.8).timeout
+	if not flags.get("intro_done", false):
+		talk("ibis_intro")
+
+
+func _on_interact_requested(target: Interactable) -> void:
+	talk(target.dialogue_id(flags), target)
+
+
+func _on_line_shown(line: Dictionary) -> void:
+	if line.has("set_flag"):
+		flags[line["set_flag"]] = true
 
 
 func _on_player_died() -> void:

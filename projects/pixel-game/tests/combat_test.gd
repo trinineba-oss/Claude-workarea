@@ -9,6 +9,7 @@ var _health_events := 0
 
 func _new_game() -> Game:
 	var game: Game = GAME.instantiate()
+	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
 	return game
@@ -155,17 +156,20 @@ func _run() -> void:
 	game.free()
 
 	# --- enemies come from the room files -------------------------------------------------
+	var road := Vector2i(0, 0)
 	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
-	file.store_string('{"version": 1, "room": [0, 0], "position": [40, 40], "health": 0}')
+	file.store_string('{"version": 1, "room": [0, 0], "position": [600, 400], "health": 0}')
 	file.close()
 	game = _new_game()
 	await _physics_frames(2)
-	_check(get_nodes_in_group("enemies").size() == 2, "room (0, 0) has its two dogs")
-	_check(game.get_node("Player").health == 6, "a saved health of 0 restores to full")
-	var coins := game.get_node("Rooms").get_child(0).get_children().filter(
-		func(n): return n is Pickup
+	var expected := game.world.objects_in(road).filter(
+		func(o): return o["kind"] in ["dog", "corbeau"]
 	)
-	_check(coins.size() == 1, "room (0, 0) has its coin")
+	_check(
+		get_nodes_in_group("enemies").size() == expected.size(),
+		"room %s has its %d enemies" % [road, expected.size()]
+	)
+	_check(game.get_node("Player").health == 6, "a saved health of 0 restores to full")
 	game.free()
 	DirAccess.remove_absolute(SAVE_PATH)
 	_finish()

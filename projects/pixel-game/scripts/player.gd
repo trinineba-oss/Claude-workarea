@@ -7,6 +7,8 @@ extends CharacterBody2D
 signal health_changed(health: int, max_health: int)
 signal money_changed(money: int)
 signal died
+## The hero pressed interact (or attack) while facing something to talk to or read.
+signal interact_requested(target: Interactable)
 
 enum State { NORMAL, ATTACK, HURT }
 
@@ -17,6 +19,7 @@ const KNOCKBACK_SPEED := 480.0
 const INVINCIBLE_SECONDS := 1.0
 const REVIVE_INVINCIBLE_SECONDS := 1.5
 const STEP_RATE := 11.0
+const INTERACT_RANGE := 76.0
 
 var max_health := 6
 var health := 6
@@ -26,6 +29,10 @@ var facing := Vector2.DOWN
 ## While true the hero ignores input and cannot be hurt (room transitions, cutscenes).
 var frozen := false
 var state := State.NORMAL
+## Story flags (shared with Game), used to decide who has something to say.
+var story_flags: Dictionary = {}
+## The thing the hero would talk to right now, if any.
+var target: Interactable
 
 var _state_time := 0.0
 var _invincible := 0.0
@@ -60,11 +67,17 @@ func _physics_process(delta: float) -> void:
 	_invincible = maxf(_invincible - delta, 0.0)
 	if frozen:
 		velocity = Vector2.ZERO
+		_set_target(null)
 		return
 	match state:
 		State.NORMAL:
 			_move()
-			if Input.is_action_just_pressed(&"attack"):
+			_set_target(_find_target())
+			var talk := Input.is_action_just_pressed(&"interact")
+			var attack := Input.is_action_just_pressed(&"attack")
+			if (talk or attack) and target != null:
+				interact_requested.emit(target)
+			elif attack:
 				_start_attack()
 		State.ATTACK:
 			velocity = Vector2.ZERO
@@ -134,6 +147,32 @@ func _move() -> void:
 			_sprite.flip_h = facing.x < 0.0
 	velocity = direction * SPEED
 	move_and_slide()
+
+
+func _find_target() -> Interactable:
+	var best: Interactable = null
+	var best_distance := INTERACT_RANGE
+	for node in get_tree().get_nodes_in_group("interactables"):
+		var thing := node as Interactable
+		if thing == null or not thing.can_interact(story_flags):
+			continue
+		var to := thing.touch_point(global_position) - global_position
+		var distance := to.length()
+		if distance > best_distance or (distance > 30.0 and to.normalized().dot(facing) < 0.3):
+			continue
+		best = thing
+		best_distance = distance
+	return best
+
+
+func _set_target(thing: Interactable) -> void:
+	if thing == target:
+		return
+	if target != null and is_instance_valid(target):
+		target.set_highlighted(false)
+	target = thing
+	if target != null:
+		target.set_highlighted(true)
 
 
 func _start_attack() -> void:

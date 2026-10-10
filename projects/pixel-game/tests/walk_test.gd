@@ -17,6 +17,7 @@ func _run() -> void:
 	Engine.time_scale = 5.0
 	DirAccess.remove_absolute(SAVE_PATH)
 	var game: Game = GAME.instantiate()
+	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
 	await _physics_frames(2)

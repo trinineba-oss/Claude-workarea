@@ -12,13 +12,18 @@ const GROUND_TEXTURES := {
 	"stone_tex": preload("res://assets/textures/stone.png"),
 	"water_tex": preload("res://assets/textures/water.png"),
 	"noise_tex": preload("res://assets/textures/noise.png"),
+	"wood_tex": preload("res://assets/textures/wood.png"),
+	"road_tex": preload("res://assets/textures/road.png"),
 }
+## Ground material -> [colour in the first weights image, colour in the second].
 const WEIGHTS := {
-	"grass": Color(0, 0, 0, 0),
-	"sand": Color(1, 0, 0, 0),
-	"dirt": Color(0, 1, 0, 0),
-	"water": Color(0, 0, 1, 0),
-	"stone": Color(0, 0, 0, 1),
+	"grass": [Color(0, 0, 0, 0), Color(0, 0, 0, 0)],
+	"sand": [Color(1, 0, 0, 0), Color(0, 0, 0, 0)],
+	"dirt": [Color(0, 1, 0, 0), Color(0, 0, 0, 0)],
+	"water": [Color(0, 0, 1, 0), Color(0, 0, 0, 0)],
+	"stone": [Color(0, 0, 0, 1), Color(0, 0, 0, 0)],
+	"wood": [Color(0, 0, 0, 0), Color(1, 0, 0, 0)],
+	"road": [Color(0, 0, 0, 0), Color(0, 1, 0, 0)],
 }
 const SHADOW := preload("res://assets/sprites/shadow.png")
 ## kind -> [texture, position in the tile relative to its centre, sprite offset, shadow scale]
@@ -31,6 +36,15 @@ const SCENERY := {
 	[preload("res://assets/sprites/bush.png"), Vector2(0, 20), Vector2(0, -27), Vector2(1.2, 0.9)],
 	"rock":
 	[preload("res://assets/sprites/rock.png"), Vector2(0, 32), Vector2(0, -41), Vector2.ZERO],
+	"crate":
+	[preload("res://assets/sprites/crate.png"), Vector2(0, 28), Vector2(0, -35), Vector2(1.0, 0.8)],
+	"bollard":
+	[
+		preload("res://assets/sprites/bollard.png"),
+		Vector2(0, 16),
+		Vector2(0, -27),
+		Vector2(0.7, 0.6)
+	],
 }
 const FLOWERS := preload("res://assets/sprites/flowers.png")
 
@@ -51,20 +65,24 @@ func build(room_coords: Vector2i, lines: PackedStringArray, things: Array = []) 
 			if kind != "":
 				_add_scenery(kind, Vector2i(x, y), rng)
 	for thing in things:
-		var node := Entities.create(thing["kind"])
+		var node := Entities.create(thing["kind"], thing.get("arg", ""))
 		node.position = _cell_centre(thing["cell"])
 		add_child(node)
 
 
 func _make_ground(lines: PackedStringArray) -> Sprite2D:
 	var weights := Image.create(WorldMap.COLS, WorldMap.ROWS, false, Image.FORMAT_RGBA8)
+	var weights2 := Image.create(WorldMap.COLS, WorldMap.ROWS, false, Image.FORMAT_RGBA8)
 	for y in lines.size():
 		for x in lines[y].length():
-			weights.set_pixel(x, y, WEIGHTS[Tiles.ground_at(lines, x, y)])
+			var pair: Array = WEIGHTS[Tiles.ground_at(lines, x, y)]
+			weights.set_pixel(x, y, pair[0])
+			weights2.set_pixel(x, y, pair[1])
 	var material := ShaderMaterial.new()
 	material.shader = GROUND_SHADER
 	for param: String in GROUND_TEXTURES:
 		material.set_shader_parameter(param, GROUND_TEXTURES[param])
+	material.set_shader_parameter("weights2", ImageTexture.create_from_image(weights2))
 	material.set_shader_parameter("room_origin", position)
 	material.set_shader_parameter("room_size", WorldMap.room_size())
 	var ground := Sprite2D.new()
@@ -114,7 +132,7 @@ func _add_scenery(kind: String, cell: Vector2i, rng: RandomNumberGenerator) -> v
 	var sprite := Sprite2D.new()
 	sprite.texture = spec[0]
 	sprite.offset = spec[2]
-	sprite.flip_h = rng.randf() < 0.5 and kind != "rock"
+	sprite.flip_h = rng.randf() < 0.5 and kind in ["tree", "bush"]
 	node.add_child(sprite)
 	add_child(node)
 

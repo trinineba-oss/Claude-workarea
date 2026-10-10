@@ -7,18 +7,29 @@ func _run() -> void:
 	_check(world.rooms.size() == 6, "loads 6 rooms (got %d)" % world.rooms.size())
 	var problems := world.validate()
 	_check(problems.is_empty(), "world is valid: %s" % ", ".join(problems))
-	_check(world.start_room() == Vector2i(1, 1), "start room is (1, 1)")
-
-	_check(world.objects_in(Vector2i(0, 0)).size() == 3, "room (0, 0) has 3 objects")
-	_check(world.objects_in(Vector2i(1, 1)).is_empty(), "the start room has no enemies")
+	_check(world.start_room() == Vector2i(0, 1), "the start room is the wharf (0, 1)")
+	var kinds := world.objects_in(Vector2i(0, 1)).map(func(o): return o["kind"])
+	_check("dog" not in kinds and "corbeau" not in kinds, "the start room has no enemies")
+	_check(
+		kinds.count("npc") == 2 and kinds.count("prop") == 1, "the wharf has 2 people and the boat"
+	)
+	var crossing := world.objects_in(Vector2i(1, 0)).map(func(o): return o["arg"])
+	_check("gyro_vendor" in crossing, "the gyro man is at Cross Crossing")
 	world.objects[Vector2i(0, 0)].append({"kind": "unicorn", "cell": Vector2i(1, 1)})
 	world.objects[Vector2i(0, 0)].append({"kind": "dog", "cell": Vector2i(0, 0)})
 	world.objects[Vector2i(0, 0)].append({"kind": "dog", "cell": Vector2i(40, 0)})
+	world.objects[Vector2i(0, 0)].append({"kind": "npc", "cell": Vector2i(2, 2), "arg": "nobody"})
+	world.objects[Vector2i(0, 0)].append({"kind": "sign", "cell": Vector2i(2, 2), "arg": ""})
+	world.objects[Vector2i(0, 0)].append({"kind": "dog", "cell": Vector2i(2, 2), "arg": "rex"})
 	var object_problems := world.validate()
-	_check(object_problems.size() == 3, "3 bad objects reported (got %s)" % [object_problems])
+	_check(object_problems.size() == 6, "6 bad objects reported (got %s)" % [object_problems])
 	var parsed := WorldMap.new()
-	parsed._parse_objects(Vector2i(0, 0), PackedStringArray(["; comment", "dog 1 2", "dog x"]))
-	_check(parsed.objects_in(Vector2i(0, 0)).size() == 1, "good object lines parse")
+	parsed._parse_objects(
+		Vector2i(0, 0),
+		PackedStringArray(["; comment", "dog 1 2", "npc 3 4 ibis", "dog x", "a 1 2 3 4"])
+	)
+	_check(parsed.objects_in(Vector2i(0, 0)).size() == 2, "good object lines parse")
+	_check(parsed.objects_in(Vector2i(0, 0))[1]["arg"] == "ibis", "ids are read")
 	_check(parsed.validate().size() >= 1, "bad object lines are reported")
 
 	var broken := WorldMap.new()

@@ -1,8 +1,9 @@
 class_name WorldMap
 extends RefCounted
 ## All rooms of the world, loaded from data/rooms/<x>_<y>.txt: 11 map rows of 20 characters
-## (see Tiles for the legend), then optional object lines `<kind> <x> <y>` (see Entities),
-## e.g. `dog 12 5`. Rooms form a grid; walking off an open edge moves to the neighbouring room.
+## (see Tiles for the legend), then optional object lines `<kind> <x> <y> [id]` (see
+## Entities), e.g. `dog 12 5` or `npc 8 4 ibis`. Rooms form a grid; walking off an open
+## edge moves to the neighbouring room.
 
 const COLS := 20
 const ROWS := 11
@@ -10,7 +11,7 @@ const TILE := Tiles.SIZE
 const START := "@"
 
 var rooms: Dictionary = {}  # Vector2i -> PackedStringArray (map rows)
-var objects: Dictionary = {}  # Vector2i -> Array of {"kind": String, "cell": Vector2i}
+var objects: Dictionary = {}  # Vector2i -> Array of {"kind", "cell": Vector2i, "arg"}
 
 var _parse_problems := PackedStringArray()
 
@@ -110,10 +111,20 @@ func _parse_objects(coords: Vector2i, lines: PackedStringArray) -> void:
 		if text.is_empty() or text.begins_with(";"):
 			continue
 		var parts := text.split(" ", false)
-		if parts.size() != 3 or not (parts[1].is_valid_int() and parts[2].is_valid_int()):
+		var size_ok := parts.size() == 3 or parts.size() == 4
+		if not size_ok or not (parts[1].is_valid_int() and parts[2].is_valid_int()):
 			_parse_problems.append("room %s: bad object line '%s'" % [coords, text])
 			continue
-		list.append({"kind": parts[0], "cell": Vector2i(int(parts[1]), int(parts[2]))})
+		(
+			list
+			. append(
+				{
+					"kind": parts[0],
+					"cell": Vector2i(int(parts[1]), int(parts[2])),
+					"arg": parts[3] if parts.size() == 4 else "",
+				}
+			)
+		)
 	if not list.is_empty():
 		objects[coords] = list
 
@@ -125,6 +136,13 @@ func _object_problems() -> PackedStringArray:
 			var cell: Vector2i = obj["cell"]
 			if not Entities.is_known(obj["kind"]):
 				problems.append("room %s: unknown object '%s'" % [coords, obj["kind"]])
+			elif Entities.argument_problem(obj["kind"], obj.get("arg", "")) != "":
+				problems.append(
+					(
+						"room %s: %s"
+						% [coords, Entities.argument_problem(obj["kind"], obj.get("arg", ""))]
+					)
+				)
 			elif cell.x < 0 or cell.x >= COLS or cell.y < 0 or cell.y >= ROWS:
 				problems.append(
 					"room %s: %s at %s is outside the room" % [coords, obj["kind"], cell]

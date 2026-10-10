@@ -241,6 +241,128 @@ for (cx, cy), col in (((8, 9), (240, 110, 150, 255)), ((19, 7), (255, 255, 255, 
     c.detail_ellipse(cx, cy, 1.6, 1.6, (250, 200, 60, 255))
 c.save(f"{OUT}/sprites/flowers.png")
 
+# ---- milestone 3: people, the guide, wharf and street props ----------------------------------
+def person(path, skin, shirt, pants, head="hair", head_col=(40, 30, 30, 255), apron=None, extra=None):
+    """A townsperson in the hero's proportions: 64x84, anchor = feet at bottom centre."""
+    c = Canvas(64, 84)
+    c.rrect(21, 66, 30, 81, 4, pants)
+    c.rrect(34, 66, 43, 81, 4, pants)
+    c.ellipse(16, 56, 6, 6, skin)
+    c.ellipse(48, 56, 6, 6, skin)
+    c.rrect(18, 42, 46, 72, 10, shirt)
+    if head == "hair":
+        c.ellipse(32, 26, 21, 19, head_col)
+    c.ellipse(32, 30, 18, 17, skin)
+    if head == "hair":
+        c.poly([(14, 26), (18, 12), (32, 8), (46, 12), (50, 26), (44, 18), (32, 15), (20, 18)], head_col)
+    elif head == "wrap":
+        c.poly([(12, 28), (14, 12), (32, 4), (50, 12), (52, 28), (46, 20), (18, 20)], head_col)
+        c.ellipse(46, 10, 7, 6, head_col)
+    elif head == "bucket":
+        c.rrect(8, 18, 56, 24, 3, head_col)
+        c.rrect(17, 4, 47, 21, 7, head_col)
+    elif head == "cap":
+        c.poly([(13, 24), (16, 10), (32, 6), (48, 10), (51, 24)], head_col)
+        c.rrect(30, 20, 60, 25, 3, head_col)
+    if apron:
+        c.rrect(22, 52, 42, 74, 5, apron, outline=1.5)
+    c.detail_ellipse(25, 33, 2.4, 3.2, INK)
+    c.detail_ellipse(39, 33, 2.4, 3.2, INK)
+    c.detail_line([(28, 41), (32, 43), (36, 41)], INK, 1.5)
+    if extra == "moustache":
+        c.detail_line([(26, 39), (32, 38), (38, 39)], INK, 2.5)
+    c.save(path)
+
+
+SKINS = [(124, 78, 52, 255), (176, 118, 78, 255), (92, 58, 40, 255), (214, 164, 120, 255), (150, 96, 64, 255)]
+person(f"{OUT}/sprites/npc_vendor.png", SKINS[1], (240, 240, 236, 255), (60, 60, 80, 255), "cap", (30, 130, 90, 255), apron=(250, 250, 250, 255), extra="moustache")
+person(f"{OUT}/sprites/npc_auntie.png", SKINS[0], (232, 96, 140, 255), (120, 60, 120, 255), "wrap", (250, 200, 60, 255))
+person(f"{OUT}/sprites/npc_fisherman.png", SKINS[2], (90, 150, 190, 255), (70, 70, 60, 255), "bucket", (200, 186, 140, 255), extra="moustache")
+person(f"{OUT}/sprites/npc_limer.png", SKINS[3], (250, 250, 250, 255), (40, 70, 140, 255), "hair", (30, 24, 24, 255))
+person(f"{OUT}/sprites/npc_cook.png", SKINS[4], (250, 170, 40, 255), (70, 50, 40, 255), "wrap", (220, 40, 40, 255), apron=(255, 240, 220, 255))
+
+c = Canvas(72, 92)  # scarlet ibis, the guide: anchor = feet at bottom centre
+IBIS, IBIS_D = (226, 52, 44, 255), (176, 30, 34, 255)
+c.rrect(30, 62, 33, 90, 1.5, (60, 40, 40, 255), outline=1.2)
+c.rrect(39, 62, 42, 90, 1.5, (60, 40, 40, 255), outline=1.2)
+c.ellipse(36, 52, 20, 15, IBIS)
+c.poly([(18, 50), (4, 58), (20, 60)], IBIS_D)
+c.rrect(40, 22, 50, 50, 5, IBIS)
+c.ellipse(47, 20, 10, 9, IBIS)
+c.poly([(55, 18), (66, 24), (70, 34), (64, 26), (55, 23)], (60, 40, 40, 255), outline=1.5)
+c.detail_ellipse(49, 17, 2, 2.2, INK)
+c.detail_line([(24, 52), (40, 56)], IBIS_D, 2.5)
+c.save(f"{OUT}/sprites/ibis.png")
+
+c = Canvas(64, 76)  # sign: anchor = foot of the post at (32, 72)
+WOOD, WOOD_D = (176, 124, 72, 255), (128, 86, 50, 255)
+c.rrect(28, 38, 36, 72, 2, WOOD_D)
+c.rrect(4, 6, 60, 42, 6, WOOD)
+for y in (16, 24, 32):
+    c.detail_line([(12, y), (52, y)], WOOD_D, 2)
+c.save(f"{OUT}/sprites/sign.png")
+
+c = Canvas(64, 74)  # crate: anchor = bottom centre (32, 72)
+c.rrect(4, 26, 60, 72, 4, (168, 116, 66, 255))
+c.rrect(4, 6, 60, 34, 6, (204, 152, 96, 255))
+c.detail_line([(4, 48), (60, 48)], (122, 82, 46, 255), 2.5)
+c.detail_line([(10, 30), (54, 70)], (122, 82, 46, 255), 2.5)
+c.save(f"{OUT}/sprites/crate.png")
+
+c = Canvas(48, 56)  # bollard: anchor = bottom centre (24, 54)
+c.rrect(10, 18, 38, 54, 6, (70, 74, 86, 255))
+c.ellipse(24, 16, 17, 9, (96, 100, 114, 255))
+c.detail_ellipse(18, 14, 6, 3, (140, 144, 158, 255))
+c.save(f"{OUT}/sprites/bollard.png")
+
+c = Canvas(200, 130)  # wrecked boat (3x2 tiles footprint): anchor = bottom centre (100, 126)
+HULL, HULL_D = (70, 120, 160, 255), (46, 84, 118, 255)
+c.poly([(10, 60), (190, 52), (170, 120), (36, 124)], HULL)
+c.poly([(16, 62), (186, 54), (180, 70), (22, 76)], (230, 230, 220, 255), outline=1.5)
+c.rrect(96, 8, 104, 60, 3, (150, 104, 60, 255))
+c.poly([(104, 12), (150, 40), (104, 52)], (236, 226, 200, 255), outline=2)
+c.detail_line([(50, 90), (70, 100), (66, 112)], HULL_D, 3)
+c.detail_line([(130, 84), (146, 98)], HULL_D, 3)
+c.save(f"{OUT}/sprites/boat.png")
+
+
+def stall(path, awning, awning_l):
+    """Street food stall, 2x1 tile footprint: 136x150, anchor = bottom centre (68, 146)."""
+    c = Canvas(136, 150)
+    c.rrect(14, 70, 22, 146, 2, (120, 86, 56, 255))
+    c.rrect(114, 70, 122, 146, 2, (120, 86, 56, 255))
+    c.rrect(8, 96, 128, 146, 6, (196, 150, 98, 255))
+    c.rrect(8, 92, 128, 104, 4, (226, 186, 130, 255))
+    c.poly([(2, 70), (14, 22), (122, 22), (134, 70)], awning)
+    for i in range(5):
+        x0 = 14 + i * 22
+        if i % 2 == 0:
+            c.detail_line([(x0 + 11 - 6, 26), (x0 + 11 - 12, 66)], awning_l, 10)
+    c.rrect(20, 4, 116, 30, 6, (250, 246, 232, 255))
+    c.detail_ellipse(40, 90, 10, 5, (250, 210, 120, 255))
+    c.detail_ellipse(68, 89, 12, 5, (226, 118, 34, 255))
+    c.detail_ellipse(96, 90, 10, 5, (250, 210, 120, 255))
+    c.save(path)
+
+
+stall(f"{OUT}/sprites/stall_red.png", (214, 58, 58, 255), (250, 240, 236, 255))
+stall(f"{OUT}/sprites/stall_yellow.png", (246, 196, 50, 255), (255, 244, 200, 255))
+stall(f"{OUT}/sprites/stall_green.png", (40, 150, 90, 255), (220, 250, 230, 255))
+
+# ground: dock planks and road
+planks = Image.new("RGB", (256, 256))
+pn = fractal(256, 11)
+base = np.array((150, 104, 62), np.float32)
+light = np.array((190, 140, 90), np.float32)
+arr = base[None, None, :] * (1 - pn[..., None]) + light[None, None, :] * pn[..., None]
+for y in range(0, 256, 32):
+    arr[y : y + 3, :, :] = (96, 64, 38)
+    offset = (y // 32) * 72 % 256
+    for x in (offset, (offset + 128) % 256):
+        arr[y : y + 32, x : x + 2, :] = (110, 74, 44)
+Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGB").save(f"{OUT}/textures/wood.png")
+material(f"{OUT}/textures/road.png", (62, 64, 72), (92, 94, 104), 12, grain=0.35, contrast=1.1)
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

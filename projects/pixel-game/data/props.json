@@ -1,0 +1,8 @@
+{
+  "_note": "Large static things placed with `prop <x> <y> <id>`. footprint = solid tiles [w, h] centred on the cell horizontally, ending at the cell's centre line (the prop's base). label = text painted on the awning. dialogue = what the hero reads when they interact (optional).",
+  "boat": {"sprite": "boat", "footprint": [3, 1], "dialogue": "boat"},
+  "stall_doubles": {"sprite": "stall_yellow", "footprint": [2, 1], "label": "DOUBLES"},
+  "stall_roti": {"sprite": "stall_green", "footprint": [2, 1], "label": "ROTI"},
+  "stall_gyro": {"sprite": "stall_red", "footprint": [2, 1], "label": "GYRO"},
+  "stall_coconut": {"sprite": "stall_green", "footprint": [2, 1], "label": "COCONUT"}
+}

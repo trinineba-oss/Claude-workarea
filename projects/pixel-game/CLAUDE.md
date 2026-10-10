@@ -13,6 +13,9 @@ The folder is still called `pixel-game`, but the game is HD 2D now (it started a
 - Tests: `tests/*_test.gd` are headless `SceneTree` scripts extending `tests/test_base.gd`; add a
   new `<name>_test.gd` per system and run `make test`. The world data is validated there.
 - World maps live in `data/rooms/` (legend in README.md); the export presets include `data/*`.
+- Conversations, characters and props are data (`data/dialogue.json`, `characters.json`,
+  `props.json`). Every dialogue line is a draft until someone from Trinidad reviews it; keep
+  the `_note` saying so.
 - After adding assets, run `godot --headless --path projects/pixel-game --import` so the
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
 - The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.

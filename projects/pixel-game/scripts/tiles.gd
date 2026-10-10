@@ -2,9 +2,9 @@ class_name Tiles
 extends RefCounted
 ## Legend for the ASCII room maps in data/rooms, and the invisible collision tile set.
 ##
-##   .  grass        ,  grass with flowers   s  sand    p  dirt path    =  stone floor
-##   @  player start (sand)
-##   ~  water        #  rock wall            b  bush    T  tree         (these four are solid)
+##   .  grass        ,  grass with flowers   s  sand    p  dirt path    =  paving / stone floor
+##   w  dock planks  r  road                 @  player start (dock planks)
+##   ~  water   #  rock wall   b  bush   T  tree   c  crate   o  bollard   (these are solid)
 
 const SIZE := 64
 ## Ground material per character; "" means "take it from the neighbours" (see ground_at).
@@ -12,17 +12,23 @@ const GROUND := {
 	".": "grass",
 	",": "grass",
 	"s": "sand",
-	"@": "sand",
+	"@": "wood",
 	"p": "dirt",
 	"=": "stone",
+	"w": "wood",
+	"r": "road",
 	"~": "water",
 	"#": "",
 	"b": "",
 	"T": "",
+	"c": "",
+	"o": "",
 }
 ## Characters that also place a scenery sprite.
-const SCENERY := {",": "flowers", "#": "rock", "b": "bush", "T": "tree"}
-const SOLID := ["~", "#", "b", "T"]
+const SCENERY := {
+	",": "flowers", "#": "rock", "b": "bush", "T": "tree", "c": "crate", "o": "bollard"
+}
+const SOLID := ["~", "#", "b", "T", "c", "o"]
 
 static var _tileset: TileSet
 

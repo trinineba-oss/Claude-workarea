@@ -135,7 +135,11 @@ shockwave). Bosses are themed on the temple.
    20:9 phones; revisit in the polish milestone.
 2. **Combat (done):** cutlass attack, health as doubles, knockback, two enemy types (pothound,
    corbeau), pickups, fainting and respawn. Tuning (damage, speeds, drop rates) is a first guess.
-3. **World and dialogue:** the wharf, Promenade, NPCs, text box, signs, the guide.
+3. **World and dialogue (first pass done):** San Fernando Wharf (start), the road up, and
+   Cross Crossing with four food stalls and their vendors; a dialogue box with typewriter text;
+   NPCs, signs and readable props from data files; story flags; the ibis's welcome. Still to
+   do: real local detail (needs your input), Harris Promenade, proper buildings instead of rock
+   walls, and reviewed dialogue.
 4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.
 5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.
 6. **Polish:** sound effects, music, hit effects, menus, settings, low-end phone testing.
