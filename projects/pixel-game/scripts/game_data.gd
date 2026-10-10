@@ -6,10 +6,15 @@ extends RefCounted
 const DIALOGUE_PATH := "res://data/dialogue.json"
 const CHARACTERS_PATH := "res://data/characters.json"
 const PROPS_PATH := "res://data/props.json"
+const ITEMS_PATH := "res://data/items.json"
+const FORAGE_PATH := "res://data/forage.json"
 
 static var _dialogue: Dictionary
 static var _characters: Dictionary
 static var _props: Dictionary
+static var _items: Dictionary
+static var _forage: Dictionary
+static var _icons: Dictionary = {}
 
 
 static func conversation(id: String) -> Array:
@@ -46,6 +51,43 @@ static func has_prop(id: String) -> bool:
 
 static func prop_ids() -> Array:
 	return _load_props().keys()
+
+
+static func item(id: String) -> Dictionary:
+	if _items == null or _items.is_empty():
+		_items = _without_notes(_read(ITEMS_PATH))
+	return _items.get(id, {})
+
+
+static func has_item(id: String) -> bool:
+	return not item(id).is_empty()
+
+
+static func item_ids() -> Array:
+	item("")
+	return _items.keys()
+
+
+static func item_icon(id: String) -> Texture2D:
+	if not _icons.has(id):
+		var path := "res://assets/items/%s.png" % item(id).get("icon", id)
+		_icons[id] = load(path) if ResourceLoader.exists(path) else null
+	return _icons[id]
+
+
+static func forage(id: String) -> Dictionary:
+	if _forage == null or _forage.is_empty():
+		_forage = _without_notes(_read(FORAGE_PATH))
+	return _forage.get(id, {})
+
+
+static func has_forage(id: String) -> bool:
+	return not forage(id).is_empty()
+
+
+static func forage_ids() -> Array:
+	forage("")
+	return _forage.keys()
 
 
 ## Which conversation a character starts, given the story flags.

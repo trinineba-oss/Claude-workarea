@@ -11,3 +11,5 @@ ssssssssssssssssssss
 ~~~~~~~~~~~~~~~~~~~~
 
 sign 4 3 sign_beach
+forage 8 2 coconut_palm
+forage 15 6 coconut_palm

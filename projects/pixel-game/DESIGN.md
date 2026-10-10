@@ -80,8 +80,9 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Open world (built):** the camera follows Chad and the rooms join seamlessly; the room he is
   in and its neighbours are loaded, ground blends across room edges, and empty cells at the
   edge of the world are filled with sea or grass.
-- **Items and foraging:** an inventory and hotbar; mangoes, coconuts, chadon beni and peppers
-  to pick around town, growing back each day (a day counter on the clock).
+- **Items and foraging (built):** a 12-slot bag with an 8-slot hotbar; eat food to heal;
+  mango trees, coconut palms, chadon beni and pepper bushes around town that grow back after
+  a few days (the clock now counts days).
 - **Fishing at the wharf:** a timing minigame on the pier; different fish by time of day.
 - **Cooking and Chad's own food truck:** recipes from ingredients; Chad parks his own truck on
   Lady Hailes Avenue; dishes left in it sell overnight for TT$.

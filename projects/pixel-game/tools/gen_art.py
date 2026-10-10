@@ -490,6 +490,96 @@ c.rrect(1, 12, 65, 26, 4, (196, 188, 170, 255))
 c.detail_line([(3, 60), (63, 60)], (206, 198, 180, 255), 2)
 c.save(f"{OUT}/sprites/wall.png")
 
+# ---- sandbox: item icons (48x48, centred) and forage plants -----------------------------------
+def icon(path, draw):
+    c = Canvas(48, 48)
+    draw(c)
+    c.save(path)
+
+
+def _mango(c):
+    c.ellipse(24, 27, 15, 13, (246, 170, 46, 255))
+    c.detail_ellipse(18, 24, 8, 7, (250, 210, 70, 255))
+    c.detail_ellipse(31, 32, 6, 5, (226, 88, 50, 255))
+    c.ellipse(29, 12, 7, 3.5, (60, 150, 70, 255), outline=1.5)
+
+
+def _coconut(c):
+    c.ellipse(24, 26, 16, 15, (120, 84, 52, 255))
+    c.detail_ellipse(19, 21, 5, 4, (150, 110, 74, 255))
+    for x, y in ((20, 26), (27, 25), (24, 31)):
+        c.detail_ellipse(x, y, 1.8, 1.8, (70, 46, 30, 255))
+
+
+def _chadon_beni(c):
+    for ang, (dx, dy) in enumerate(((-9, -4), (9, -6), (0, -12), (-6, 6), (8, 5))):
+        c.ellipse(24 + dx, 26 + dy, 6, 11, (66, 160, 72, 255), outline=1.8)
+    c.detail_line([(24, 40), (24, 18)], (40, 110, 50, 255), 2)
+
+
+def _pimento(c):
+    c.poly([(16, 18), (34, 16), (36, 30), (26, 42), (14, 30)], (222, 52, 40, 255))
+    c.detail_ellipse(21, 22, 4, 3, (250, 120, 100, 255))
+    c.rrect(22, 8, 27, 18, 2, (60, 140, 60, 255), outline=1.5)
+
+
+icon(f"{OUT}/items/mango.png", _mango)
+icon(f"{OUT}/items/coconut.png", _coconut)
+icon(f"{OUT}/items/chadon_beni.png", _chadon_beni)
+icon(f"{OUT}/items/pimento.png", _pimento)
+
+
+def fruit_tree(path, fruit):
+    """Mango tree, 128x156 like the plain tree; fruit drawn when given. Anchor (64, 150)."""
+    c = Canvas(128, 156)
+    c.rrect(54, 96, 74, 150, 6, (116, 78, 46, 255))
+    for cx, cy, r in ((40, 74, 30), (88, 74, 30), (64, 52, 38), (38, 46, 26), (92, 46, 26), (64, 86, 30)):
+        c.ellipse(cx, cy, r, r * 0.92, (40, 118, 64, 255))
+    for cx, cy, r in ((52, 40, 16), (82, 36, 12)):
+        c.detail_ellipse(cx, cy, r, r * 0.8, (84, 160, 84, 255))
+    if fruit:
+        for x, y in ((40, 66), (62, 80), (84, 60), (72, 44), (48, 90), (94, 84), (30, 50)):
+            c.detail_ellipse(x, y, 6, 5, (246, 170, 46, 255))
+            c.detail_ellipse(x - 2, y - 1.5, 2.5, 2, (252, 214, 90, 255))
+    c.save(path)
+
+
+fruit_tree(f"{OUT}/sprites/mango_tree.png", True)
+fruit_tree(f"{OUT}/sprites/mango_tree_picked.png", False)
+
+
+def palm(path, nuts):
+    """Coconut palm, 120x176. Anchor = trunk base (60, 172)."""
+    c = Canvas(120, 176)
+    c.poly([(56, 172), (66, 172), (70, 60), (62, 40), (54, 60)], (156, 116, 72, 255))
+    for x0, y0, x1, y1 in ((60, 40, 6, 58), (60, 40, 114, 58), (60, 40, 20, 14), (60, 40, 100, 12), (60, 40, 60, 2)):
+        c.poly([(x0, y0 - 6), (x1, y1), (x0, y0 + 6)], (52, 140, 70, 255), outline=2)
+    if nuts:
+        for x, y in ((52, 50), (66, 52), (59, 58)):
+            c.ellipse(x, y, 7, 7, (120, 84, 52, 255), outline=2)
+    c.save(path)
+
+
+palm(f"{OUT}/sprites/palm.png", True)
+palm(f"{OUT}/sprites/palm_picked.png", False)
+
+
+def herb_patch(path, ready, leaf, extra=None):
+    """Low plant patch, 72x48. Anchor = bottom centre (36, 46)."""
+    c = Canvas(72, 48)
+    for cx, cy in ((18, 34), (36, 28), (54, 34), (27, 38), (45, 38)):
+        c.ellipse(cx, cy, 9 if ready else 6, 7 if ready else 4.5, leaf, outline=2)
+    if ready and extra:
+        for x, y in ((22, 26), (40, 22), (52, 28), (30, 34)):
+            c.detail_ellipse(x, y, 3.5, 4.5, extra)
+    c.save(path)
+
+
+herb_patch(f"{OUT}/sprites/chadon_beni_patch.png", True, (66, 160, 72, 255))
+herb_patch(f"{OUT}/sprites/chadon_beni_patch_picked.png", False, (66, 160, 72, 255))
+herb_patch(f"{OUT}/sprites/pepper_bush.png", True, (48, 128, 60, 255), (222, 52, 40, 255))
+herb_patch(f"{OUT}/sprites/pepper_bush_picked.png", False, (48, 128, 60, 255))
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

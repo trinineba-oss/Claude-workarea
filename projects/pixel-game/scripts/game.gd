@@ -21,9 +21,14 @@ var save := SaveGame.new()
 var flags: Dictionary = {}
 var world: WorldMap
 var coords := Vector2i.ZERO
+## Chad's bag. Saved with the game.
+var inventory := Inventory.new()
+## Forage plant key -> game day it is ready again. Saved with the game.
+var forage_state: Dictionary = {}
 
 var _loaded: Dictionary = {}  # Vector2i -> Room
 var _entry_position := Vector2.ZERO
+var _hotbar: Hotbar
 
 @onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
@@ -46,6 +51,17 @@ func _ready() -> void:
 	_player.died.connect(_on_player_died)
 	_player.story_flags = flags
 	day_night.minute_changed.connect(_status.set_time)
+	day_night.day_changed.connect(_status.set_day)
+	_hotbar = Hotbar.new()
+	_hotbar.name = "Hotbar"
+	$HUD.add_child(_hotbar)
+	$HUD.move_child(_hotbar, _touch.get_index() + 1)
+	_hotbar.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_hotbar.offset_left = -_hotbar.size.x / 2.0
+	_hotbar.offset_right = _hotbar.size.x / 2.0
+	_hotbar.offset_top = -_hotbar.size.y - 20.0
+	_hotbar.offset_bottom = -20.0
+	_hotbar.bind(inventory)
 	_player.interact_requested.connect(_on_interact_requested)
 	_dialogue.line_shown.connect(_on_line_shown)
 	if not _restore(save.read()):
@@ -53,6 +69,7 @@ func _ready() -> void:
 		_player.position = world.start_position()
 	_apply_debug_start()
 	_status.set_time(day_night.hour)
+	_status.set_day(day_night.day)
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
 	_entry_position = _player.position
@@ -80,6 +97,32 @@ func _physics_process(_delta: float) -> void:
 
 func _process(_delta: float) -> void:
 	_camera.position = _player.position
+	if Input.is_action_just_pressed(&"item") and not _player.frozen and not is_talking():
+		use_selected_item()
+
+
+## Uses the item in the selected hotbar slot (for now: eat food to heal).
+func use_selected_item() -> bool:
+	var id := _hotbar.selected_id()
+	if id == "":
+		return false
+	var heal := int(GameData.item(id).get("heal", 0))
+	var above := _player.position + Vector2(0, -90)
+	if heal <= 0:
+		Effects.float_text(self, above, "Can't eat that", Color(1, 0.8, 0.6))
+		return false
+	if _player.is_full_health():
+		Effects.float_text(self, above, "Not hungry", Color(1, 0.8, 0.6))
+		return false
+	inventory.remove(id)
+	_player.heal(heal)
+	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
+	return true
+
+
+## The hotbar at the bottom of the screen.
+func hotbar() -> Hotbar:
+	return _hotbar
 
 
 func _notification(what: int) -> void:
@@ -121,9 +164,11 @@ func talk(id: String, with: Interactable = null) -> void:
 	get_tree().paused = true
 	var touch_was_visible := _touch.visible
 	_touch.visible = false
+	_hotbar.visible = false
 	_dialogue.start(GameData.conversation(id))
 	await _dialogue.finished
 	_touch.visible = touch_was_visible
+	_hotbar.visible = true
 	# Let the button press that closed the box go stale before the hero can act on it.
 	await get_tree().process_frame
 	await get_tree().process_frame
@@ -136,6 +181,7 @@ func talk(id: String, with: Interactable = null) -> void:
 func dialogue_state() -> Dictionary:
 	var state := flags.duplicate()
 	state["night"] = day_night.is_night()
+	state["day"] = day_night.day
 	return state
 
 
@@ -151,6 +197,9 @@ func save_game() -> void:
 		"money": _player.money,
 		"flags": flags,
 		"hour": day_night.hour,
+		"day": day_night.day,
+		"inventory": inventory.to_data(),
+		"forage": forage_state,
 	}
 	save.write(data)
 
@@ -168,7 +217,13 @@ func _restore(data: Dictionary) -> bool:
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
+	day_night.day = maxi(int(data.get("day", 1)), 1)
 	day_night.set_hour(float(data.get("hour", day_night.hour)))
+	inventory.from_data(data.get("inventory", []))
+	var saved_forage: Variant = data.get("forage", {})
+	if saved_forage is Dictionary:
+		for key: String in saved_forage:
+			forage_state[key] = int(saved_forage[key])
 	var saved_flags: Variant = data.get("flags", {})
 	if saved_flags is Dictionary:
 		flags.merge(saved_flags, true)
@@ -215,6 +270,9 @@ func _make_room(room_coords: Vector2i) -> Room:
 		world.padded_rows(room_coords),
 		not real
 	)
+	for child in room.get_children():
+		if child is Forage:
+			child.ready_day = int(forage_state.get(child.key, 0))
 	_rooms.add_child(room)
 	return room
 
@@ -261,7 +319,32 @@ func _play_intro() -> void:
 
 
 func _on_interact_requested(target: Interactable) -> void:
-	talk(target.dialogue_id(dialogue_state()), target)
+	if target is Forage:
+		harvest(target)
+	else:
+		talk(target.dialogue_id(dialogue_state()), target)
+
+
+## Picks a forage plant into the bag. Returns how many items were added.
+func harvest(plant: Forage) -> int:
+	if not plant.is_ready(day_night.day):
+		return 0
+	var before := plant.ready_day
+	var got := plant.pick(day_night.day)
+	var id: String = got[0]
+	var amount: int = got[1]
+	var added := amount - inventory.add(id, amount)
+	var above := plant.position + Vector2(0, -120)
+	if added == 0:
+		plant.ready_day = before
+		plant.refresh(day_night.day)
+		Effects.float_text(plant.get_parent(), above, "Bag full!", Color(1, 0.6, 0.5))
+		return 0
+	forage_state[plant.key] = plant.ready_day
+	var name: String = GameData.item(id).get("name", id)
+	Effects.float_text(plant.get_parent(), above, "+%d %s" % [added, name], Color(1, 0.95, 0.6))
+	Effects.burst(plant.get_parent(), plant.position + Vector2(0, -40), "sparkle")
+	return added
 
 
 func _on_line_shown(line: Dictionary) -> void:

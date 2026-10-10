@@ -6,6 +6,27 @@ extends RefCounted
 const SPARK := preload("res://assets/sprites/spark.png")
 
 
+## A short message that floats up from a point in the world and fades ("+2 Mango").
+static func float_text(parent: Node, pos: Vector2, text: String, color := Color.WHITE) -> void:
+	if parent == null or not parent.is_inside_tree():
+		return
+	var label := Label.new()
+	label.text = text
+	label.z_index = 20
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", color)
+	label.add_theme_color_override("font_outline_color", Color(0.1, 0.06, 0.14))
+	label.add_theme_constant_override("outline_size", 8)
+	label.position = pos + Vector2(-120, -40)
+	label.size = Vector2(240, 40)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	parent.add_child(label)
+	var tween := label.create_tween().set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 60.0, 1.1)
+	tween.tween_property(label, "modulate:a", 0.0, 1.1).set_delay(0.4)
+	tween.chain().tween_callback(label.queue_free)
+
+
 static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
@@ -52,4 +73,4 @@ static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	p.color_ramp = ramp
 	p.finished.connect(p.queue_free)
 	p.emitting = true
-	parent.add_child.call_deferred(p)
+	parent.add_child(p)

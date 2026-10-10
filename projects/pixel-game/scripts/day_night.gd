@@ -4,6 +4,7 @@ extends Node
 ## affected), and tells night lights how strong to shine.
 
 signal minute_changed(hour: float)
+signal day_changed(day: int)
 
 ## Real seconds for a full 24-hour day.
 const SECONDS_PER_DAY := 720.0
@@ -25,6 +26,8 @@ static var current: DayNight
 
 ## 0.0 to 24.0.
 var hour := 7.0
+## Days since the game began (day 1 is the first).
+var day := 1
 var seconds_per_day := SECONDS_PER_DAY
 
 var _modulate: CanvasModulate
@@ -51,6 +54,9 @@ func _process(delta: float) -> void:
 
 
 func set_hour(value: float) -> void:
+	if value >= 24.0:
+		day += int(value / 24.0)
+		day_changed.emit(day)
 	hour = fposmod(value, 24.0)
 	if _modulate != null:
 		_modulate.color = tint_at(hour)

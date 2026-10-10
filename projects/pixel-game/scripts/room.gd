@@ -84,6 +84,8 @@ func build(
 	for thing in things:
 		var node := Entities.create(thing["kind"], thing.get("arg", ""))
 		node.position = _cell_centre(thing["cell"])
+		if node is Forage:
+			node.key = "%d_%d_%d_%d" % [coords.x, coords.y, thing["cell"].x, thing["cell"].y]
 		add_child(node)
 	_add_wires()
 

@@ -15,3 +15,6 @@ dog 14 2
 prop 10 5 pole
 prop 17 5 pole
 prop 17 9 pole
+forage 4 3 mango_tree
+forage 2 8 chadon_beni_patch
+forage 5 9 pepper_bush

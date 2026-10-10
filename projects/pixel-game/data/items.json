@@ -1,0 +1,7 @@
+{
+  "_note": "Things Chad can carry. icon = assets/items/<icon>.png. price = what it sells for (TT$). heal = half-doubles restored when eaten (0 = not edible).",
+  "mango": {"name": "Mango", "icon": "mango", "price": 4, "heal": 1},
+  "coconut": {"name": "Coconut", "icon": "coconut", "price": 6, "heal": 2},
+  "chadon_beni": {"name": "Chadon beni", "icon": "chadon_beni", "price": 3, "heal": 0},
+  "pimento": {"name": "Pimento pepper", "icon": "pimento", "price": 3, "heal": 0}
+}
