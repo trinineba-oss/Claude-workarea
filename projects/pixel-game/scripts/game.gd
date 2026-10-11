@@ -1,12 +1,27 @@
 class_name Game
 extends Node2D
 ## The adventure: a free-scrolling world streamed room by room (the room Chad is in and its
-## neighbours stay loaded), autosave whenever he enters another room, and pause.
+## neighbours stay loaded), autosave whenever he enters another room, and pause. Dungeons are
+## separate maps entered through warps; inside them the camera stays within one room at a time.
 
 signal room_changed(coords: Vector2i)
 signal conversation_finished(id: String)
 
 const ROOMS_DIR := "res://data/rooms"
+const OVERWORLD := "overworld"
+## Map id -> where its rooms live and how it looks. Dungeons are indoors (cave light, one room
+## on screen at a time) and filled with rock outside their rooms.
+const MAPS := {
+	"overworld": {"dir": ROOMS_DIR, "name": "San Fernando"},
+	"temple1":
+	{
+		"dir": "res://data/dungeons/temple1",
+		"name": "Callaloo Cave",
+		"indoors": true,
+		"filler": "#",
+	},
+}
+const FADE_SECONDS := 0.25
 ## Rooms within this many rooms of Chad stay loaded, so the camera never shows a gap.
 const LOAD_RADIUS := 1
 const CAMERA_SMOOTHING := 7.0
@@ -18,6 +33,10 @@ const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 @export var play_intro := true
 
 var save := SaveGame.new()
+## The map Chad is on (a key of MAPS).
+var map_id := OVERWORLD
+## Temple progress: opened doors and chests, fired triggers, small keys per map. Saved.
+var progress := Progress.new()
 ## Story flags set by conversations ("intro_done", ...). Saved with the game.
 var flags: Dictionary = {}
 var world: WorldMap
@@ -33,6 +52,10 @@ var _hotbar: Hotbar
 var _minigame: FishingMinigame
 var _fishing := false
 var _was_night := false
+var _boomerang: Boomerang
+var _worlds: Dictionary = {}  # map id -> WorldMap
+var _fade: ColorRect
+var _warping := false
 
 @onready var day_night: DayNight = $DayNight
 @onready var _rooms: Node2D = $Rooms
@@ -47,9 +70,17 @@ var _was_night := false
 
 func _ready() -> void:
 	add_to_group("game")
-	world = WorldMap.load_dir(ROOMS_DIR)
+	world = _world_for(OVERWORLD)
 	for problem in world.validate():
 		push_error("world map: " + problem)
+	progress.keys_changed.connect(func(_count): _update_keys())
+	progress.triggered.connect(func(_name): save_game())
+	_fade = ColorRect.new()
+	_fade.name = "Fade"
+	_fade.color = Color(0.02, 0.01, 0.04, 0.0)
+	_fade.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade.set_anchors_preset(Control.PRESET_FULL_RECT)
+	$HUD.add_child(_fade)
 	_pause.paused_changed.connect(_on_paused_changed)
 	_player.health_changed.connect(_status.set_health)
 	_player.money_changed.connect(_status.set_money)
@@ -80,6 +111,7 @@ func _ready() -> void:
 	_status.set_day(day_night.day)
 	_status.set_health(_player.health, _player.max_health)
 	_status.set_money(_player.money)
+	_update_keys()
 	_entry_position = _player.position
 	_was_night = day_night.is_night()
 	_setup_camera()
@@ -97,6 +129,7 @@ func _physics_process(_delta: float) -> void:
 		coords = now
 		_entry_position = _player.position
 		_refresh_rooms()
+		_on_room_entered()
 		save_game()
 		room_changed.emit(coords)
 	else:
@@ -107,7 +140,7 @@ func _physics_process(_delta: float) -> void:
 func _process(_delta: float) -> void:
 	_camera.position = _player.position
 	var night := day_night.is_night()
-	if night and not _was_night:
+	if night and not _was_night and not is_indoors():
 		Effects.float_text(
 			self, _player.position + Vector2(0, -120), "Night. Stick to the lights.", NIGHT_COLOR
 		)
@@ -124,6 +157,8 @@ func use_selected_item() -> bool:
 	if id == "fishing_rod":
 		fish()
 		return true
+	if id == "coconut_boomerang":
+		return throw_boomerang()
 	var heal := int(GameData.item(id).get("heal", 0))
 	var above := _player.position + Vector2(0, -90)
 	if heal <= 0:
@@ -136,6 +171,21 @@ func use_selected_item() -> bool:
 	_player.heal(heal)
 	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
 	return true
+
+
+## Throws the coconut boomerang the way Chad faces (one at a time).
+func throw_boomerang() -> bool:
+	if is_instance_valid(_boomerang):
+		return false
+	_boomerang = Boomerang.new()
+	_boomerang.launch(_player, _player.facing, world)
+	add_child(_boomerang)
+	return true
+
+
+## The boomerang in flight, if any.
+func boomerang() -> Boomerang:
+	return _boomerang if is_instance_valid(_boomerang) else null
 
 
 ## The hotbar at the bottom of the screen.
@@ -193,8 +243,7 @@ func fish(bite_seconds := -1.0) -> String:
 	var result: String = await _minigame.finished
 	_touch.visible = touch_was_visible
 	_hotbar.visible = true
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _let_input_go_stale()
 	get_tree().paused = false
 	bobber.queue_free()
 	_player.frozen = false
@@ -227,8 +276,82 @@ func go_to(room_coords: Vector2i, pos: Vector2) -> void:
 	_player.position = pos
 	_entry_position = pos
 	_refresh_rooms()
+	_setup_camera()
 	_snap_camera()
+	_on_room_entered()
 	save_game()
+
+
+## Switches to another map (a key of MAPS) and puts Chad in a room there.
+func enter_map(id: String, room_coords: Vector2i, pos: Vector2) -> void:
+	map_id = id
+	progress.map_id = id
+	world = _world_for(id)
+	day_night.indoors = MAPS[id].get("indoors", false)
+	_update_keys()
+	go_to(room_coords, pos)
+
+
+## Walks through a warp: fade out, change map, fade in. `target` is "<map>:<x>_<y>:<tx>_<ty>"
+## (a room and a tile in it), as written in room files.
+func warp(target: String) -> void:
+	var parsed := parse_warp(target)
+	if _warping or parsed.is_empty():
+		return
+	_warping = true
+	_player.frozen = true
+	var out := create_tween()
+	out.tween_property(_fade, "color:a", 1.0, FADE_SECONDS)
+	await out.finished
+	var room_coords: Vector2i = parsed["room"]
+	var tile: Vector2i = parsed["tile"]
+	enter_map(
+		parsed["map"],
+		room_coords,
+		WorldMap.room_origin(room_coords) + (Vector2(tile) + Vector2(0.5, 0.5)) * WorldMap.TILE
+	)
+	var back := create_tween()
+	back.tween_property(_fade, "color:a", 0.0, FADE_SECONDS)
+	await back.finished
+	_player.frozen = false
+	_warping = false
+
+
+## {"map", "room": Vector2i, "tile": Vector2i} for a warp target, or {} if it is malformed.
+static func parse_warp(target: String) -> Dictionary:
+	var parts := target.split(":")
+	if parts.size() != 3 or not MAPS.has(parts[0]):
+		return {}
+	var room: Variant = _pair(parts[1])
+	var tile: Variant = _pair(parts[2])
+	if room == null or tile == null:
+		return {}
+	return {"map": parts[0], "room": room, "tile": tile}
+
+
+static func _pair(text: String) -> Variant:
+	var xy := text.split("_")
+	if xy.size() != 2 or not xy[0].is_valid_int() or not xy[1].is_valid_int():
+		return null
+	return Vector2i(int(xy[0]), int(xy[1]))
+
+
+## The map data for a map id (loaded once).
+func _world_for(id: String) -> WorldMap:
+	if not _worlds.has(id):
+		var loaded := WorldMap.load_dir(MAPS[id]["dir"])
+		loaded.filler = MAPS[id].get("filler", "")
+		_worlds[id] = loaded
+	return _worlds[id]
+
+
+func is_indoors() -> bool:
+	return MAPS[map_id].get("indoors", false)
+
+
+func _update_keys() -> void:
+	if _status != null:
+		_status.set_keys(progress.key_count() if is_indoors() else -1)
 
 
 ## The room Chad is in.
@@ -255,12 +378,19 @@ func talk(id: String, with: Interactable = null) -> void:
 	await _dialogue.finished
 	_touch.visible = touch_was_visible
 	_hotbar.visible = true
-	# Let the button press that closed the box go stale before the hero can act on it.
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _let_input_go_stale()
 	get_tree().paused = false
 	save_game()
 	conversation_finished.emit(id)
+
+
+## Waits until the button press that closed a box or minigame can no longer count as "just
+## pressed" for the hero. Physics ticks matter here: on a fast screen several frames can pass
+## between two ticks.
+func _let_input_go_stale() -> void:
+	await get_tree().process_frame
+	await get_tree().physics_frame
+	await get_tree().physics_frame
 
 
 ## Story flags plus "night" while it is dark, for choosing what characters say.
@@ -286,6 +416,8 @@ func save_game() -> void:
 		"day": day_night.day,
 		"inventory": inventory.to_data(),
 		"forage": forage_state,
+		"map": map_id,
+		"progress": progress.data,
 	}
 	save.write(data)
 
@@ -296,8 +428,16 @@ func _restore(data: Dictionary) -> bool:
 	if not (room is Array and room.size() == 2 and position is Array and position.size() == 2):
 		return false
 	var saved_coords := Vector2i(int(room[0]), int(room[1]))
-	if not world.has_room(saved_coords):
+	var saved_map := str(data.get("map", OVERWORLD))
+	if not MAPS.has(saved_map) or not _world_for(saved_map).has_room(saved_coords):
 		return false
+	map_id = saved_map
+	progress.map_id = saved_map
+	world = _world_for(saved_map)
+	day_night.indoors = is_indoors()
+	var saved_progress: Variant = data.get("progress", {})
+	if saved_progress is Dictionary:
+		progress.data.merge(saved_progress, true)
 	coords = saved_coords
 	_player.position = _clamp_to_room(Vector2(position[0], position[1]), coords, 32.0)
 	var health := int(data.get("health", _player.max_health))
@@ -330,8 +470,13 @@ func _refresh_rooms() -> void:
 			_loaded[room_coords] = _make_room(room_coords)
 
 
+## Outdoors the camera roams the whole world; indoors it stays inside the current room and
+## slides to the next one, like the rooms of a temple.
 func _setup_camera() -> void:
 	var rect := world.bounds()
+	if is_indoors():
+		rect = Rect2i(coords, Vector2i.ONE)
+	_camera.limit_smoothed = is_indoors()
 	var size := WorldMap.room_size()
 	_camera.limit_left = int(rect.position.x * size.x)
 	_camera.limit_top = int(rect.position.y * size.y)
@@ -348,6 +493,7 @@ func _snap_camera() -> void:
 
 func _make_room(room_coords: Vector2i) -> Room:
 	var room := Room.new()
+	room.key_prefix = "" if map_id == OVERWORLD else map_id + ":"
 	var real := world.has_room(room_coords)
 	room.build(
 		room_coords,
@@ -363,6 +509,16 @@ func _make_room(room_coords: Vector2i) -> Room:
 	return room
 
 
+## Runs when Chad arrives in a room: dungeon puzzles there reset if they are unsolved, and
+## the indoor camera moves to the new room.
+func _on_room_entered() -> void:
+	if is_indoors():
+		_setup_camera()
+	var room := current_room()
+	if room != null:
+		room.on_enter()
+
+
 func _room_center(room_coords: Vector2i) -> Vector2:
 	return WorldMap.room_origin(room_coords) + WorldMap.room_size() / 2.0
 
@@ -375,8 +531,8 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
-## that tile, `&time=21` at that hour, and `&give=fishing_rod` puts an item in the bag (used to
-## take screenshots). Ignored everywhere else.
+## that tile, `&time=21` at that hour, `&map=temple1` on another map, and `&give=fishing_rod`
+## puts an item in the bag (used to take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
@@ -387,6 +543,13 @@ func _apply_debug_start() -> void:
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
+	var on_map := RegEx.create_from_string("map=([a-z0-9_]+)").search(query)
+	if on_map != null and MAPS.has(on_map.get_string(1)):
+		map_id = on_map.get_string(1)
+		progress.map_id = map_id
+		world = _world_for(map_id)
+		day_night.indoors = is_indoors()
+		_update_keys()
 	var found := RegEx.create_from_string("room=(-?\\d+)_(-?\\d+)").search(query)
 	if found == null:
 		return
@@ -411,6 +574,8 @@ func _play_intro() -> void:
 func _on_interact_requested(target: Interactable) -> void:
 	if target is Forage:
 		harvest(target)
+	elif target.has_method("use"):
+		target.use(self)
 	else:
 		talk(target.dialogue_id(dialogue_state()), target)
 

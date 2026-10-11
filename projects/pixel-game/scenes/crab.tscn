@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/crab.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/crab.png" id="2_tex"]
+[ext_resource type="Texture2D" path="res://assets/sprites/shadow.png" id="3_shadow"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(40, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_contact"]
+size = Vector2(48, 34)
+
+[node name="Crab" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 1
+motion_mode = 1
+script = ExtResource("1_script")
+max_health = 1
+coin_chance = 0.3
+snack_chance = 0.15
+
+[node name="Shadow" type="Sprite2D" parent="."]
+z_index = -4
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("3_shadow")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_tex")
+offset = Vector2(0, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Contact" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Contact"]
+position = Vector2(0, -14)
+shape = SubResource("RectangleShape2D_contact")

@@ -1,0 +1,22 @@
+#########==#########
+#==================#
+#==================#
+#===###======###===#
+#===#~~#====#~~#===#
+#===###======###===#
+#==================#
+#==================#
+#==================#
+#========ss========#
+####################
+
+; The way in from the beach: step on the sand at the bottom to go back out.
+warp 9 9 overworld:1_1:14_3
+warp 10 9 overworld:1_1:14_3
+prop 7 9 torch
+prop 12 9 torch
+prop 2 1 torch
+prop 17 1 torch
+sign 6 7 sign_cave
+crab 5 2
+crab 14 6

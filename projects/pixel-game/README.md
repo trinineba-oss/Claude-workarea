@@ -40,13 +40,15 @@ The game started as pixel art and is now smooth HD 2D:
   `signpost.gd`, `prop.gd`), `save_game.gd`, and the touch
   widgets (`touch_*.gd`)
 - `data/rooms/<x>_<y>.txt` – the world: one 20x11 ASCII map per screen (see below)
+- `data/dungeons/<map>/<x>_<y>.txt` – temples, in the same format (see *Temples*)
 - `data/dialogue.json`, `data/characters.json`, `data/props.json` – conversations, people and props
 - `data/items.json`, `data/forage.json` – things to carry, and plants to pick
 - `assets/` – placeholder art: `textures/` (tileable ground materials) and `sprites/`
   (`tools/gen_art.py` regenerates it). Commit the `.import`
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
-  walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing)
+  walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing,
+  night dangers, the first temple)
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -118,6 +120,15 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 | `traffic` | `up`, `down`, `left` or `right` | a lane of cars driving through that cell's column/row; cars hurt and knock back |
 | `forage` | a plant from `data/forage.json` | something to pick (mango tree, coconut palm, chadon beni, pepper bush) |
 | `night` | `bandit`, `dog`, `soucouyant` or `corbeau` | an enemy that comes out after dark (see *Night dangers*) |
+| `warp` | `<map>:<x>_<y>:<tx>_<ty>` | stepping on it takes Chad to that room and tile of a map (`overworld` or a temple) |
+| `crab`, `bigcrab` | (`bigcrab`: a trigger name) | temple enemies; `bigcrab` is the mini-boss, and beating it fires its trigger |
+| `locked` | | a two-tile door that takes a small key |
+| `gate` | a trigger name | two-tile iron bars that open for good when the trigger fires |
+| `shutter` | | bars that close while a mini-boss in the room is fighting |
+| `chest` | `key`, an item id or `tt<amount>`, optionally `@<trigger>` | a chest; with `@trigger` it only appears once the trigger fires |
+| `block` | | a push block |
+| `plate` | a trigger name | a pressure plate: a push block on it fires the trigger |
+| `switch` | a trigger name | a crystal switch: hit it (cutlass or boomerang) to fire the trigger |
 
 ```
 npc 8 4 ibis
@@ -206,9 +217,39 @@ Lamps on props (street lamps, food trucks, the gas station) are the safe ones
 (`NightLight.SAFE_FRACTION` of its size) is what counts as lit. The limer, the doubles auntie,
 the seafood man, the fisherman and the ibis all warn about the dark.
 
+## Temples
+
+Temples are separate maps in `data/dungeons/<map>/`, listed in `Game.MAPS`, and entered
+through `warp` objects. Inside, the light stays dim (torches are always lit; the clock keeps
+running), the camera stays in the current room and slides to the next one, and the HUD shows
+the small keys held for that temple. Doors and gates are two tiles wide and placed on their
+first tile: along a top or bottom wall they run sideways, along a side wall they run down,
+and inside a room they follow the wall on their left. Opened doors and chests, fired triggers
+and keys are saved per map (`Game.progress`). Push blocks go back to their starting tiles
+when Chad re-enters a room whose plates are not all pressed, so a jammed puzzle can always
+be retried.
+
+**Temple 1: Callaloo Cave** sits behind the closed beach (`1_1`): walk into the cave mouth.
+Seven rooms:
+- **Entrance:** the sand at the bottom leads back out.
+- **Hub:** the north door is locked.
+- **West:** crabs guard a chest with a small key.
+- **East:** a push-block puzzle (right, then up onto the plate) opens a gate to a second key.
+- **North:** the **Big Blue Crab**, the mini-boss. Its shell shrugs off the cutlass. It sidles,
+  raises its claws and charges; when it rams a wall it lands on its back, and only then can it
+  be hurt. The boomerang flips it too. Shutters keep Chad in until it is beaten, then its chest
+  appears with the **coconut boomerang**.
+- **North-west:** a crystal switch across the water opens the way to the sealed pepper door
+  (the boss, milestone 5).
+
+**Coconut boomerang** (select it, then Item): flies about six tiles the way Chad faces and
+comes back. It sails over water, turns back at walls and solid things, knocks out small
+enemies, flips the Big Blue Crab and hits crystal switches.
+
 ## Saving
 
-`user://save.json` holds the room, position, health, money, story flags and time of day. It is written on every room change, on pause,
+`user://save.json` holds the map, room, position, health, money, story flags, time of day,
+bag, forage regrowth and temple progress. It is written on every room change, on pause,
 and when the app goes to the background or closes. A missing, corrupt or different-version
 file starts a new game.
 
@@ -246,5 +287,6 @@ release keystores out of git (`*.keystore` and `*.jks` are ignored).
 
 ## Next steps
 
-See the milestones in `DESIGN.md`: next is the wharf and Cross Crossing as real areas, NPCs and
-dialogue. Real art can replace the placeholders in `assets/` at any point.
+See the milestones in `DESIGN.md`: next is milestone 5, the Temple 1 boss behind the pepper
+door and the first sacred seasoning. Real art can replace the placeholders in `assets/` at any
+point.

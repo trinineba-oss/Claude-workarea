@@ -66,7 +66,8 @@ corn soup, hot dogs, doubles...). Trucks use generic food names, never the real 
 | Harris Promenade | Hub | Shops, benches, NPCs, save point, maxi taxi stop |
 | High Street and market | Overworld | More vendors, the rum-shop riddle men |
 | Skinner Park | Overworld / minigame | A cricket or football minigame |
-| Temples 1-4 | Dungeons | Ideas: quarry caves, the market at night, the refinery tower, the old wharf |
+| Callaloo Cave (built) | Temple 1 | A sea cave behind the closed beach: keys, a push-block puzzle, the Big Blue Crab, the coconut boomerang |
+| Temples 2-4 | Dungeons | Ideas: quarry caves, the market at night, the refinery tower, the old wharf |
 | San Fernando Hill | Finale | Opens after four seasonings |
 
 The overworld is a grid of screen-sized rooms (as built in milestone 1).
@@ -119,7 +120,7 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 | Sword | Cutlass (starter; hold to charge a spin) |
 | Shield | Tawa (the roti griddle) |
 | Health | "Doubles" as hearts; coconut water and pepper sauce heal |
-| Dungeon items | Coconut boomerang, wiri-wiri pepper bombs, flambeau lantern, bamboo grapple |
+| Dungeon items | Coconut boomerang (built, Temple 1), wiri-wiri pepper bombs, flambeau lantern, bamboo grapple |
 | Currency | Dollars (TT$) |
 
 Enemies: corbeaux (swoop), stray dogs, night bandits (snatch and run; built), soucouyant
@@ -182,7 +183,11 @@ gossips), jumbies, steups teens (a teeth-suck shockwave). Bosses are themed on t
    NPCs, signs and readable props from data files; story flags; the ibis's welcome. Still to
    do: real local detail (needs your input), Harris Promenade, proper buildings instead of rock
    walls, and reviewed dialogue.
-4. **Temple 1:** keys, locked doors, a push-block puzzle, a mini-boss, a new item.
+4. **Temple 1 (done):** *Callaloo Cave*, behind the closed beach. Seven rooms with two small
+   keys, locked doors, a push-block puzzle that opens a gate, the **Big Blue Crab** mini-boss
+   (only hurt when stunned against a wall), and the **coconut boomerang**, used straight away
+   on a crystal switch across water to open the way to the sealed pepper door. Temples are
+   their own maps with dim torchlit rooms and a camera that stays in one room at a time.
 5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.
 6. **Polish:** sound effects, music, hit effects, menus, settings, low-end phone testing.
 

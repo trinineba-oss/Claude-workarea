@@ -6,20 +6,41 @@ extends RefCounted
 ## `traffic <x> <y> <up|down|left|right>` (a lane of cars through that cell),
 ## `forage <x> <y> <plant>` (a plant to pick, from data/forage.json),
 ## `night <x> <y> <enemy>` (an enemy that comes out after dark: see NightSpawn.KINDS).
+## Dungeon pieces: `locked <x> <y>` (a door that takes a small key), `gate <x> <y> <trigger>`
+## (bars that open when the trigger fires), `shutter <x> <y>` (bars that close during a
+## mini-boss fight), `chest <x> <y> <content>[@<trigger>]`, `block <x> <y>` (push block),
+## `plate <x> <y> <trigger>`, `switch <x> <y> <trigger>`, `bigcrab <x> <y> <trigger>` (the
+## mini-boss; beating it fires the trigger) and `warp <x> <y> <map>:<room>:<tile>`.
 
 const PICKUP := preload("res://scenes/pickup.tscn")
 const SCENES := {
 	"bandit": preload("res://scenes/bandit.tscn"),
+	"bigcrab": preload("res://scenes/big_crab.tscn"),
+	"crab": preload("res://scenes/crab.tscn"),
 	"corbeau": preload("res://scenes/corbeau.tscn"),
 	"dog": preload("res://scenes/pothound.tscn"),
 	"soucouyant": preload("res://scenes/soucouyant.tscn"),
 }
 const PICKUPS := ["snack", "coin"]
-const WITH_ARGUMENT := ["npc", "sign", "prop", "traffic", "forage", "night"]
+const WITH_ARGUMENT := [
+	"npc",
+	"sign",
+	"prop",
+	"traffic",
+	"forage",
+	"night",
+	"gate",
+	"chest",
+	"plate",
+	"switch",
+	"warp",
+	"bigcrab"
+]
+const DUNGEON := ["locked", "gate", "shutter", "chest", "block", "plate", "switch", "warp"]
 
 
 static func is_known(kind: String) -> bool:
-	return SCENES.has(kind) or kind in PICKUPS or kind in WITH_ARGUMENT
+	return SCENES.has(kind) or kind in PICKUPS or kind in WITH_ARGUMENT or kind in DUNGEON
 
 
 static func needs_argument(kind: String) -> bool:
@@ -43,6 +64,12 @@ static func argument_problem(kind: String, arg: String) -> String:
 			return "" if Traffic.DIRECTIONS.has(arg) else "traffic needs up, down, left or right"
 		"forage":
 			return "" if GameData.has_forage(arg) else "unknown forage '%s'" % arg
+		"chest":
+			return Chest.content_problem(arg)
+		"warp":
+			return "" if not Game.parse_warp(arg).is_empty() else "bad warp target '%s'" % arg
+		"gate", "plate", "switch", "bigcrab":
+			return "" if arg.is_valid_identifier() else "bad trigger name '%s'" % arg
 		"night":
 			return (
 				""
@@ -82,4 +109,30 @@ static func create(kind: String, arg: String = "") -> Node2D:
 			var spot := NightSpawn.new()
 			spot.setup(arg)
 			return spot
+		"locked", "gate", "shutter":
+			var door := DungeonDoor.new()
+			door.setup(kind, arg)
+			return door
+		"chest":
+			var chest := Chest.new()
+			chest.setup(arg)
+			return chest
+		"block":
+			return PushBlock.new()
+		"plate":
+			var plate := Plate.new()
+			plate.setup(arg)
+			return plate
+		"switch":
+			var orb := CrystalSwitch.new()
+			orb.setup(arg)
+			return orb
+		"warp":
+			var warp := Warp.new()
+			warp.setup(arg)
+			return warp
+		"bigcrab":
+			var boss: BigCrab = SCENES[kind].instantiate()
+			boss.trigger_name = arg
+			return boss
 	return SCENES[kind].instantiate()

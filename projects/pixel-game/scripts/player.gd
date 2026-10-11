@@ -147,6 +147,13 @@ func _move() -> void:
 			_sprite.flip_h = facing.x < 0.0
 	velocity = direction * SPEED
 	move_and_slide()
+	if direction == Vector2.ZERO:
+		return
+	# Walking into a push block or a locked door does something.
+	for i in get_slide_collision_count():
+		var body := get_slide_collision(i).get_collider()
+		if body != null and body.has_method("bump"):
+			body.bump(self, facing)
 
 
 func _find_target() -> Interactable:

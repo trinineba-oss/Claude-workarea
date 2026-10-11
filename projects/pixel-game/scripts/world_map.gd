@@ -12,6 +12,9 @@ const START := "@"
 
 var rooms: Dictionary = {}  # Vector2i -> PackedStringArray (map rows)
 var objects: Dictionary = {}  # Vector2i -> Array of {"kind", "cell": Vector2i, "arg"}
+## Tile that fills cells with no room ("" = sea in the south, grass elsewhere). Dungeons use
+## rock, so their outer walls blend into solid darkness.
+var filler := ""
 
 var _parse_problems := PackedStringArray()
 
@@ -91,6 +94,8 @@ func padded_rows(coords: Vector2i) -> PackedStringArray:
 
 
 func filler_tile(coords: Vector2i) -> String:
+	if filler != "":
+		return filler
 	return "~" if coords.y >= 1 else "."
 
 
@@ -128,8 +133,9 @@ func start_position() -> Vector2:
 	return room_origin(coords) + Vector2(cell) * TILE + Vector2.ONE * (TILE / 2.0)
 
 
-## Human-readable problems with the map data. Empty when the world is valid.
-func validate() -> PackedStringArray:
+## Human-readable problems with the map data. Empty when the world is valid. Only the
+## overworld has a start marker; dungeons are entered through warps.
+func validate(needs_start := true) -> PackedStringArray:
 	var problems := _parse_problems.duplicate()
 	var starts := 0
 	for coords in rooms:
@@ -152,8 +158,10 @@ func validate() -> PackedStringArray:
 					problems.append("room %s has unknown tile '%s' at %d,%d" % [coords, ch, x, y])
 				elif ch == START:
 					starts += 1
-	if starts != 1:
-		problems.append("expected exactly one start marker '@', found %d" % starts)
+	if starts != (1 if needs_start else 0):
+		problems.append(
+			"expected %d start marker(s) '@', found %d" % [1 if needs_start else 0, starts]
+		)
 	if problems.is_empty():
 		problems.append_array(_edge_problems())
 		problems.append_array(_object_problems())

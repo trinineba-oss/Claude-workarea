@@ -14,7 +14,8 @@ The folder is still called `pixel-game`, but the game is HD 2D now (it started a
 - Style: `make lint` runs `gdformat --check` and `gdlint`; fix with `gdformat scripts tests`.
 - Tests: `tests/*_test.gd` are headless `SceneTree` scripts extending `tests/test_base.gd`; add a
   new `<name>_test.gd` per system and run `make test`. The world data is validated there.
-- World maps live in `data/rooms/` (legend in README.md); the export presets include `data/*`.
+- World maps live in `data/rooms/`, temples in `data/dungeons/<map>/` (legend and temple
+  rules in README.md); the export presets include `data/*`.
 - Conversations, characters and props are data (`data/dialogue.json`, `characters.json`,
   `props.json`). Every dialogue line is a draft until someone from Trinidad reviews it; keep
   the `_note` saying so.
