@@ -5,14 +5,19 @@ extends Interactable
 ##   locked   opens with a small key (walk into it or press interact) and stays open
 ##   gate     iron bars that open for good when their trigger fires (a plate, a switch)
 ##   shutter  bars that slam shut while a mini-boss in the room is fighting, then open again
+##   bossdoor the big sealed door; it takes the temple's boss key (the Pepper Key)
 
-enum Mode { LOCKED, GATE, SHUTTER }
+enum Mode { LOCKED, GATE, SHUTTER, BOSS }
 
 const TEXTURES := {
 	"locked_h": preload("res://assets/sprites/door_locked_h.png"),
 	"locked_v": preload("res://assets/sprites/door_locked_v.png"),
 	"bars_h": preload("res://assets/sprites/gate_h.png"),
 	"bars_v": preload("res://assets/sprites/gate_v.png"),
+	"boss_h": preload("res://assets/sprites/door_boss_h.png"),
+}
+const MODES := {
+	"locked": Mode.LOCKED, "gate": Mode.GATE, "shutter": Mode.SHUTTER, "bossdoor": Mode.BOSS
 }
 const MESSAGE_COOLDOWN := 1.5
 ## A shutter only closes once Chad is this far inside the room, so it never lands on him.
@@ -31,7 +36,7 @@ var _message_cooldown := 0.0
 
 
 func setup(kind: String, arg: String) -> void:
-	mode = {"locked": Mode.LOCKED, "gate": Mode.GATE, "shutter": Mode.SHUTTER}[kind]
+	mode = MODES[kind]
 	trigger_name = arg
 
 
@@ -48,8 +53,10 @@ func _ready() -> void:
 	_shape = _feet_shape(span, centre)
 	add_child(_shape)
 	_sprite = Sprite2D.new()
-	var look := "locked" if mode == Mode.LOCKED else "bars"
-	_sprite.texture = TEXTURES["%s_%s" % [look, "h" if horizontal else "v"]]
+	var look: String = {Mode.LOCKED: "locked", Mode.BOSS: "boss"}.get(mode, "bars")
+	# The sealed door has no side-wall art of its own; it borrows the locked door's.
+	var art := "%s_%s" % [look, "h" if horizontal else "v"]
+	_sprite.texture = TEXTURES.get(art, TEXTURES["locked_v"])
 	# The art's bottom edge sits on the bottom of the door's tiles.
 	_sprite.position = centre + Vector2(0, span.y / 2.0)
 	_sprite.offset = Vector2(0, -_sprite.texture.get_height() / 2.0)
@@ -57,7 +64,7 @@ func _ready() -> void:
 	bubble_height = _sprite.texture.get_height() - span.y / 2.0 + 20.0
 	var game := _game()
 	match mode:
-		Mode.LOCKED:
+		Mode.LOCKED, Mode.BOSS:
 			if game != null and game.progress.is_done(key):
 				_set_open(true, false)
 		Mode.GATE:
@@ -79,7 +86,7 @@ func _physics_process(delta: float) -> void:
 
 
 func can_interact(_flags: Dictionary) -> bool:
-	return mode == Mode.LOCKED and not is_open
+	return _has_lock() and not is_open
 
 
 func touch_point(from: Vector2) -> Vector2:
@@ -90,19 +97,23 @@ func touch_point(from: Vector2) -> Vector2:
 
 ## Interact: try the lock.
 func use(game: Game) -> void:
+	if mode == Mode.BOSS and not game.progress.has_boss_key():
+		game.talk("boss_door")
+		return
 	_try_unlock(game)
 
 
 ## Chad walked into it.
 func bump(_player: Player, _direction: Vector2) -> void:
-	if mode == Mode.LOCKED and not is_open:
+	if _has_lock() and not is_open:
 		_try_unlock(_game())
 
 
 func _try_unlock(game: Game) -> void:
 	if game == null or is_open:
 		return
-	if game.progress.use_key():
+	var unlocked := game.progress.has_boss_key() if mode == Mode.BOSS else game.progress.use_key()
+	if unlocked:
 		game.progress.mark_done(key)
 		_set_open(true, true)
 		Effects.float_text(
@@ -114,9 +125,13 @@ func _try_unlock(game: Game) -> void:
 		Effects.float_text(
 			get_parent(),
 			position + Vector2(0, -90),
-			"Locked. Need a small key.",
+			"Sealed. Need the Pepper Key." if mode == Mode.BOSS else "Locked. Need a small key.",
 			Color(1, 0.8, 0.6)
 		)
+
+
+func _has_lock() -> bool:
+	return mode == Mode.LOCKED or mode == Mode.BOSS
 
 
 func _on_triggered(trigger: String) -> void:

@@ -312,7 +312,11 @@
       },
       {
         "speaker": "",
-        "text": "Something big is snoring on the other side. It smell like... curry?"
+        "text": "Something big is snoring on the other side. It smell like callaloo... slightly burnt callaloo."
+      },
+      {
+        "speaker": "",
+        "text": "Somewhere in this cave there must be a Pepper Key."
       }
     ],
     "got_coconut_boomerang": [
@@ -327,6 +331,97 @@
       {
         "speaker": "",
         "text": "It sails over water too, so things across a gap are in reach now."
+      }
+    ],
+    "got_pepper_key": [
+      {
+        "speaker": "",
+        "text": "You got the Pepper Key! It opens the sealed door. Handle with care: it still hot."
+      }
+    ],
+    "got_heart": [
+      {
+        "speaker": "",
+        "text": "One more double! Your health goes up by a whole double. Well fed is well armed."
+      }
+    ],
+    "got_sacred_chadon_beni": [
+      {
+        "speaker": "",
+        "text": "You got the Sacred Chadon Beni! The first of the four sacred seasonings."
+      },
+      {
+        "speaker": "",
+        "text": "Chadon beni. For Chad. Some things are just meant to be."
+      },
+      {
+        "speaker": "",
+        "text": "A warm green light wraps around you, and the cave melts away..."
+      }
+    ],
+    "rival_intro": [
+      {
+        "speaker": "???",
+        "text": "Well, well, well. A little seasoning hunter."
+      },
+      {
+        "speaker": "Doner Dread",
+        "text": "Doner Dread. Owner of fourteen fast-food franchises. Fifteen, if you count the one that burn down."
+      },
+      {
+        "speaker": "Doner Dread",
+        "text": "That Lamb Gyro on the Hill? Mine. I go put it on a menu. Two-for-one Tuesdays."
+      },
+      {
+        "speaker": "Doner Dread",
+        "text": "Keep your little herb, boss. I'll see you at the next temple. Try and keep up.",
+        "set_flag": "met_rival"
+      }
+    ],
+    "ibis_seasoning1": [
+      {
+        "speaker": "Ibis",
+        "text": "Look at that! The Sacred Chadon Beni! One seasoning down, three to go."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "A fella in a shiny suit was asking for you. Smelled like fryer oil. I doh like he."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "The other three temples? Patience. The Gyro God not going anywhere. He sleeping."
+      },
+      {
+        "speaker": "",
+        "text": "(That's the end of the first chapter for now. Thanks for playing!)"
+      }
+    ],
+    "brownie_hungry": [
+      {
+        "speaker": "",
+        "text": "A brown pothound lies in the shade, watching you."
+      },
+      {
+        "speaker": "",
+        "text": "Her eyes go from your face to your bag. Back to your face. Back to the bag."
+      },
+      {
+        "speaker": "",
+        "text": "She look hungry. Maybe if you had something to eat..."
+      }
+    ],
+    "brownie_join": [
+      {
+        "speaker": "",
+        "text": "You share some food. It disappears in one bite."
+      },
+      {
+        "speaker": "",
+        "text": "She wags her whole back end. Somebody scratch BROWNIE on her old collar."
+      },
+      {
+        "speaker": "",
+        "text": "Brownie will follow you now. She does bite anything that troubles you."
       }
     ]
   }

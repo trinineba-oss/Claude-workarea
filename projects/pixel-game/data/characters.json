@@ -1,5 +1,5 @@
 {
-  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts. The pseudo-flag \"night\" is set while it is dark.",
+  "_note": "People and creatures you can talk to. \"talk\" picks the first entry whose conditions hold: \"if\" needs the flag set, \"unless\" needs it unset. Names and dialogue are drafts. The pseudo-flag \"night\" is set while it is dark. \"present_if\" / \"present_unless\" decide whether the character is around at all, and \"approach\": true makes them walk up and talk when Chad comes near.",
   "ibis": {
     "name": "Ibis",
     "sprite": "ibis",
@@ -11,6 +11,10 @@
       {
         "if": "night",
         "dialogue": "ibis_night"
+      },
+      {
+        "if": "has_sacred_chadon_beni",
+        "dialogue": "ibis_seasoning1"
       },
       {
         "dialogue": "ibis_hint"
@@ -109,6 +113,18 @@
       },
       {
         "dialogue": "seafood_man"
+      }
+    ]
+  },
+  "rival": {
+    "name": "Doner Dread",
+    "sprite": "npc_rival",
+    "present_if": "has_sacred_chadon_beni",
+    "present_unless": "met_rival",
+    "approach": true,
+    "talk": [
+      {
+        "dialogue": "rival_intro"
       }
     ]
   }

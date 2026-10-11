@@ -42,6 +42,16 @@ func use_key() -> bool:
 	return true
 
 
+## The big key that opens this map's boss door.
+func has_boss_key() -> bool:
+	return is_done(key("boss_key"))
+
+
+func give_boss_key() -> void:
+	mark_done(key("boss_key"))
+	keys_changed.emit(key_count())
+
+
 func is_triggered(trigger_name: String) -> bool:
 	return is_done(key("trigger/" + trigger_name))
 

@@ -18,5 +18,6 @@ This repo is a general-purpose remote workstation for Claude Code cloud sessions
 ## Checks
 
 - `make lint` — shellcheck + shfmt (2-space indent) for shell scripts.
-- `make test` — tests for the session-start hook.
+- `make test` — tests for the session-start hook, then every Godot project's tests (a test
+  fails on a failed check, a timeout or any script error).
 - Run both after changing `.claude/hooks/session-start.sh`.

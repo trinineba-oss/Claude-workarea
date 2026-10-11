@@ -245,17 +245,5 @@
       1
     ],
     "solid": "none"
-  },
-  "boss_door": {
-    "sprite": "boss_door",
-    "footprint": [
-      3,
-      1
-    ],
-    "solid": [
-      180,
-      40
-    ],
-    "dialogue": "boss_door"
   }
 }

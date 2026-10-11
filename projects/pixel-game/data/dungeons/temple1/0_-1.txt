@@ -1,0 +1,22 @@
+####################
+#==================#
+#=##============##=#
+#==================#
+#==================#
+#==================#
+#==================#
+#==================#
+#=##============##=#
+#==================#
+#########==#########
+
+; The Callaloo Cauldron. Beating it opens the shutter and brings out one more double of
+; health and the first sacred seasoning, which carries Chad back out to the beach.
+cauldron 9 3 pot
+shutter 9 10
+chest 3 5 heart@pot
+seasoning 9 4 sacred_chadon_beni@pot
+prop 1 1 torch
+prop 18 1 torch
+prop 1 9 torch
+prop 18 9 torch

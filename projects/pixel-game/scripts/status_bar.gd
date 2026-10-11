@@ -6,6 +6,7 @@ extends Control
 const DOUBLE := preload("res://assets/sprites/snack.png")
 const COIN := preload("res://assets/sprites/coin.png")
 const KEY := preload("res://assets/sprites/key.png")
+const BOSS_KEY := preload("res://assets/sprites/pepper_key.png")
 const STEP := 56.0
 const EMPTY := Color(0.1, 0.06, 0.14, 0.45)
 const FONT_SIZE := 30
@@ -16,6 +17,7 @@ var _money := 0
 var _hour := 7.0
 var _day := 1
 var _keys := -1
+var _boss_key := false
 
 
 func _draw() -> void:
@@ -56,6 +58,8 @@ func _draw() -> void:
 			Color(0.1, 0.06, 0.14)
 		)
 		draw_string(font, key_text_at, key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
+		if _boss_key:
+			draw_texture(BOSS_KEY, key_at + Vector2(96, -4))
 
 
 func set_health(health: int, max_health: int) -> void:
@@ -74,9 +78,10 @@ func set_day(day: int) -> void:
 	queue_redraw()
 
 
-## Small keys held in this dungeon; -1 hides the counter (outdoors).
-func set_keys(count: int) -> void:
+## Small keys held in this dungeon (-1 hides the counter, outdoors), and the boss key.
+func set_keys(count: int, boss_key := false) -> void:
 	_keys = count
+	_boss_key = boss_key
 	queue_redraw()
 
 

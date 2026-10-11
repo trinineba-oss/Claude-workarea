@@ -16,3 +16,4 @@ forage 15 6 coconut_palm
 night 12 4 soucouyant
 prop 14 2 cave_mouth
 warp 14 2 temple1:1_2:9_8
+npc 11 4 rival
