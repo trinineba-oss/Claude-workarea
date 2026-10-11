@@ -938,6 +938,61 @@ def _sacred_beni(c):
 
 icon(f"{OUT}/items/sacred_chadon_beni.png", _sacred_beni)
 
+# ---- Brownie's commands and the top dogs ---------------------------------------------------------------
+c = Canvas(60, 40)  # a freshly dug hole, anchor = centre
+c.ellipse(30, 22, 27, 15, (120, 84, 52, 255), outline=0)
+c.ellipse(30, 22, 18, 9, (62, 42, 30, 255), outline=0)
+for x, y in ((6, 10), (54, 12), (10, 34), (50, 34)):
+    c.ellipse(x, y, 4, 3, (140, 100, 64, 255), outline=0)
+c.save(f"{OUT}/sprites/dig_hole.png")
+
+
+def top_dog(path, fur, fur_l, ear, extra=None, size=1.0):
+    """A top dog, facing right, in the pothound's proportions (scaled), anchor = feet."""
+    w, h = int(76 * size), int(58 * size)
+    c = Canvas(w, h)
+    k = size
+    c.poly([(10 * k, 26 * k), (2 * k, 14 * k), (6 * k, 12 * k), (16 * k, 22 * k)], fur)
+    for x in (16, 26, 44, 54):
+        c.rrect(x * k, 36 * k, (x + 7) * k, 55 * k, 3 * k, fur)
+    c.ellipse(36 * k, 32 * k, 24 * k, 13 * k, fur)
+    c.ellipse(58 * k, 20 * k, 12 * k, 11 * k, fur)
+    c.ellipse(68 * k, 25 * k, 7 * k, 5.5 * k, fur_l)
+    c.poly([(52 * k, 12 * k), (50 * k, 2 * k), (58 * k, 9 * k)], ear)
+    c.detail_ellipse(36 * k, 38 * k, 15 * k, 5 * k, fur_l)
+    c.detail_ellipse(61 * k, 17 * k, 2.2 * k, 2.6 * k, INK)
+    c.detail_ellipse(74 * k, 23 * k, 2.4 * k, 2.0 * k, INK)
+    if extra:
+        extra(c, k)
+    c.save(path)
+
+
+def _scraps(c, k):  # scruffy: a torn ear and patches
+    c.detail_ellipse(28 * k, 28 * k, 7 * k, 5 * k, (96, 96, 104, 255))
+    c.detail_line([(60 * k, 26 * k), (66 * k, 24 * k)], INK, 1.5 * k)
+
+
+def _duchess(c, k):  # fluffy with a pink bow
+    for x, y in ((20, 24), (34, 22), (48, 26)):
+        c.detail_ellipse(x * k, y * k, 8 * k, 7 * k, (250, 250, 250, 255))
+    c.detail_ellipse(55 * k, 9 * k, 5 * k, 3.5 * k, (240, 110, 170, 255))
+    c.detail_ellipse(63 * k, 9 * k, 5 * k, 3.5 * k, (240, 110, 170, 255))
+    c.detail_ellipse(59 * k, 9 * k, 2.4 * k, 2.4 * k, (200, 60, 130, 255))
+
+
+def _tiger(c, k):  # black and tan, spiked collar, scar
+    c.detail_ellipse(66 * k, 27 * k, 6 * k, 4 * k, (196, 128, 60, 255))
+    c.detail_ellipse(36 * k, 40 * k, 14 * k, 4 * k, (196, 128, 60, 255))
+    c.detail_line([(48 * k, 28 * k), (54 * k, 33 * k), (62 * k, 31 * k)], (60, 60, 70, 255), 3 * k)
+    for x in (50, 55, 60):
+        c.detail_ellipse(x * k, 32 * k, 1.5 * k, 1.5 * k, (210, 210, 220, 255))
+    c.detail_line([(57 * k, 13 * k), (63 * k, 19 * k)], (230, 200, 200, 255), 1.5 * k)
+
+
+top_dog(f"{OUT}/sprites/dog_scraps.png", (150, 150, 158, 255), (196, 196, 204, 255), (110, 110, 118, 255), _scraps)
+top_dog(f"{OUT}/sprites/dog_duchess.png", (238, 236, 240, 255), (255, 255, 255, 255), (220, 214, 224, 255), _duchess)
+top_dog(f"{OUT}/sprites/dog_tiger.png", (40, 36, 40, 255), (70, 64, 70, 255), (30, 26, 30, 255), _tiger, size=1.3)
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

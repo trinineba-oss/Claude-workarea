@@ -23,3 +23,4 @@ sign 1 5 sign_lady_hailes
 prop 7 9 pole
 prop 14 9 pole
 night 18 7 bandit
+topdog 10 9 duchess

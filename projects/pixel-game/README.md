@@ -48,7 +48,7 @@ The game started as pixel art and is now smooth HD 2D:
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
   walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing,
-  night dangers, the first temple, its boss, Brownie). `make test` fails if a test fails, times
+  night dangers, the first temple, its boss, Brownie, her orders, dog duels). `make test` fails if a test fails, times
   out, or prints a script error
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
@@ -62,6 +62,7 @@ The game started as pixel art and is now smooth HD 2D:
 | Item (use the selected hotbar item) | X | B |
 | Select hotbar slot | 1-8 | tap the slot |
 | Interact / talk | C | X (A also talks when facing someone) |
+| Give Brownie an order (once she has joined) | V | DOG |
 | Pause (also saves) | Esc | II (top right) |
 
 Touch controls show on touch devices and in the browser; on desktop the mouse acts as a
@@ -126,6 +127,8 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 | `bossdoor` | | the sealed two-tile door to a temple's boss; it takes that temple's Pepper Key (`chest ... bosskey`) |
 | `seasoning` | `<item>@<trigger>` | a sacred seasoning that appears when the trigger fires; taking it sets `has_<item>` and carries Chad out (`exit` in `Game.MAPS`) |
 | `brownie` | | where Brownie waits to be found (overworld, once) |
+| `dig` | `tt<amount>` or an item id | something buried for Brownie to sniff out and dig up (once) |
+| `topdog` | a dog from `data/dogs.json` | a dog that challenges Brownie to a turn-based duel |
 | `locked` | | a two-tile door that takes a small key |
 | `gate` | a trigger name | two-tile iron bars that open for good when the trigger fires |
 | `shutter` | | bars that close while a mini-boss in the room is fighting |
@@ -199,8 +202,9 @@ poles and car headlights. Add a lamp to any prop with `"light": [x, y, size, "#c
 `data/props.json`. Characters can say different things at night: the pseudo-flag `night` works
 in `if` / `unless` in `data/characters.json` (the ibis sleeps). The time is saved.
 
-For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room) and
-`&time=21` and `&give=fishing_rod` (e.g. `index.html?room=0_1&at=10_8&time=17&give=fishing_rod`).
+For screenshots, the Web build takes `?room=2_0`, `&at=19_7` (a tile in that room),
+`&time=21`, `&give=fishing_rod`, `&map=temple1`, `&brownie=1` (start with Brownie) and
+`&duel=scraps` (open a duel) (e.g. `index.html?room=0_1&at=10_8&time=17&give=fishing_rod`).
 
 ## Night dangers
 
@@ -270,6 +274,34 @@ she follows Chad everywhere, temples included, sitting when he stands still and 
 if she falls far behind. She runs at enemies near Chad and bites them, and she chases down any
 bandit making off with Chad's money, so a bitten bandit drops it. She never gets hurt, and
 once she has joined, Attack near her swings the cutlass as usual.
+
+### Orders
+
+Press **Dog** (V / DOG) to open her menu; the game pauses while you choose:
+- **Sic 'em:** pick a target (left/right cycles through enemies nearby, marked with a red
+  ring) and she chases that one down, even beyond her usual range.
+- **Stay / Come:** she waits where she is, and still snaps at anything that comes close. Sat
+  on (or right next to) a pressure plate, she holds it down like a push block.
+- **Fetch:** she brings back the nearest coin or snack, swimming across water if she has to.
+- **Dig:** she runs to the nearest buried thing (`dig` in a room file) and digs it up: money or
+  an item. When she passes one on her own she stops and goes "Sniff sniff?".
+
+### Dog duels
+
+Three top dogs rule their patch: **Scraps** at Cross Crossing, **Duchess** by the food trucks
+on Lady Hailes Avenue and **Tiger** in the fenced lot at the east end (`data/dogs.json`). Talk
+to one with Brownie at your side and it challenges her to a turn-based duel on its own screen
+(the world pauses). Each round you pick her move, then the foe moves:
+- **Bite:** damage from her attack, minus the foe's defense, plus a little luck.
+- **Bark:** lowers the foe's attack and may make it flinch and lose its turn.
+- **Guard:** halves the damage she takes this round. Use it when a dog crouches to pounce
+  (the next round it hits twice as hard).
+- **Treat:** she eats something from Chad's bag (any food or fish) and heals.
+
+Foes bite, growl (lowering her attack), howl (healing when hurt) and pounce. Winning pays TT$,
+marks the dog as beaten (it is friendly afterwards) and gives Brownie experience: she levels up
+and gets tougher (`DogBattle.stats_for`, saved in the flags). Losing costs nothing; rest and
+try again. Tiger is meant to be beaten after a level or two.
 
 ## Saving
 

@@ -20,6 +20,7 @@ var _age := 0.0
 
 
 func _ready() -> void:
+	add_to_group("pickups")
 	_sprite.texture = TEXTURES[kind]
 	_age = randf() * TAU
 
@@ -41,6 +42,15 @@ func _physics_process(delta: float) -> void:
 			Effects.burst(get_parent(), position + Vector2(0, -24), "sparkle")
 			queue_free()
 			return
+
+
+func texture() -> Texture2D:
+	return TEXTURES[kind]
+
+
+## Gives it to Chad (heal or money). False when it is no use yet (a snack at full health).
+func collect(player: Player) -> bool:
+	return _collect(player)
 
 
 func _collect(player: Player) -> bool:

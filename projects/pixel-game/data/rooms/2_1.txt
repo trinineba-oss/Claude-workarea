@@ -17,3 +17,5 @@ forage 6 6 coconut_palm
 forage 11 2 coconut_palm
 night 16 5 soucouyant
 night 10 6 bandit
+dig 3 2 tt10
+dig 12 8 slipper

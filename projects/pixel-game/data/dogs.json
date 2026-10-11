@@ -1,0 +1,60 @@
+{
+  "_note": "Top dogs that challenge Brownie to a turn-based duel (`topdog <x> <y> <id>` in a room file). hp/attack/defense are battle stats; moves are picked at random each turn from the list (repeat a move to make it likelier): bite, growl (lowers Brownie's attack), howl (heals, only when hurt), pounce (crouches one turn, then hits twice as hard). reward = TT$ for winning, xp = what Brownie learns. Conversations: intro (before the duel), win/lose (after), after (talking to them once beaten). Names and lines are drafts.",
+  "scraps": {
+    "name": "Scraps",
+    "sprite": "dog_scraps",
+    "hp": 14,
+    "attack": 3,
+    "defense": 0,
+    "moves": [
+      "bite",
+      "bite",
+      "growl"
+    ],
+    "reward": 10,
+    "xp": 8,
+    "intro": "duel_scraps",
+    "win": "duel_scraps_win",
+    "lose": "duel_scraps_lose",
+    "after": "duel_scraps_after"
+  },
+  "duchess": {
+    "name": "Duchess",
+    "sprite": "dog_duchess",
+    "hp": 20,
+    "attack": 4,
+    "defense": 1,
+    "moves": [
+      "bite",
+      "growl",
+      "howl",
+      "pounce"
+    ],
+    "reward": 20,
+    "xp": 14,
+    "intro": "duel_duchess",
+    "win": "duel_duchess_win",
+    "lose": "duel_duchess_lose",
+    "after": "duel_duchess_after"
+  },
+  "tiger": {
+    "name": "Tiger",
+    "sprite": "dog_tiger",
+    "hp": 28,
+    "attack": 5,
+    "defense": 2,
+    "moves": [
+      "bite",
+      "bite",
+      "pounce",
+      "growl",
+      "howl"
+    ],
+    "reward": 40,
+    "xp": 22,
+    "intro": "duel_tiger",
+    "win": "duel_tiger_win",
+    "lose": "duel_tiger_lose",
+    "after": "duel_tiger_after"
+  }
+}
