@@ -19,6 +19,8 @@ const MAPS := {
 		"name": "Callaloo Cave",
 		"indoors": true,
 		"filler": "#",
+		# Where Chad comes out when he leaves with the temple's seasoning.
+		"exit": "overworld:1_1:14_3",
 	},
 }
 const FADE_SECONDS := 0.25
@@ -53,6 +55,7 @@ var _minigame: FishingMinigame
 var _fishing := false
 var _was_night := false
 var _boomerang: Boomerang
+var _companion: Companion
 var _worlds: Dictionary = {}  # map id -> WorldMap
 var _fade: ColorRect
 var _warping := false
@@ -113,6 +116,7 @@ func _ready() -> void:
 	_status.set_money(_player.money)
 	_update_keys()
 	_entry_position = _player.position
+	_add_companion()
 	_was_night = day_night.is_night()
 	_setup_camera()
 	_refresh_rooms()
@@ -275,6 +279,8 @@ func go_to(room_coords: Vector2i, pos: Vector2) -> void:
 	coords = room_coords
 	_player.position = pos
 	_entry_position = pos
+	if _companion != null and _companion.joined:
+		_companion.catch_up(_player)
 	_refresh_rooms()
 	_setup_camera()
 	_snap_camera()
@@ -351,7 +357,7 @@ func is_indoors() -> bool:
 
 func _update_keys() -> void:
 	if _status != null:
-		_status.set_keys(progress.key_count() if is_indoors() else -1)
+		_status.set_keys(progress.key_count() if is_indoors() else -1, progress.has_boss_key())
 
 
 ## The room Chad is in.
@@ -410,6 +416,7 @@ func save_game() -> void:
 		"room": [coords.x, coords.y],
 		"position": [_player.position.x, _player.position.y],
 		"health": _player.health,
+		"max_health": _player.max_health,
 		"money": _player.money,
 		"flags": flags,
 		"hour": day_night.hour,
@@ -440,6 +447,7 @@ func _restore(data: Dictionary) -> bool:
 		progress.data.merge(saved_progress, true)
 	coords = saved_coords
 	_player.position = _clamp_to_room(Vector2(position[0], position[1]), coords, 32.0)
+	_player.max_health = clampi(int(data.get("max_health", _player.max_health)), 6, 40)
 	var health := int(data.get("health", _player.max_health))
 	_player.health = health if health > 0 else _player.max_health
 	_player.money = maxi(int(data.get("money", 0)), 0)
@@ -517,6 +525,26 @@ func _on_room_entered() -> void:
 	var room := current_room()
 	if room != null:
 		room.on_enter()
+
+
+## Brownie: waiting at her spot on the road (`brownie` in a room file), or at Chad's heels if
+## she has already joined.
+func _add_companion() -> void:
+	_companion = Companion.new()
+	_companion.name = "Brownie"
+	var overworld := _world_for(OVERWORLD)
+	for room_coords: Vector2i in overworld.objects:
+		for obj in overworld.objects_in(room_coords):
+			if obj["kind"] == "brownie":
+				_companion.home = (
+					WorldMap.room_origin(room_coords)
+					+ (Vector2(obj["cell"]) + Vector2(0.5, 0.5)) * WorldMap.TILE
+				)
+	_companion.position = _companion.home
+	add_child(_companion)
+	if flags.get(Companion.FLAG, false):
+		_companion.join()
+		_companion.catch_up(_player)
 
 
 func _room_center(room_coords: Vector2i) -> Vector2:
@@ -617,6 +645,8 @@ func _on_player_died() -> void:
 	_loaded[coords] = _make_room(coords)
 	_player.position = _entry_position
 	_player.revive()
+	if _companion.joined:
+		_companion.catch_up(_player)
 	save_game()
 
 

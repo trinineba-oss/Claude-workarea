@@ -107,7 +107,9 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Shopkeeper rule:** a Cross Crossing vendor is cheerful until you try to skip the line or steal;
   the gag is the punishment, not violence.
 - **Maxi taxis:** colorful minibuses as fast travel between hubs (the ocarina/telephone idea).
-- **Chain-chomp ally:** a pothound on a long rope who guards a path.
+- **Companion (built): Brownie**, a brown pothound found hungry on the road from the wharf.
+  Feed her and she follows Chad everywhere, bites enemies near him and chases down bandits
+  who rob him.
 - **Trading quest:** a chain of absurd favors along the Cross Crossing stalls (a bag of ice, a
   sno-cone, a lost slipper ...) ending in a useful reward.
 - **Rum-shop riddle men:** a group of "liming" locals who give clues and terrible advice.
@@ -188,7 +190,12 @@ gossips), jumbies, steups teens (a teeth-suck shockwave). Bosses are themed on t
    (only hurt when stunned against a wall), and the **coconut boomerang**, used straight away
    on a crystal switch across water to open the way to the sealed pepper door. Temples are
    their own maps with dim torchlit rooms and a camera that stays in one room at a time.
-5. **Boss and slice ending:** Temple 1 boss, first seasoning, hint of the rival.
+5. **Boss and slice ending (done):** the Pepper Key (a boomerang crystal in the west room),
+   the sealed door, and the **Callaloo Cauldron** (lid on: invulnerable; lid up: it spits hot
+   callaloo; boomerang the open pot to knock it dizzy, then cut). Prizes: one more double of
+   health and the first seasoning, the **Sacred Chadon Beni** ("for Chad"), which carries him
+   out to the beach, where **Doner Dread** introduces himself and leaves. The ibis then marks
+   the end of the first chapter. Also built: **Brownie**, the companion dog.
 6. **Polish:** sound effects, music, hit effects, menus, settings, low-end phone testing.
 
 After the slice: Temples 2-4, the trading quest, minigames, the finale and the twist ending.

@@ -102,6 +102,16 @@ func _player() -> Player:
 	return player if player != null and not player.frozen else null
 
 
+## Is Chad in the same room? Bosses wait for him (neighbouring rooms are loaded too).
+func _player_in_my_room() -> bool:
+	var player := _player()
+	return (
+		player != null
+		and get_parent() is Room
+		and get_parent().coords == WorldMap.room_at(player.global_position)
+	)
+
+
 func _die() -> void:
 	died.emit()
 	var room := get_parent()

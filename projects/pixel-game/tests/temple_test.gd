@@ -67,7 +67,7 @@ func _run() -> void:
 		map.filler = Game.MAPS[id].get("filler", "")
 		maps[id] = map
 	var temple: WorldMap = maps[TEMPLE]
-	_check(temple.rooms.size() == 7, "the temple has 7 rooms (%d)" % temple.rooms.size())
+	_check(temple.rooms.size() == 8, "the temple has 8 rooms (%d)" % temple.rooms.size())
 	var problems := temple.validate(false)
 	_check(problems.is_empty(), "the temple is valid: %s" % ", ".join(problems))
 	_check(temple.filler_tile(Vector2i(9, 9)) == "#", "outside the temple is rock")
@@ -221,7 +221,7 @@ func _run() -> void:
 	var arena := Vector2i(1, 0)
 	game.go_to(arena, _at(arena, 10, 8))
 	await _physics_frames(4)
-	var boss: BigCrab = get_nodes_in_group("bosses")[0]
+	var boss: BigCrab = get_nodes_in_group("bosses").filter(func(b): return b is BigCrab)[0]
 	var shutters := _in_room(game, DungeonDoor)
 	_check(shutters.size() == 2, "the arena has two shutters")
 	_check(shutters.all(func(s): return not s.is_open), "the shutters slam shut")
@@ -245,7 +245,10 @@ func _run() -> void:
 	_check(game.inventory.count("coconut_boomerang") == 1, "the chest holds the boomerang")
 	game.go_to(arena, _at(arena, 10, 8))
 	await _physics_frames(4)
-	_check(get_nodes_in_group("bosses").is_empty(), "a beaten crab stays beaten")
+	_check(
+		not get_nodes_in_group("bosses").any(func(b): return b is BigCrab),
+		"a beaten crab stays beaten"
+	)
 	_check(_in_room(game, DungeonDoor).all(func(s): return s.is_open), "the shutters stay open")
 
 	# --- the boomerang ------------------------------------------------------------------------

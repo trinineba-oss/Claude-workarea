@@ -141,5 +141,13 @@
     "price": 0,
     "heal": 0,
     "tool": true
+  },
+  "sacred_chadon_beni": {
+    "name": "Sacred Chadon Beni",
+    "icon": "sacred_chadon_beni",
+    "price": 0,
+    "heal": 0,
+    "tool": true,
+    "seasoning": true
   }
 }

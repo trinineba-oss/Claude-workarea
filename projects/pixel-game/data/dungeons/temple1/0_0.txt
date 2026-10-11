@@ -1,7 +1,7 @@
-####################
+#########==#########
 #==~~~~#=====#=====#
 #==~~~~#=====#=====#
-#==~~~~###==##=====#
+#==~~~~##==###=====#
 #==~~~~============#
 #==~~~~=============
 #==~~~~=============
@@ -10,11 +10,14 @@
 #==~~~~============#
 ####################
 
-; Hit the crystal across the water with the boomerang to open the way to the sealed door.
+; Hit the crystal across the water with the boomerang to open the gate; past it is the
+; sealed pepper door to the boss, which takes the Pepper Key.
 locked 19 5
 switch 2 5 west_switch
-gate 10 3 west_switch
-prop 10 2 boss_door
+gate 9 3 west_switch
+bossdoor 9 0
+prop 8 1 torch
+prop 12 1 torch
 prop 15 1 torch
 prop 18 9 torch
 sign 9 8 sign_switch

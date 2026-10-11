@@ -19,7 +19,14 @@ test:
 		godot --headless --path $$p --import >/dev/null 2>&1; \
 		for t in $$p/tests/*_test.gd; do \
 			echo "  $$(basename $$t)"; \
-			timeout 120 godot --headless --path $$p --script res://tests/$$(basename $$t) || exit 1; \
+			out=$$(mktemp); \
+			timeout 120 godot --headless --path $$p --script res://tests/$$(basename $$t) >$$out 2>&1; \
+			status=$$?; \
+			cat $$out; \
+			if [ $$status -ne 0 ] || grep -qE 'SCRIPT ERROR|Parse Error|Compile Error' $$out; then \
+				rm -f $$out; echo "  FAILED: $$(basename $$t) (exit $$status or script errors)"; exit 1; \
+			fi; \
+			rm -f $$out; \
 		done; \
 	done
 

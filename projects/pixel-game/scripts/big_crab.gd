@@ -60,6 +60,9 @@ func _think(delta: float) -> void:
 	_timer -= delta
 	_tink_cooldown = maxf(_tink_cooldown - delta, 0.0)
 	var player := _player()
+	if not _player_in_my_room():
+		velocity = Vector2.ZERO
+		return
 	match state:
 		State.SIDLE:
 			velocity = Vector2.ZERO

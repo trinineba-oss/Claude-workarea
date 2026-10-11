@@ -835,17 +835,108 @@ c.poly([(20, 2), (32, 22), (28, 36), (12, 36), (8, 22)], (246, 130, 40, 255), ou
 c.detail_ellipse(20, 26, 6, 8, (252, 220, 100, 255))
 c.save(f"{OUT}/sprites/torch.png")
 
-c = Canvas(192, 200)  # the sealed temple door (boss door, milestone 5): anchor = bottom centre
-c.rrect(4, 8, 188, 198, 14, STONE_D)
-c.rrect(24, 30, 168, 198, 60, (60, 40, 30, 255))
-c.rrect(34, 44, 158, 198, 52, WOOD)
-c.detail_line([(96, 46), (96, 196)], WOOD_D, 3)
-for y in (90, 150):
-    c.detail_line([(36, y), (156, y)], IRON, 6)
-c.poly([(96, 96), (116, 120), (110, 150), (96, 160), (82, 150), (76, 120)], (220, 50, 40, 255), outline=2.5)  # pepper lock
-c.rrect(92, 84, 100, 98, 2, (60, 140, 60, 255), outline=1.5)
-c.detail_ellipse(90, 118, 4, 8, (255, 140, 120, 255))
-c.save(f"{OUT}/sprites/boss_door.png")
+
+# ---- milestone 5: the Temple 1 boss, the rival and Brownie ------------------------------------------
+c = Canvas(128, 150)  # sealed pepper door across a top wall: anchor = bottom centre
+c.rrect(2, 6, 126, 148, 12, STONE_D)
+c.rrect(14, 22, 114, 148, 40, (60, 40, 30, 255))
+c.rrect(22, 32, 106, 148, 34, WOOD)
+c.detail_line([(64, 34), (64, 146)], WOOD_D, 3)
+for y in (70, 118):
+    c.detail_line([(24, y), (104, y)], IRON, 6)
+c.poly([(64, 64), (80, 82), (76, 108), (64, 116), (52, 108), (48, 82)], (220, 50, 40, 255), outline=2.5)
+c.rrect(60, 54, 68, 66, 2, (60, 140, 60, 255), outline=1.5)
+c.detail_ellipse(58, 84, 3, 7, (255, 140, 120, 255))
+c.save(f"{OUT}/sprites/door_boss_h.png")
+
+c = Canvas(40, 40)  # the Pepper Key (HUD), anchor = centre
+c.poly([(12, 6), (22, 14), (20, 28), (12, 34), (4, 28), (2, 14)], (220, 50, 40, 255), outline=2)
+c.rrect(10, 2, 14, 8, 1, (60, 140, 60, 255), outline=1.2)
+c.rrect(18, 16, 38, 22, 2, BRASS, outline=1.5)
+c.rrect(30, 22, 34, 30, 1, BRASS, outline=1.2)
+c.detail_ellipse(9, 16, 2, 4, (255, 140, 120, 255))
+c.save(f"{OUT}/sprites/pepper_key.png")
+
+c = Canvas(180, 150)  # the Callaloo Cauldron, anchor = bottom centre (the lid is separate)
+POT, POT_L = (52, 50, 60, 255), (96, 94, 110, 255)
+c.rrect(30, 126, 52, 148, 6, POT)  # legs
+c.rrect(128, 126, 150, 148, 6, POT)
+c.ellipse(10, 70, 12, 10, POT)  # handles
+c.ellipse(170, 70, 12, 10, POT)
+c.ellipse(90, 84, 80, 62, POT)
+c.ellipse(90, 28, 74, 16, POT_L)  # rim
+c.detail_ellipse(90, 28, 66, 11, (70, 140, 60, 255))  # callaloo
+c.detail_ellipse(70, 26, 8, 4, (120, 190, 90, 255))
+c.detail_ellipse(112, 30, 6, 3, (120, 190, 90, 255))
+c.detail_ellipse(48, 60, 16, 10, POT_L)  # shine
+for x in (66, 114):
+    c.detail_ellipse(x, 82, 11, 9, (250, 246, 240, 255))
+    c.detail_ellipse(x, 85, 5, 5, INK)
+c.detail_line([(52, 66), (76, 74)], INK, 4)  # grumpy brows
+c.detail_line([(128, 66), (104, 74)], INK, 4)
+c.detail_line([(70, 110), (90, 104), (110, 110)], INK, 4)
+c.save(f"{OUT}/sprites/cauldron.png")
+
+c = Canvas(156, 48)  # the cauldron's lid, anchor = centre
+c.ellipse(78, 32, 74, 14, POT_L)
+c.ellipse(78, 26, 66, 12, POT)
+c.rrect(66, 2, 90, 16, 6, POT_L)
+c.detail_ellipse(56, 24, 18, 4, (130, 128, 144, 255))
+c.save(f"{OUT}/sprites/cauldron_lid.png")
+
+c = Canvas(36, 36)  # a glob of hot callaloo, anchor = centre
+c.ellipse(18, 19, 14, 13, (70, 150, 60, 255))
+c.detail_ellipse(13, 13, 5, 3, (150, 210, 110, 255))
+c.detail_ellipse(22, 22, 3, 3, (40, 100, 40, 255))
+c.save(f"{OUT}/sprites/callaloo_blob.png")
+
+c = Canvas(76, 60)  # Brownie, Chad's pothound: facing right, anchor = feet at bottom centre
+BROWN, BROWN_L, BROWN_D = (128, 84, 50, 255), (176, 128, 86, 255), (88, 56, 34, 255)
+c.poly([(10, 30), (2, 16), (8, 14), (16, 26)], BROWN)  # tail up
+for x in (16, 26, 44, 54):
+    c.rrect(x, 38, x + 7, 57, 3, BROWN)
+c.ellipse(36, 34, 24, 13, BROWN)
+c.ellipse(58, 22, 12, 11, BROWN)
+c.ellipse(68, 27, 7, 5.5, BROWN_L)
+c.poly([(50, 14), (46, 2), (56, 10)], BROWN_D)  # floppy ear
+c.detail_ellipse(36, 40, 15, 5, BROWN_L)
+c.detail_line([(48, 30), (54, 34), (62, 32)], (220, 50, 50, 255), 3)  # red collar
+c.detail_ellipse(55, 36, 2.5, 2.5, BRASS)
+c.detail_ellipse(61, 19, 2.4, 2.8, INK)
+c.detail_ellipse(74, 25, 2.4, 2.0, INK)
+c.detail_line([(66, 31), (70, 33)], (200, 90, 100, 255), 2)  # tongue
+c.save(f"{OUT}/sprites/brownie.png")
+
+# Doner Dread, the rival: a fast-food baron in a shiny purple suit, shades and a chef's hat.
+c = Canvas(64, 96)
+SUIT, SUIT_L = (110, 50, 150, 255), (150, 90, 190, 255)
+c.rrect(21, 76, 30, 93, 4, (40, 30, 50, 255))
+c.rrect(34, 76, 43, 93, 4, (40, 30, 50, 255))
+c.ellipse(15, 66, 6, 6, SKINS[3])
+c.ellipse(49, 66, 6, 6, SKINS[3])
+c.rrect(16, 52, 48, 82, 10, SUIT)
+c.ellipse(32, 40, 18, 17, SKINS[3])
+c.rrect(16, 4, 48, 26, 8, (250, 250, 250, 255))  # chef's toque
+c.ellipse(24, 8, 9, 8, (250, 250, 250, 255))
+c.ellipse(40, 8, 9, 8, (250, 250, 250, 255))
+c.detail_line([(20, 37), (44, 37)], INK, 6)  # shades
+c.detail_ellipse(26, 37, 5, 4, INK)
+c.detail_ellipse(38, 37, 5, 4, INK)
+c.detail_line([(27, 49), (32, 51), (39, 47)], INK, 1.8)  # smirk
+c.detail_line([(28, 54), (32, 62), (36, 54)], (250, 240, 230, 255), 3)  # shirt
+c.detail_line([(24, 58), (32, 66), (40, 58)], BRASS, 2.2)  # big gold chain
+c.detail_line([(20, 56), (24, 74)], SUIT_L, 2)
+c.save(f"{OUT}/sprites/npc_rival.png")
+
+
+def _sacred_beni(c):
+    for (cx, cy), r in (((24, 30), 0), ((14, 22), -0.5), ((34, 22), 0.5), ((24, 14), 0)):
+        c.poly([(cx - 5, cy + 10), (cx, cy - 10), (cx + 5, cy + 10)], (70, 170, 70, 255), outline=2)
+    c.detail_line([(24, 44), (24, 26)], (60, 120, 50, 255), 2)
+    c.detail_ellipse(24, 8, 4, 4, (255, 240, 150, 255))
+
+
+icon(f"{OUT}/items/sacred_chadon_beni.png", _sacred_beni)
 
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))

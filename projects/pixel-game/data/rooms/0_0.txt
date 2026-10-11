@@ -20,3 +20,4 @@ forage 2 8 chadon_beni_patch
 forage 5 9 pepper_bush
 night 3 5 bandit
 night 6 2 dog
+brownie 6 4

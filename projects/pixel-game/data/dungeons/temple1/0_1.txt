@@ -1,6 +1,6 @@
 ####################
-#==================#
-#==================#
+#=~================#
+#~~================#
 #===##======##=====#
 #===##======##=====#
 #===================
@@ -10,10 +10,13 @@
 #==================#
 ####################
 
-; Crabs guard the first small key.
+; Crabs guard the first small key. The crystal on the little island in the corner needs the
+; boomerang: hit it and the Pepper Key's chest appears.
 chest 2 5 key
-prop 1 1 torch
+switch 1 1 west_crystal
+chest 16 2 bosskey@west_crystal
 prop 1 9 torch
+prop 18 9 torch
 crab 8 2
 crab 10 8
 crab 15 5

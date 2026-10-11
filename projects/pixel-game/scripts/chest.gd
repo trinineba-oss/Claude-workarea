@@ -1,8 +1,9 @@
 class_name Chest
 extends Interactable
-## A treasure chest. Its content is "key" (a small key for this dungeon), an item id, or
-## "tt<amount>" (money). With "<content>@<trigger>" it only appears once that trigger fires
-## (e.g. after a mini-boss). Opened chests stay open.
+## A treasure chest. Its content is "key" (a small key for this dungeon), "bosskey" (the
+## temple's big key), "heart" (one more double of health), an item id, or "tt<amount>"
+## (money). With "<content>@<trigger>" it only appears once that trigger fires (e.g. after a
+## mini-boss). Opened chests stay open.
 
 const CLOSED := preload("res://assets/sprites/chest.png")
 const OPEN := preload("res://assets/sprites/chest_open.png")
@@ -29,7 +30,7 @@ static func content_problem(arg: String) -> String:
 	if parts.size() > 2 or parts[0] == "" or (parts.size() == 2 and parts[1] == ""):
 		return "chest needs <content> or <content>@<trigger>"
 	var what := parts[0]
-	if what == "key" or GameData.has_item(what):
+	if what in ["key", "bosskey", "heart"] or GameData.has_item(what):
 		return ""
 	if what.begins_with("tt") and what.substr(2).is_valid_int():
 		return ""
@@ -74,6 +75,16 @@ func use(game: Game) -> void:
 	if content == "key":
 		game.progress.add_key()
 		Effects.float_text(get_parent(), above, "+1 Small key", Color(1, 0.95, 0.6))
+	elif content == "bosskey":
+		game.progress.give_boss_key()
+		Effects.float_text(get_parent(), above, "You got the Pepper Key!", Color(1, 0.7, 0.5))
+		game.talk("got_pepper_key")
+	elif content == "heart":
+		var player: Player = game.get_node("Player")
+		player.max_health += 2
+		player.heal(player.max_health)
+		Effects.float_text(get_parent(), above, "One more double!", Color(1, 0.95, 0.6))
+		game.talk("got_heart")
 	elif content.begins_with("tt") and content.substr(2).is_valid_int():
 		var amount := int(content.substr(2))
 		game.get_node("Player").add_money(amount)

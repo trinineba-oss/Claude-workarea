@@ -48,7 +48,8 @@ The game started as pixel art and is now smooth HD 2D:
   files next to each asset; `.godot/` is ignored.
 - `tests/*_test.gd` – headless tests (world data, save file, touch controls, the game, combat,
   walking through every doorway, dialogue, traffic, day and night, inventory, foraging, fishing,
-  night dangers, the first temple)
+  night dangers, the first temple, its boss, Brownie). `make test` fails if a test fails, times
+  out, or prints a script error
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
 
@@ -121,11 +122,14 @@ After the 11 map rows, a room file can list objects, one per line as `<kind> <x>
 | `forage` | a plant from `data/forage.json` | something to pick (mango tree, coconut palm, chadon beni, pepper bush) |
 | `night` | `bandit`, `dog`, `soucouyant` or `corbeau` | an enemy that comes out after dark (see *Night dangers*) |
 | `warp` | `<map>:<x>_<y>:<tx>_<ty>` | stepping on it takes Chad to that room and tile of a map (`overworld` or a temple) |
-| `crab`, `bigcrab` | (`bigcrab`: a trigger name) | temple enemies; `bigcrab` is the mini-boss, and beating it fires its trigger |
+| `crab`, `bigcrab`, `cauldron` | (`bigcrab`, `cauldron`: a trigger name) | temple enemies; `bigcrab` is Temple 1's mini-boss and `cauldron` its boss; beating one fires its trigger |
+| `bossdoor` | | the sealed two-tile door to a temple's boss; it takes that temple's Pepper Key (`chest ... bosskey`) |
+| `seasoning` | `<item>@<trigger>` | a sacred seasoning that appears when the trigger fires; taking it sets `has_<item>` and carries Chad out (`exit` in `Game.MAPS`) |
+| `brownie` | | where Brownie waits to be found (overworld, once) |
 | `locked` | | a two-tile door that takes a small key |
 | `gate` | a trigger name | two-tile iron bars that open for good when the trigger fires |
 | `shutter` | | bars that close while a mini-boss in the room is fighting |
-| `chest` | `key`, an item id or `tt<amount>`, optionally `@<trigger>` | a chest; with `@trigger` it only appears once the trigger fires |
+| `chest` | `key`, `bosskey`, `heart`, an item id or `tt<amount>`, optionally `@<trigger>` | a chest; with `@trigger` it only appears once the trigger fires. `heart` adds a double of health |
 | `block` | | a push block |
 | `plate` | a trigger name | a pressure plate: a push block on it fires the trigger |
 | `switch` | a trigger name | a crystal switch: hit it (cutlass or boomerang) to fire the trigger |
@@ -153,7 +157,9 @@ finish the line, then again for the next one.
   English and needs review by someone from Trinidad. A line can set a story flag
   (`"set_flag": "intro_done"`); flags are saved.
 - `data/characters.json` lists who is who: name, sprite, and which conversation they start
-  (the first entry whose `if` / `unless` flag conditions hold).
+  (the first entry whose `if` / `unless` flag conditions hold). `present_if` /
+  `present_unless` make someone appear or leave with a story flag, and `"approach": true` makes
+  them walk up and talk as soon as Chad is near (Doner Dread on the beach).
 - `data/props.json` lists props: sprite, solid footprint, an optional awning label and an
   optional conversation.
 - On a new game the ibis welcomes Chad on the wharf (once).
@@ -230,26 +236,45 @@ when Chad re-enters a room whose plates are not all pressed, so a jammed puzzle 
 be retried.
 
 **Temple 1: Callaloo Cave** sits behind the closed beach (`1_1`): walk into the cave mouth.
-Seven rooms:
+Eight rooms:
 - **Entrance:** the sand at the bottom leads back out.
 - **Hub:** the north door is locked.
-- **West:** crabs guard a chest with a small key.
+- **West:** crabs guard a chest with a small key. Later, the boomerang reaches a crystal on a
+  little island in the corner, and the **Pepper Key**'s chest appears.
 - **East:** a push-block puzzle (right, then up onto the plate) opens a gate to a second key.
 - **North:** the **Big Blue Crab**, the mini-boss. Its shell shrugs off the cutlass. It sidles,
   raises its claws and charges; when it rams a wall it lands on its back, and only then can it
   be hurt. The boomerang flips it too. Shutters keep Chad in until it is beaten, then its chest
   appears with the **coconut boomerang**.
-- **North-west:** a crystal switch across the water opens the way to the sealed pepper door
-  (the boss, milestone 5).
+- **North-west:** a crystal switch across the water opens the way to the sealed pepper door,
+  which takes the Pepper Key.
+- **The lair:** the **Callaloo Cauldron**, a giant iron pot of callaloo. With its lid on it
+  shrugs everything off ("Tonk!") and hops after Chad; then it lifts the lid and spits hot
+  callaloo. While the lid is up the pot is too hot to hit, but a boomerang into it knocks the
+  lid off and leaves it dizzy, and then the cutlass hurts. At half health it gets angry
+  (faster hops, wider spits, a second spit). Beating it opens the shutter and brings out one
+  more double of health and the **Sacred Chadon Beni**, the first sacred seasoning, which
+  carries Chad back out to the beach. There, Doner Dread is waiting.
+- Bosses stay idle until Chad is in their room (neighbouring rooms are loaded too).
 
 **Coconut boomerang** (select it, then Item): flies about six tiles the way Chad faces and
 comes back. It sails over water, turns back at walls and solid things, knocks out small
 enemies, flips the Big Blue Crab and hits crystal switches.
 
+## Brownie
+
+Brownie is a brown pothound lying in the shade on the road from the wharf (`brownie` in
+`data/rooms/0_0.txt`). She only has eyes for Chad's bag: talk to her with something to eat
+(any food or fish) and she takes one and joins for good (flag `brownie_joined`). From then on
+she follows Chad everywhere, temples included, sitting when he stands still and catching up
+if she falls far behind. She runs at enemies near Chad and bites them, and she chases down any
+bandit making off with Chad's money, so a bitten bandit drops it. She never gets hurt, and
+once she has joined, Attack near her swings the cutlass as usual.
+
 ## Saving
 
 `user://save.json` holds the map, room, position, health, money, story flags, time of day,
-bag, forage regrowth and temple progress. It is written on every room change, on pause,
+bag, forage regrowth, temple progress and maximum health. It is written on every room change, on pause,
 and when the app goes to the background or closes. A missing, corrupt or different-version
 file starts a new game.
 
@@ -287,6 +312,6 @@ release keystores out of git (`*.keystore` and `*.jks` are ignored).
 
 ## Next steps
 
-See the milestones in `DESIGN.md`: next is milestone 5, the Temple 1 boss behind the pepper
-door and the first sacred seasoning. Real art can replace the placeholders in `assets/` at any
+See the milestones in `DESIGN.md`: the first chapter (the vertical slice) is complete; next is
+polish (milestone 6). Real art can replace the placeholders in `assets/` at any
 point.
