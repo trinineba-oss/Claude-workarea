@@ -423,6 +423,116 @@
         "speaker": "",
         "text": "Brownie will follow you now. She does bite anything that troubles you."
       }
+    ],
+    "topdog_no_dog": [
+      {
+        "speaker": "",
+        "text": "The dog looks you up and down, then yawns. You're not the one it wants to deal with."
+      },
+      {
+        "speaker": "",
+        "text": "(Maybe if you had a dog of your own...)"
+      }
+    ],
+    "duel_scraps": [
+      {
+        "speaker": "",
+        "text": "A scrappy grey mutt blocks the pavement. One ear up, one ear down, all attitude."
+      },
+      {
+        "speaker": "",
+        "text": "He growls at Brownie. Brownie growls back. This is happening."
+      },
+      {
+        "speaker": "",
+        "text": "SCRAPS wants to settle who runs Cross Crossing!"
+      }
+    ],
+    "duel_scraps_win": [
+      {
+        "speaker": "",
+        "text": "Scraps rolls over and shows his belly. Respect, earned."
+      }
+    ],
+    "duel_scraps_lose": [
+      {
+        "speaker": "",
+        "text": "Scraps trots off with his tail high. Brownie sulks. Rest up and try again."
+      }
+    ],
+    "duel_scraps_after": [
+      {
+        "speaker": "",
+        "text": "Scraps wags his tail at Brownie. Still one ear up, one ear down."
+      }
+    ],
+    "duel_duchess": [
+      {
+        "speaker": "",
+        "text": "A fluffy white dog in a pink bow sits by the trucks like she owns the avenue. She might."
+      },
+      {
+        "speaker": "",
+        "text": "She sniffs at Brownie's old collar and turns her nose up."
+      },
+      {
+        "speaker": "",
+        "text": "DUCHESS will not tolerate riff-raff on Lady Hailes Avenue!"
+      }
+    ],
+    "duel_duchess_win": [
+      {
+        "speaker": "",
+        "text": "Duchess sighs, adjusts her bow, and lets Brownie have the good shade."
+      }
+    ],
+    "duel_duchess_lose": [
+      {
+        "speaker": "",
+        "text": "Duchess doesn't even look back. The bow stays perfect. Next time."
+      }
+    ],
+    "duel_duchess_after": [
+      {
+        "speaker": "",
+        "text": "Duchess shares a crumb of doubles with Brownie. A great honour, apparently."
+      }
+    ],
+    "duel_tiger": [
+      {
+        "speaker": "",
+        "text": "Inside the lot, a big black-and-tan dog stands up slow. Very slow. Very big."
+      },
+      {
+        "speaker": "",
+        "text": "Every corbeau on the fence goes quiet."
+      },
+      {
+        "speaker": "",
+        "text": "TIGER, the boss of the back lot, accepts Brownie's challenge!"
+      }
+    ],
+    "duel_tiger_win": [
+      {
+        "speaker": "",
+        "text": "Tiger lies down and puts his head on his paws. The lot has a new boss."
+      },
+      {
+        "speaker": "",
+        "text": "(The corbeaux look very, very nervous.)"
+      }
+    ],
+    "duel_tiger_lose": [
+      {
+        "speaker": "",
+        "text": "Tiger yawns and lies back down. Brownie needs to toughen up a little."
+      }
+    ],
+    "duel_tiger_after": [
+      {
+        "speaker": "",
+        "text": "Tiger thumps his tail once. From Tiger, that's a speech."
+      }
     ]
   }
 }

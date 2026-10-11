@@ -25,3 +25,4 @@ prop 18 9 pole
 sign 7 9 sign_crossing
 npc 3 5 limer
 night 9 1 bandit
+topdog 16 9 scraps

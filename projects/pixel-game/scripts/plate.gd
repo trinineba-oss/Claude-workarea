@@ -1,7 +1,7 @@
 class_name Plate
 extends Node2D
-## A pressure plate set into the floor. Slide a push block onto it and its trigger fires for
-## good (opening gates with the same trigger name).
+## A pressure plate set into the floor. Slide a push block onto it, or tell Brownie to stay
+## on it, and its trigger fires for good (opening gates with the same trigger name).
 
 const UP := preload("res://assets/sprites/plate.png")
 const DOWN := preload("res://assets/sprites/plate_down.png")
@@ -18,6 +18,7 @@ func setup(arg: String) -> void:
 
 
 func _ready() -> void:
+	add_to_group("plates")
 	_sprite = Sprite2D.new()
 	_sprite.texture = DOWN if is_pressed() else UP
 	_sprite.z_index = -5
@@ -32,8 +33,14 @@ func is_pressed() -> bool:
 func _physics_process(_delta: float) -> void:
 	if _sprite.texture == DOWN:
 		return
-	for block: PushBlock in get_tree().get_nodes_in_group("blocks"):
-		if not block.is_moving() and block.global_position.distance_to(global_position) < SNAP:
+	var weights: Array = get_tree().get_nodes_in_group("blocks").filter(
+		func(b): return not b.is_moving() and b.global_position.distance_to(global_position) < SNAP
+	)
+	for dog: Companion in get_tree().get_nodes_in_group("companion"):
+		if dog.mode == Companion.Mode.STAY and dog.position.distance_to(global_position) < 28.0:
+			weights.append(dog)
+	for weight: Node2D in weights:
+		if weight != null:
 			_sprite.texture = DOWN
 			var game := get_tree().get_first_node_in_group("game") as Game
 			if game != null:

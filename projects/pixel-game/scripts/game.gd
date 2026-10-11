@@ -56,6 +56,7 @@ var _fishing := false
 var _was_night := false
 var _boomerang: Boomerang
 var _companion: Companion
+var _dog_menu: DogMenu
 var _worlds: Dictionary = {}  # map id -> WorldMap
 var _fade: ColorRect
 var _warping := false
@@ -101,6 +102,12 @@ func _ready() -> void:
 	_hotbar.offset_top = -_hotbar.size.y - 20.0
 	_hotbar.offset_bottom = -20.0
 	_hotbar.bind(inventory)
+	_dog_menu = DogMenu.new()
+	_dog_menu.name = "DogMenu"
+	$HUD.add_child(_dog_menu)
+	var duel := DuelScreen.new()
+	duel.name = "DuelScreen"
+	$HUD.add_child(duel)
 	_minigame = FishingMinigame.new()
 	_minigame.name = "FishingMinigame"
 	$HUD.add_child(_minigame)
@@ -151,6 +158,10 @@ func _process(_delta: float) -> void:
 	_was_night = night
 	if Input.is_action_just_pressed(&"item") and not _player.frozen and not is_talking():
 		use_selected_item()
+	var dog_ready := _companion != null and _companion.joined
+	_touch.get_node("DogButton").visible = dog_ready
+	if Input.is_action_just_pressed(&"dog") and dog_ready and _can_command_brownie():
+		_command_brownie()
 
 
 ## Uses the item in the selected hotbar slot: cast the rod, or eat food to heal.
@@ -527,6 +538,40 @@ func _on_room_entered() -> void:
 		room.on_enter()
 
 
+func _can_command_brownie() -> bool:
+	return (
+		not get_tree().paused
+		and not _player.frozen
+		and not is_talking()
+		and not _dog_menu.is_open()
+	)
+
+
+## The dog menu: pause, let Chad pick an order, then Brownie carries it out.
+func _command_brownie() -> void:
+	get_tree().paused = true
+	var touch_was_visible := _touch.visible
+	_touch.visible = false
+	_hotbar.visible = false
+	_dog_menu.open(_companion)
+	var choice: Dictionary = await _dog_menu.closed
+	_touch.visible = touch_was_visible
+	_hotbar.visible = true
+	await _let_input_go_stale()
+	get_tree().paused = false
+	match choice.get("order", ""):
+		"sic":
+			_companion.sic(choice["target"])
+		"stay":
+			_companion.stay()
+		"come":
+			_companion.come()
+		"fetch":
+			_companion.fetch()
+		"dig":
+			_companion.dig()
+
+
 ## Brownie: waiting at her spot on the road (`brownie` in a room file), or at Chad's heels if
 ## she has already joined.
 func _add_companion() -> void:
@@ -559,8 +604,9 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
-## that tile, `&time=21` at that hour, `&map=temple1` on another map, and `&give=fishing_rod`
-## puts an item in the bag (used to take screenshots). Ignored everywhere else.
+## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
+## puts an item in the bag, `&brownie=1` starts with Brownie and `&duel=scraps` opens a dog
+## duel (used to take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
@@ -571,6 +617,13 @@ func _apply_debug_start() -> void:
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
+	if query.contains("brownie=1"):
+		flags[Companion.FLAG] = true
+	var duel := RegEx.create_from_string("duel=([a-z_]+)").search(query)
+	if duel != null and GameData.has_dog(duel.get_string(1)):
+		flags[Companion.FLAG] = true
+		var screen: DuelScreen = $HUD/DuelScreen
+		screen.fight.call_deferred(self, duel.get_string(1))
 	var on_map := RegEx.create_from_string("map=([a-z0-9_]+)").search(query)
 	if on_map != null and MAPS.has(on_map.get_string(1)):
 		map_id = on_map.get_string(1)

@@ -12,7 +12,9 @@ extends RefCounted
 ## `plate <x> <y> <trigger>`, `switch <x> <y> <trigger>`, `bigcrab <x> <y> <trigger>` (the
 ## mini-boss; beating it fires the trigger), `cauldron <x> <y> <trigger>` (Temple 1's boss),
 ## `bossdoor <x> <y>` (takes the Pepper Key), `seasoning <x> <y> <item>@<trigger>` and
-## `warp <x> <y> <map>:<room>:<tile>`. `brownie <x> <y>` marks where Brownie waits to be found.
+## `warp <x> <y> <map>:<room>:<tile>`. `brownie <x> <y>` marks where Brownie waits to be found,
+## `dig <x> <y> <reward>` buries something for her to dig up, and `topdog <x> <y> <dog>` is a
+## dog that challenges her to a duel (data/dogs.json).
 
 const PICKUP := preload("res://scenes/pickup.tscn")
 const SCENES := {
@@ -40,6 +42,8 @@ const WITH_ARGUMENT := [
 	"bigcrab",
 	"cauldron",
 	"seasoning",
+	"dig",
+	"topdog",
 ]
 const DUNGEON := [
 	"locked", "gate", "shutter", "chest", "block", "plate", "switch", "warp", "bossdoor"
@@ -85,6 +89,10 @@ static func argument_problem(kind: String, arg: String) -> String:
 			return "" if not Game.parse_warp(arg).is_empty() else "bad warp target '%s'" % arg
 		"seasoning":
 			return Seasoning.argument_problem(arg)
+		"dig":
+			return DigSpot.reward_problem(arg)
+		"topdog":
+			return "" if GameData.has_dog(arg) else "unknown top dog '%s'" % arg
 		"gate", "plate", "switch", "bigcrab", "cauldron":
 			return "" if arg.is_valid_identifier() else "bad trigger name '%s'" % arg
 		"night":
@@ -156,6 +164,14 @@ static func create(kind: String, arg: String = "") -> Node2D:
 			var seasoning := Seasoning.new()
 			seasoning.setup(arg)
 			return seasoning
+		"dig":
+			var buried := DigSpot.new()
+			buried.setup(arg)
+			return buried
+		"topdog":
+			var rival_dog := TopDog.new()
+			rival_dog.setup(arg)
+			return rival_dog
 		"brownie":
 			var marker := Node2D.new()
 			marker.name = "BrownieHome"

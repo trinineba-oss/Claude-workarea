@@ -109,7 +109,11 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Maxi taxis:** colorful minibuses as fast travel between hubs (the ocarina/telephone idea).
 - **Companion (built): Brownie**, a brown pothound found hungry on the road from the wharf.
   Feed her and she follows Chad everywhere, bites enemies near him and chases down bandits
-  who rob him.
+  who rob him. **Orders (built):** a pause-and-command menu with Sic 'em (pick a target),
+  Stay / Come (she can hold down pressure plates), Fetch (she swims for it) and Dig (buried
+  treasure she sniffs out). **Dog duels (built):** three top dogs (Scraps, Duchess, Tiger)
+  challenge her to turn-based duels (bite, bark, guard, treat); wins pay TT$ and level her up.
+  Ideas: plate puzzles built around Stay, more top dogs per area, new moves as she levels.
 - **Trading quest:** a chain of absurd favors along the Cross Crossing stalls (a bag of ice, a
   sno-cone, a lost slipper ...) ending in a useful reward.
 - **Rum-shop riddle men:** a group of "liming" locals who give clues and terrible advice.

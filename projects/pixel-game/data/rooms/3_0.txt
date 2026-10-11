@@ -25,3 +25,5 @@ forage 17 5 mango_tree
 forage 9 9 pepper_bush
 night 15 7 bandit
 night 6 7 soucouyant
+topdog 12 3 tiger
+dig 16 2 tt30

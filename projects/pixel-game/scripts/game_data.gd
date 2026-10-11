@@ -8,12 +8,14 @@ const CHARACTERS_PATH := "res://data/characters.json"
 const PROPS_PATH := "res://data/props.json"
 const ITEMS_PATH := "res://data/items.json"
 const FORAGE_PATH := "res://data/forage.json"
+const DOGS_PATH := "res://data/dogs.json"
 
 static var _dialogue: Dictionary
 static var _characters: Dictionary
 static var _props: Dictionary
 static var _items: Dictionary
 static var _forage: Dictionary
+static var _dogs: Dictionary
 static var _icons: Dictionary = {}
 
 
@@ -117,6 +119,17 @@ static func forage_ids() -> Array:
 
 
 ## Which conversation a character starts, given the story flags.
+## A top dog that duels Brownie (data/dogs.json).
+static func dog(id: String) -> Dictionary:
+	if _dogs == null or _dogs.is_empty():
+		_dogs = _without_notes(_read(DOGS_PATH))
+	return _dogs.get(id, {})
+
+
+static func has_dog(id: String) -> bool:
+	return not dog(id).is_empty()
+
+
 static func pick_dialogue(talk: Array, flags: Dictionary) -> String:
 	for option: Dictionary in talk:
 		if option.has("if") and not flags.get(option["if"], false):
