@@ -5,6 +5,9 @@ extends Node2D
 const COLOR := Color(0.12, 0.1, 0.14, 0.85)
 const SAG := 34.0
 
+## Each span once, pole top to pole top: [from, to] (the 3D view hangs its own wires).
+var lines: Array = []
+
 var _spans: Array = []
 
 
@@ -13,6 +16,7 @@ func _ready() -> void:
 
 
 func add_span(from: Vector2, to: Vector2) -> void:
+	lines.append([from, to])
 	for offset in [-22.0, 0.0, 22.0]:
 		_spans.append([from + Vector2(offset, 0), to + Vector2(offset, 0)])
 	queue_redraw()

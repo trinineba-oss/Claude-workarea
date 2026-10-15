@@ -117,8 +117,58 @@ func _run() -> void:
 	)
 	_check(Looks.sheet_for(Entities.create("dog")) == "stray", "stray dogs have a sheet")
 
-	# --- the camera ---------------------------------------------------------------------------
+	# --- solid props -------------------------------------------------------------------------
 	var road := Vector2i(0, 0)
+	game.go_to(road, _at(road, 10, 5))
+	await _frames(3)
+	var poles := get_nodes_in_group("interactables").filter(
+		func(n): return n is Prop and n.prop_id == "pole"
+	)
+	var pole: Prop = poles[0]
+	var pole_view := view.entity_view(pole)
+	var pole_model: Array = pole_view.find_children("*", "PropModel", true, false)
+	_check(not pole_model.is_empty() and pole_model[0].kind == "pole", "a pole is a 3D model")
+	_check(
+		pole_view.find_children("*", "Sprite3D", true, false).is_empty(),
+		"and not a flat cutout as well"
+	)
+	_check(
+		pole_view.find_children("*", "OmniLight3D", true, false).size() == 1,
+		"its lamp still shines"
+	)
+	var road_view: RoomView = view.room_views().filter(func(v): return v.room.coords == road)[0]
+	_check(road_view.get_node_or_null("wire") != null, "power lines hang between the poles")
+	var chest := Chest.new()
+	chest.setup("key")
+	var chest_model := PropModel.make(chest)
+	chest.opened = true
+	for i in 10:
+		chest_model.refresh(chest, 0.1)
+	_check(
+		chest_model.kind == "chest" and chest_model._lid.rotation.x < -1.5,
+		"an opened chest's lid lifts"
+	)
+	chest_model.free()
+	chest.free()
+	var palm := Forage.new()
+	palm.setup("coconut_palm")
+	var palm_model := PropModel.make(palm)
+	palm_model.refresh(palm, 0.1)
+	_check(palm_model.kind == "forage" and palm_model._up.visible, "a palm has coconuts")
+	palm._sprite.texture = palm._bare
+	palm_model.refresh(palm, 0.1)
+	_check(not palm_model._up.visible, "until they are picked")
+	palm_model.free()
+	palm.free()
+	var gate := DungeonDoor.new()
+	gate.setup("gate", "test")
+	_check(PropModel.make(gate) != null, "gates are models too")
+	gate.free()
+	var bandit := Entities.create("bandit")
+	_check(PropModel.make(bandit) == null, "people stay pixel sprites")
+	bandit.free()
+
+	# --- the camera ---------------------------------------------------------------------------
 	game.go_to(road, _at(road, 10, 5))
 	await _frames(3)
 	var aim := (

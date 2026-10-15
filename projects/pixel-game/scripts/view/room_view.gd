@@ -117,6 +117,7 @@ func build(source: Room, indoors: bool) -> void:
 						_put(spots, "petal", at + off, Vector3.ONE * 0.12, flower, null)
 	for kind: String in spots:
 		_add_multimesh(kind, spots[kind])
+	_add_wires()
 
 
 func _put(
@@ -167,6 +168,39 @@ func _add_multimesh(kind: String, items: Array) -> void:
 	if kind in ["petal", "mesh"]:
 		node.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(node)
+
+
+## Power lines between the poles' crossbars: three sagging wires per span, each a chain of
+## thin straight pieces.
+func _add_wires() -> void:
+	var wires: Wires = null
+	for child in room.get_children():
+		if child is Wires:
+			wires = child
+	if wires == null or wires.lines.is_empty():
+		return
+	var top := PropModel.POLE_HEIGHT - 0.04
+	var spots := {"wire": []}
+	for span: Array in wires.lines:
+		var a := Vector3(span[0].x * PX, top, (span[0].y - Prop.POLE_TOP) * PX)
+		var b := Vector3(span[1].x * PX, top, (span[1].y - Prop.POLE_TOP) * PX)
+		var along := b - a
+		var side := along.cross(Vector3.UP).normalized() * 0.34
+		var sag := 0.3 * (1.0 + along.length() / 9.0)
+		for offset: float in [-1.0, 0.0, 1.0]:
+			var points: Array[Vector3] = []
+			for i in 13:
+				var t := i / 12.0
+				var dip := 4.0 * t * (1.0 - t) * sag
+				points.append(a.lerp(b, t) + side * offset + Vector3(0, -dip, 0))
+			for i in points.size() - 1:
+				var p := points[i]
+				var q := points[i + 1]
+				var basis := Basis.looking_at(q - p).scaled_local(
+					Vector3(0.012, 0.012, p.distance_to(q))
+				)
+				spots["wire"].append([Transform3D(basis, (p + q) / 2.0), Color(0.16, 0.15, 0.17)])
+	_add_multimesh("wire", spots["wire"])
 
 
 func _add_floor() -> void:
@@ -235,6 +269,7 @@ static func _material(kind: String) -> Material:
 		"crate":
 			mat.albedo_texture = preload("res://assets/textures/wood.png")
 			mat.uv1_triplanar = true
+			mat.uv1_scale = Vector3.ONE * 0.4
 		"mesh":
 			mat.albedo_texture = preload("res://assets/sprites/fence.png")
 			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR

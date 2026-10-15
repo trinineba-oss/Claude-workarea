@@ -5,7 +5,10 @@ extends Node3D
 ## upright Sprite3D facing the camera (shadows and floor decals, z_index -4 and below, lie flat
 ## on the ground instead), each Label a Label3D and each NightLight an OmniLight3D. Heights come
 ## from the 2D offsets: in 2D "up the screen" is "up in the air". When the node is
-## highlighted (something to talk to) a speech bubble floats over it.
+## highlighted (something to talk to) a speech bubble floats over it. Things with a solid
+## model (PropModel: trucks, poles, chests, palms...) show that instead of their sprites and
+## labels; characters with a pixel sheet (Looks) show an animated PixelBody instead of their
+## body sprite.
 
 const PX := View3D.PX
 ## Sprites of things that stand (characters, props) stand on this layer; floor decals lie on
@@ -20,6 +23,8 @@ var _bubble: Label3D
 ## A pixel-art body (Looks) drawn instead of the 2D body sprite, if the thing has one.
 var _body: PixelBody
 var _body_source: Sprite2D
+## A solid 3D model (PropModel) drawn instead of the 2D sprites and labels, if it has one.
+var _model: PropModel
 
 
 func setup(node: Node2D) -> void:
@@ -49,6 +54,8 @@ func sync() -> void:
 			_sync_label(from, to, origin)
 		elif from is NightLight:
 			_sync_light(from, to, origin)
+	if _model != null:
+		_model.refresh(source, _delta())
 	if _body != null:
 		_body.update(source, _body_source if is_instance_valid(_body_source) else null, _delta())
 	if _bubble != null:
@@ -65,7 +72,11 @@ func _rebuild() -> void:
 			pair[1].queue_free()
 	_pairs.clear()
 	_child_count = source.get_child_count()
-	if _body == null:
+	if _model == null and _body == null:
+		_model = PropModel.make(source)
+		if _model != null:
+			add_child(_model)
+	if _body == null and _model == null:
 		var sheet := Looks.sheet_for(source)
 		if sheet != "":
 			_body = PixelBody.new()
@@ -80,6 +91,8 @@ func _rebuild() -> void:
 	for node in found:
 		var made: Node3D = null
 		if node == _body_source and _body != null:
+			continue
+		if _model != null and (node is Sprite2D or node is Label):
 			continue
 		if node is Sprite2D:
 			made = _make_sprite(node, index)
