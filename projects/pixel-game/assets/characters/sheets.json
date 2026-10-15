@@ -1,0 +1,431 @@
+{
+  "frame": 64,
+  "anims": {
+    "walk": {
+      "frames": 9,
+      "directional": true
+    },
+    "idle": {
+      "frames": 2,
+      "directional": true
+    },
+    "slash": {
+      "frames": 6,
+      "directional": true
+    },
+    "hurt": {
+      "frames": 6,
+      "directional": false
+    },
+    "sit": {
+      "frames": 1,
+      "directional": true
+    },
+    "bite": {
+      "frames": 3,
+      "directional": true
+    }
+  },
+  "characters": {
+    "chad": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "gyro_vendor": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "doubles_vendor": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "fisherman": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "limer": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "soup_lady": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "pork_man": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "seafood_man": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "bandit": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "rival": {
+      "walk": {
+        "row": 0,
+        "frames": 9,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 6,
+        "rows": 4
+      },
+      "hurt": {
+        "row": 12,
+        "frames": 6,
+        "rows": 1
+      }
+    },
+    "evey": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "brownie": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "stray": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "scraps": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "duchess": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "tiger": {
+      "walk": {
+        "row": 0,
+        "frames": 6,
+        "rows": 4
+      },
+      "idle": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 4
+      }
+    },
+    "corbeau": {
+      "walk": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      },
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      }
+    },
+    "soucouyant": {
+      "walk": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      },
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      }
+    },
+    "crab": {
+      "walk": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      },
+      "idle": {
+        "row": 0,
+        "frames": 4,
+        "rows": 4
+      }
+    },
+    "ibis": {
+      "idle": {
+        "row": 0,
+        "frames": 2,
+        "rows": 4
+      },
+      "walk": {
+        "row": 0,
+        "frames": 2,
+        "rows": 4
+      }
+    }
+  }
+}

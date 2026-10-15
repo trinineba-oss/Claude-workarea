@@ -83,6 +83,40 @@ func _run() -> void:
 		"and his twin kept up"
 	)
 
+	# --- pixel bodies ---------------------------------------------------------------------------
+	var body: PixelBody = chad_view.find_children("*", "PixelBody", true, false)[0]
+	_check(body.sheet == "chad", "Chad is drawn from his LPC sheet")
+	_check(body.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "with crisp pixels")
+	player.facing = Vector2.LEFT
+	Input.action_press(&"move_left")
+	await _physics_frames(6)
+	await _frames(1)
+	_check(body.anim_name == "walk", "walking plays the walk cycle")
+	_check(Looks.direction_index(body.facing) == 1, "facing left")
+	Input.action_release(&"move_left")
+	await _physics_frames(4)
+	await _frames(2)
+	_check(body.anim_name == "idle", "standing still plays the idle")
+	Input.action_press(&"attack")
+	await _physics_frames(2)
+	await _frames(1)
+	Input.action_release(&"attack")
+	_check(body.anim_name == "slash", "a swing plays the slash")
+	await _physics_frames(20)
+	var evey: Companion = get_first_node_in_group("companion")
+	var evey_body: Array = view.entity_view(evey).find_children("*", "PixelBody", true, false)
+	_check(not evey_body.is_empty() and evey_body[0].sheet == "evey", "Evey is the pixel beagle")
+	var fisher: Npc = npcs.filter(func(n): return n.character_id == "fisherman")[0]
+	var fisher_body: Array = view.entity_view(fisher).find_children("*", "PixelBody", true, false)
+	_check(not fisher_body.is_empty(), "townspeople have pixel bodies")
+	_check(
+		view.entity_view(fisher).find_children("*", "Sprite3D", false, false).all(
+			func(s): return s is PixelBody or s.billboard == BaseMaterial3D.BILLBOARD_DISABLED
+		),
+		"and their old 2D picture is not drawn as well"
+	)
+	_check(Looks.sheet_for(Entities.create("dog")) == "stray", "stray dogs have a sheet")
+
 	# --- the camera ---------------------------------------------------------------------------
 	var road := Vector2i(0, 0)
 	game.go_to(road, _at(road, 10, 5))

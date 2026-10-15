@@ -17,6 +17,9 @@ var source: Node2D
 var _pairs: Array = []  # [2D node, 3D node]
 var _child_count := -1
 var _bubble: Label3D
+## A pixel-art body (Looks) drawn instead of the 2D body sprite, if the thing has one.
+var _body: PixelBody
+var _body_source: Sprite2D
 
 
 func setup(node: Node2D) -> void:
@@ -46,6 +49,8 @@ func sync() -> void:
 			_sync_label(from, to, origin)
 		elif from is NightLight:
 			_sync_light(from, to, origin)
+	if _body != null:
+		_body.update(source, _body_source if is_instance_valid(_body_source) else null, _delta())
 	if _bubble != null:
 		var talking: bool = source is Interactable and source.get("_highlighted") == true
 		_bubble.visible = talking
@@ -60,11 +65,22 @@ func _rebuild() -> void:
 			pair[1].queue_free()
 	_pairs.clear()
 	_child_count = source.get_child_count()
+	if _body == null:
+		var sheet := Looks.sheet_for(source)
+		if sheet != "":
+			_body = PixelBody.new()
+			_body.setup(sheet, source)
+			add_child(_body)
+	if _body != null:
+		var main: Variant = source.get("_sprite")
+		_body_source = main if main is Sprite2D else source.get_node_or_null("Sprite2D") as Sprite2D
 	var found: Array[Node] = [source]
 	found.append_array(source.find_children("*", "", true, false))
 	var index := 0
 	for node in found:
 		var made: Node3D = null
+		if node == _body_source and _body != null:
+			continue
 		if node is Sprite2D:
 			made = _make_sprite(node, index)
 		elif node is Label:
@@ -170,3 +186,7 @@ func _sync_light(from: NightLight, to: OmniLight3D, origin: Vector2) -> void:
 	to.light_energy = from.energy * 2.2
 	to.omni_range = from.texture_scale * 256.0 * PX * 0.75
 	to.visible = from.visible
+
+
+func _delta() -> float:
+	return get_process_delta_time()

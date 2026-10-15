@@ -1,0 +1,23 @@
+{
+  "_note": "Which sprite sheet (assets/characters/<sheet>.png, layouts in sheets.json) draws each thing in the 2.5D view. Keys: player, companion, npc:<character id>, dog:<top dog id>, or an enemy's class name. Things not listed are drawn from their 2D sprite.",
+  "player": "chad",
+  "companion": "evey",
+  "npc:ibis": "ibis",
+  "npc:fisherman": "fisherman",
+  "npc:limer": "limer",
+  "npc:doubles_vendor": "doubles_vendor",
+  "npc:gyro_vendor": "gyro_vendor",
+  "npc:soup_lady": "soup_lady",
+  "npc:pork_man": "pork_man",
+  "npc:seafood_man": "seafood_man",
+  "npc:rival": "rival",
+  "dog:brownie": "brownie",
+  "dog:scraps": "scraps",
+  "dog:duchess": "duchess",
+  "dog:tiger": "tiger",
+  "Bandit": "bandit",
+  "Pothound": "stray",
+  "Corbeau": "corbeau",
+  "Crab": "crab",
+  "Soucouyant": "soucouyant"
+}

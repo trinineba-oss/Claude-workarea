@@ -25,3 +25,4 @@ build/
 *.swp
 .idea/
 .vscode/
+projects/pixel-game/tools/.lpc_cache/

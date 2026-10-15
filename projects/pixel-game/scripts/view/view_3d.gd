@@ -12,13 +12,13 @@ extends Node3D
 const PX := 1.0 / 64.0
 ## The world's canvas layer bit that the viewport stops drawing (the 2D world is hidden).
 const HIDDEN_LAYER := 1 << 19
-const CAMERA_DISTANCE := 15.0
+const CAMERA_DISTANCE := 12.5
 const CAMERA_PITCH := deg_to_rad(50.0)
 const CAMERA_FOV := 32.0
 const CAMERA_SMOOTHING := 6.0
 ## How far the camera's aim stays inside the edges of the world (or the room, indoors).
-const VIEW_MARGIN := Vector2(7.0, 3.0)
-const INDOOR_MARGIN := Vector2(7.0, 2.4)
+const VIEW_MARGIN := Vector2(6.0, 2.6)
+const INDOOR_MARGIN := Vector2(6.0, 2.2)
 
 ## The view in play (Effects draws its floating texts here).
 static var current: View3D
