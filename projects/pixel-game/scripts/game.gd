@@ -600,7 +600,8 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
-## puts an item in the bag and `&duel=scraps` opens a dog duel (used to take screenshots). Ignored everywhere else.
+## puts an item in the bag and `&duel=scraps` opens a dog duel (used to take screenshots).
+## Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
