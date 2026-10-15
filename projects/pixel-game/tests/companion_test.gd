@@ -1,5 +1,5 @@
 extends "res://tests/test_base.gd"
-## Brownie: found hungry on the road, won over with food, follows Chad everywhere (temples
+## Evey: found hungry on the road, won over with food, follows Chad everywhere (temples
 ## too), bites enemies near him, makes bandits drop their loot, and is remembered in the save.
 
 const GAME := preload("res://scenes/game.tscn")
@@ -52,41 +52,31 @@ func _run() -> void:
 	await _physics_frames(2)
 	var player: Player = game.get_node("Player")
 	game.day_night.seconds_per_day = 1.0e9
-	var brownie: Companion = get_first_node_in_group("companion")
+	var evey: Companion = get_first_node_in_group("companion")
 	var road := Vector2i(0, 0)
-	_check(brownie != null and not brownie.joined, "Brownie is waiting to be found")
-	_check(brownie.position == _at(road, 6, 4), "at her spot on the road")
-
-	# --- hungry, then fed ---------------------------------------------------------------------
-	game.go_to(road, _at(road, 7, 4))
+	_check(evey != null and evey.joined, "Evey is with Chad from the start")
+	_check(evey.position.distance_to(player.position) < 150.0, "at his heels")
+	_check(not evey.can_interact({}), "Attack near her swings the cutlass, not a chat")
+	var brownie_dog := GameData.dog("brownie")
+	_check(not brownie_dog.is_empty(), "Brownie is one of the stray dogs now")
+	var on_road: Array = game.world.objects_in(road).filter(
+		func(o): return o["kind"] == "topdog" and o["arg"] == "brownie"
+	)
+	_check(on_road.size() == 1, "she waits on the road from the wharf")
+	game.go_to(road, _at(road, 10, 4))
 	await _physics_frames(2)
 	for enemy in get_nodes_in_group("enemies"):
 		enemy.free()
-	player.facing = Vector2.LEFT
-	await _physics_frames(2)
-	_check(player.target == brownie, "Chad can talk to her")
-	Input.action_press(&"interact")
-	await _physics_frames(2)
-	Input.action_release(&"interact")
-	await _frames(1)
-	_check(game.is_talking() and not brownie.joined, "with nothing to eat she just watches")
-	await _close_dialogue(game)
-	game.inventory.add("mango", 2)
-	brownie.use(game)
-	await _close_dialogue(game)
-	_check(brownie.joined and game.flags.get(Companion.FLAG, false), "a mango wins her over")
-	_check(game.inventory.count("mango") == 1, "she eats one")
-	_check(not brownie.can_interact({}), "once she joins, attack is for enemies again")
 
 	# --- following ----------------------------------------------------------------------------
 	player.position = _at(road, 14, 7)
 	var near := await _wait_until(
-		func(): return brownie.position.distance_to(player.position) < 140.0, 180
+		func(): return evey.position.distance_to(player.position) < 140.0, 180
 	)
 	_check(near, "she follows Chad")
 	player.position = _at(road, 2, 2)
 	await _physics_frames(3)
-	_check(brownie.position.distance_to(player.position) < 200.0, "she catches up from far away")
+	_check(evey.position.distance_to(player.position) < 200.0, "she catches up from far away")
 
 	# --- biting -------------------------------------------------------------------------------
 	player.position = _at(road, 10, 7)
@@ -116,25 +106,41 @@ func _run() -> void:
 	var entrance := Vector2i(1, 2)
 	game.enter_map("temple1", entrance, _at(entrance, 9, 7))
 	await _physics_frames(2)
-	_check(brownie.position.distance_to(player.position) < 150.0, "she comes into the temple")
+	_check(evey.position.distance_to(player.position) < 150.0, "she comes into the temple")
 	game.save_game()
 	game.free()
 	game = _new_game()
 	await _physics_frames(2)
 	player = game.get_node("Player")
-	brownie = get_first_node_in_group("companion")
-	_check(brownie.joined, "the save remembers her")
-	_check(brownie.position.distance_to(player.position) < 150.0, "and she is at Chad's heels")
+	evey = get_first_node_in_group("companion")
+	_check(evey.joined, "the save remembers her")
+	_check(evey.position.distance_to(player.position) < 150.0, "and she is at Chad's heels")
 	game.free()
 
-	# --- not yet found: she stays on the road -------------------------------------------------
-	DirAccess.remove_absolute(SAVE_PATH)
+	# --- an old save with Brownie as the companion ------------------------------------------
+	var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
+	(
+		file
+		. store_string(
+			(
+				JSON
+				. stringify(
+					{
+						"version": 1,
+						"room": [0, 1],
+						"position": [600, 400],
+						"flags": {"brownie_joined": true, "brownie_level": 3, "brownie_xp": 4},
+					}
+				)
+			)
+		)
+	)
+	file.close()
 	game = _new_game()
 	await _physics_frames(2)
-	brownie = get_first_node_in_group("companion")
-	game.enter_map("temple1", entrance, _at(entrance, 9, 7))
-	await _physics_frames(3)
-	_check(not brownie.visible, "an unfound Brownie is not in the temple")
+	_check(int(game.flags.get("evey_level", 0)) == 3, "Brownie's old level carries over to Evey")
+	_check(int(game.flags.get("evey_xp", 0)) == 4, "and so does her experience")
+	_check(not game.flags.has("brownie_joined"), "the old flag is cleared")
 	game.free()
 	DirAccess.remove_absolute(SAVE_PATH)
 	_finish()

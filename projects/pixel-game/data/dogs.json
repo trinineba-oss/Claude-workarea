@@ -1,5 +1,23 @@
 {
   "_note": "Top dogs that challenge Brownie to a turn-based duel (`topdog <x> <y> <id>` in a room file). hp/attack/defense are battle stats; moves are picked at random each turn from the list (repeat a move to make it likelier): bite, growl (lowers Brownie's attack), howl (heals, only when hurt), pounce (crouches one turn, then hits twice as hard). reward = TT$ for winning, xp = what Brownie learns. Conversations: intro (before the duel), win/lose (after), after (talking to them once beaten). Names and lines are drafts.",
+  "brownie": {
+    "name": "Brownie",
+    "sprite": "brownie",
+    "hp": 12,
+    "attack": 3,
+    "defense": 0,
+    "moves": [
+      "bite",
+      "bite",
+      "growl"
+    ],
+    "reward": 5,
+    "xp": 6,
+    "intro": "duel_brownie",
+    "win": "duel_brownie_win",
+    "lose": "duel_brownie_lose",
+    "after": "duel_brownie_after"
+  },
   "scraps": {
     "name": "Scraps",
     "sprite": "dog_scraps",

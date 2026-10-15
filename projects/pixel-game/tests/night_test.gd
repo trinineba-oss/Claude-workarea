@@ -11,6 +11,7 @@ func _new_game() -> Game:
 	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
+	_bench_evey()
 	return game
 
 

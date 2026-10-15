@@ -1,7 +1,7 @@
 class_name TopDog
 extends Interactable
 ## A dog that rules its patch (`topdog <x> <y> <id>`, stats and lines in data/dogs.json). Talk
-## to it with Brownie at your side and it challenges her to a turn-based duel (DuelScreen).
+## to it with Evey at your side and it challenges her to a turn-based duel (DuelScreen).
 ## Beaten, it is friendly from then on (flag "beat_<id>").
 
 var dog_id := ""
@@ -43,14 +43,14 @@ func is_beaten(game: Game) -> bool:
 	return game.flags.get("beat_" + dog_id, false)
 
 
-## Talking to it: a challenge if Brownie is here, a shrug if not, a friendly look once beaten.
+## Talking to it: a challenge if Evey is here, a shrug if not, a friendly look once beaten.
 func use(game: Game) -> void:
 	var data := GameData.dog(dog_id)
 	if is_beaten(game):
 		game.talk(data.get("after", ""), self)
 		return
-	var brownie := get_tree().get_first_node_in_group("companion") as Companion
-	if brownie == null or not brownie.joined:
+	var evey := get_tree().get_first_node_in_group("companion") as Companion
+	if evey == null or not evey.joined:
 		game.talk("topdog_no_dog", self)
 		return
 	await game.talk(data.get("intro", ""), self)

@@ -160,8 +160,8 @@ func _process(_delta: float) -> void:
 		use_selected_item()
 	var dog_ready := _companion != null and _companion.joined
 	_touch.get_node("DogButton").visible = dog_ready
-	if Input.is_action_just_pressed(&"dog") and dog_ready and _can_command_brownie():
-		_command_brownie()
+	if Input.is_action_just_pressed(&"dog") and dog_ready and _can_command_evey():
+		_command_evey()
 
 
 ## Uses the item in the selected hotbar slot: cast the rod, or eat food to heal.
@@ -472,6 +472,12 @@ func _restore(data: Dictionary) -> bool:
 	var saved_flags: Variant = data.get("flags", {})
 	if saved_flags is Dictionary:
 		flags.merge(saved_flags, true)
+	# Older saves: the companion's duel level was kept under Brownie's name.
+	for old in ["brownie_level", "brownie_xp"]:
+		if flags.has(old):
+			flags[old.replace("brownie", "evey")] = flags[old]
+			flags.erase(old)
+	flags.erase("brownie_joined")
 	return true
 
 
@@ -538,7 +544,7 @@ func _on_room_entered() -> void:
 		room.on_enter()
 
 
-func _can_command_brownie() -> bool:
+func _can_command_evey() -> bool:
 	return (
 		not get_tree().paused
 		and not _player.frozen
@@ -547,8 +553,8 @@ func _can_command_brownie() -> bool:
 	)
 
 
-## The dog menu: pause, let Chad pick an order, then Brownie carries it out.
-func _command_brownie() -> void:
+## The dog menu: pause, let Chad pick an order, then Evey carries it out.
+func _command_evey() -> void:
 	get_tree().paused = true
 	var touch_was_visible := _touch.visible
 	_touch.visible = false
@@ -572,24 +578,13 @@ func _command_brownie() -> void:
 			_companion.dig()
 
 
-## Brownie: waiting at her spot on the road (`brownie` in a room file), or at Chad's heels if
-## she has already joined.
+## Evey, Chad's beagle: at his heels from the start.
 func _add_companion() -> void:
 	_companion = Companion.new()
-	_companion.name = "Brownie"
-	var overworld := _world_for(OVERWORLD)
-	for room_coords: Vector2i in overworld.objects:
-		for obj in overworld.objects_in(room_coords):
-			if obj["kind"] == "brownie":
-				_companion.home = (
-					WorldMap.room_origin(room_coords)
-					+ (Vector2(obj["cell"]) + Vector2(0.5, 0.5)) * WorldMap.TILE
-				)
-	_companion.position = _companion.home
+	_companion.name = "Evey"
 	add_child(_companion)
-	if flags.get(Companion.FLAG, false):
-		_companion.join()
-		_companion.catch_up(_player)
+	_companion.join()
+	_companion.catch_up(_player)
 
 
 func _room_center(room_coords: Vector2i) -> Vector2:
@@ -605,8 +600,7 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
-## puts an item in the bag, `&brownie=1` starts with Brownie and `&duel=scraps` opens a dog
-## duel (used to take screenshots). Ignored everywhere else.
+## puts an item in the bag and `&duel=scraps` opens a dog duel (used to take screenshots). Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
@@ -617,11 +611,8 @@ func _apply_debug_start() -> void:
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
-	if query.contains("brownie=1"):
-		flags[Companion.FLAG] = true
 	var duel := RegEx.create_from_string("duel=([a-z_]+)").search(query)
 	if duel != null and GameData.has_dog(duel.get_string(1)):
-		flags[Companion.FLAG] = true
 		var screen: DuelScreen = $HUD/DuelScreen
 		screen.fight.call_deferred(self, duel.get_string(1))
 	var on_map := RegEx.create_from_string("map=([a-z0-9_]+)").search(query)
@@ -649,6 +640,7 @@ func _apply_debug_start() -> void:
 func _play_intro() -> void:
 	await get_tree().create_timer(0.8).timeout
 	if not flags.get("intro_done", false):
+		await talk("evey_wake")
 		talk("ibis_intro")
 
 

@@ -1,5 +1,5 @@
 extends "res://tests/test_base.gd"
-## Dog duels: the rules (DogBattle) with fixed luck, Brownie's levels, and a whole duel on the
+## Dog duels: the rules (DogBattle) with fixed luck, Evey's levels, and a whole duel on the
 ## screen against Scraps through TopDog, including the rewards and the after-talk.
 
 const GAME := preload("res://scenes/game.tscn")
@@ -35,45 +35,45 @@ func _run() -> void:
 	DirAccess.remove_absolute(SAVE_PATH)
 
 	# --- the data -----------------------------------------------------------------------------
-	for id in ["scraps", "duchess", "tiger"]:
+	for id in ["brownie", "scraps", "duchess", "tiger"]:
 		var data := GameData.dog(id)
 		_check(not data.is_empty(), "%s is in dogs.json" % id)
 		for talk in ["intro", "win", "lose", "after"]:
 			_check(GameData.has_conversation(data.get(talk, "")), "%s has its %s talk" % [id, talk])
-	_check(GameData.has_conversation("topdog_no_dog"), "a line for when Brownie is not around")
+	_check(GameData.has_conversation("topdog_no_dog"), "a line for when Evey is not around")
 
 	# --- the rules ----------------------------------------------------------------------------
 	var stats := DogBattle.stats_for(1)
-	_check(stats["hp"] == 16 and stats["attack"] == 4, "Brownie at level 1")
+	_check(stats["hp"] == 16 and stats["attack"] == 4, "Evey at level 1")
 	_check(DogBattle.stats_for(3)["hp"] > stats["hp"], "levels make her tougher")
 	var flags := {}
 	var grew := DogBattle.add_xp(flags, 25)
-	_check(flags["brownie_level"] == 2 and flags["brownie_xp"] == 15, "xp carries over levels")
+	_check(flags["evey_level"] == 2 and flags["evey_xp"] == 15, "xp carries over levels")
 	_check(grew.size() == 1, "a line for the level gained")
 
 	var punchbag := {"name": "Bag", "hp": 30, "attack": 3, "defense": 1, "moves": ["growl"]}
 	var duel := DogBattle.new(1, punchbag, 7)
 	duel.play_round("bite")
 	_check(duel.foe["hp"] < 30, "bite hurts")
-	_check(duel.brownie["mod"] == -1, "growl lowers Brownie's attack")
-	duel.brownie["hp"] = 5
+	_check(duel.evey["mod"] == -1, "growl lowers Evey's attack")
+	duel.evey["hp"] = 5
 	duel.play_round("treat", 7)
-	_check(duel.brownie["hp"] == 12, "a treat heals")
+	_check(duel.evey["hp"] == 12, "a treat heals")
 	duel.play_round("treat", 50)
-	_check(duel.brownie["hp"] == duel.brownie["max_hp"], "but not past full")
+	_check(duel.evey["hp"] == duel.evey["max_hp"], "but not past full")
 
 	var pouncer := {"name": "Pouncer", "hp": 50, "attack": 6, "defense": 0, "moves": ["pounce"]}
 	duel = DogBattle.new(1, pouncer, 3)
 	var log := duel.play_round("guard")
 	_check(duel.foe["charging"] and "Guard" in log[-1], "a pounce is telegraphed")
-	var before: int = duel.brownie["hp"]
+	var before: int = duel.evey["hp"]
 	duel.play_round("guard")
-	var guarded := before - int(duel.brownie["hp"])
+	var guarded := before - int(duel.evey["hp"])
 	duel = DogBattle.new(1, pouncer, 3)
 	duel.play_round("guard")
-	before = duel.brownie["hp"]
+	before = duel.evey["hp"]
 	duel.play_round("bite")
-	var open_hit := before - int(duel.brownie["hp"])
+	var open_hit := before - int(duel.evey["hp"])
 	_check(guarded > 0 and guarded * 2 <= open_hit + 1, "guarding halves the pounce")
 
 	var flinches := 0
@@ -82,7 +82,7 @@ func _run() -> void:
 		var lines := b.play_round("bark")
 		if lines.any(func(l): return "flinches" in l):
 			flinches += 1
-			_check(b.brownie["mod"] == 0, "a flinching foe does nothing that round")
+			_check(b.evey["mod"] == 0, "a flinching foe does nothing that round")
 	_check(flinches > 0 and flinches < 40, "barking sometimes makes the foe flinch")
 
 	var wins := 0
@@ -93,16 +93,16 @@ func _run() -> void:
 			b.play_round("bite")
 			guard += 1
 		_check(b.over, "a duel always ends")
-		if b.brownie_won:
+		if b.evey_won:
 			wins += 1
-	_check(wins >= 15, "level-1 Brownie usually beats Scraps by biting (%d/20)" % wins)
+	_check(wins >= 15, "level-1 Evey usually beats Scraps by biting (%d/20)" % wins)
 	var tiger_wins := 0
 	for seed_value in 20:
 		var b := DogBattle.new(1, GameData.dog("tiger"), seed_value)
 		while not b.over:
 			b.play_round("bite")
-		tiger_wins += 1 if b.brownie_won else 0
-	_check(tiger_wins <= 5, "Tiger is too much for a level-1 Brownie (%d/20)" % tiger_wins)
+		tiger_wins += 1 if b.evey_won else 0
+	_check(tiger_wins <= 5, "Tiger is too much for a level-1 Evey (%d/20)" % tiger_wins)
 
 	# --- a whole duel on screen ---------------------------------------------------------------
 	var game := _new_game()
@@ -117,16 +117,16 @@ func _run() -> void:
 	for enemy in get_nodes_in_group("enemies"):
 		enemy.free()
 	var is_scraps := func(n): return n is TopDog and n.dog_id == "scraps"
+	get_first_node_in_group("companion").joined = false
 	var scraps: TopDog = get_nodes_in_group("interactables").filter(is_scraps)[0]
 	scraps.use(game)
 	await _frames(2)
-	_check(game.is_talking(), "without Brownie, Scraps just yawns")
+	_check(game.is_talking(), "without Evey, Scraps just yawns")
 	await _close_dialogue(game)
 	_check(not screen.is_open(), "and there is no duel")
 
-	var brownie: Companion = get_first_node_in_group("companion")
-	brownie.join()
-	game.flags[Companion.FLAG] = true
+	var evey: Companion = get_first_node_in_group("companion")
+	evey.join()
 	game.inventory.add("mango", 2)
 	var money := player.money
 	scraps.use(game)
@@ -143,7 +143,7 @@ func _run() -> void:
 	var used_treat := false
 	while screen.is_open() and rounds < 80:
 		if screen.get("_menu_open"):
-			if not used_treat and screen.battle.brownie["hp"] < screen.battle.brownie["max_hp"]:
+			if not used_treat and screen.battle.evey["hp"] < screen.battle.evey["max_hp"]:
 				screen.choose("treat")
 				used_treat = true
 			else:
@@ -151,7 +151,7 @@ func _run() -> void:
 			rounds += 1
 		await process_frame
 	_check(not screen.is_open(), "the duel ends")
-	_check(screen.battle.brownie_won, "Brownie beats Scraps")
+	_check(screen.battle.evey_won, "Evey beats Scraps")
 	_check(not used_treat or game.inventory.count("mango") == 1, "a treat uses up a mango")
 	await _settle()
 	await _frames(2)
@@ -160,7 +160,7 @@ func _run() -> void:
 	_check(not paused, "the world goes on")
 	_check(game.flags.get("beat_scraps", false), "Scraps is marked as beaten")
 	_check(player.money == money + 10, "TT$10 for the win")
-	_check(int(game.flags.get("brownie_xp", 0)) == 8, "Brownie learns from it")
+	_check(int(game.flags.get("evey_xp", 0)) == 8, "Evey learns from it")
 	scraps.use(game)
 	await _frames(2)
 	_check(game.is_talking() and not screen.is_open(), "once beaten, Scraps is friendly")
@@ -171,7 +171,7 @@ func _run() -> void:
 	game = _new_game()
 	await _physics_frames(2)
 	_check(game.flags.get("beat_scraps", false), "the win is saved")
-	_check(int(game.flags.get("brownie_xp", 0)) == 8, "and so is her experience")
+	_check(int(game.flags.get("evey_xp", 0)) == 8, "and so is her experience")
 	game.free()
 	DirAccess.remove_absolute(SAVE_PATH)
 	_finish()

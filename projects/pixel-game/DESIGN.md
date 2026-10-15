@@ -38,7 +38,7 @@ opinion about everything.
 5. **The hill.** With all four seasonings the hero wakes the Gyro God and reaches the gyro.
 6. **The twist.** The whole thing was a dream. Chad dozed off by the gyro truck on
    **Lady Hailes Avenue, by Cross Crossing**, while waiting for a gyro. The final scene: the street vendor shakes them awake ("Boss,
-   yuh gyro ready!" — or "Chad! Yuh gyro ready!"), Chad collects an ordinary, delicious gyro, and the credits roll
+   yuh gyro ready!" — or "Chad! Yuh gyro ready!"), Chad collects an ordinary, delicious gyro (Evey stayed in the dream), and the credits roll
    over the busy food stretch. Bittersweet, then funny. The vendor has been in the dream
    all along, in a different role (the shopkeeper, the riddle men's cook, or the Gyro God's
    voice; your call).
@@ -107,13 +107,12 @@ from foraging, fishing, cooking and friendships, alongside or instead of temples
 - **Shopkeeper rule:** a Cross Crossing vendor is cheerful until you try to skip the line or steal;
   the gag is the punishment, not violence.
 - **Maxi taxis:** colorful minibuses as fast travel between hubs (the ocarina/telephone idea).
-- **Companion (built): Brownie**, a brown pothound found hungry on the road from the wharf.
-  Feed her and she follows Chad everywhere, bites enemies near him and chases down bandits
-  who rob him. **Orders (built):** a pause-and-command menu with Sic 'em (pick a target),
-  Stay / Come (she can hold down pressure plates), Fetch (she swims for it) and Dig (buried
-  treasure she sniffs out). **Dog duels (built):** three top dogs (Scraps, Duchess, Tiger)
-  challenge her to turn-based duels (bite, bark, guard, treat); wins pay TT$ and level her up.
-  Ideas: plate puzzles built around Stay, more top dogs per area, new moves as she levels.
+- **Companion (built): Evey**, Chad's beagle, based on the owner's dog who passed away. She
+  washed up with him and wakes him on the wharf; she follows him everywhere, bites enemies and
+  chases down thieves, takes orders (Sic 'em, Stay / Come, Fetch, Dig) and fights turn-based
+  duels against the stray top dogs (Brownie, Scraps, Duchess, Tiger), levelling up as she wins.
+  She belongs to the dream: when Chad wakes at the gyro truck, she is not there (bittersweet,
+  on purpose).
 - **Trading quest:** a chain of absurd favors along the Cross Crossing stalls (a bag of ice, a
   sno-cone, a lost slipper ...) ending in a useful reward.
 - **Rum-shop riddle men:** a group of "liming" locals who give clues and terrible advice.

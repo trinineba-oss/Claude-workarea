@@ -993,6 +993,21 @@ top_dog(f"{OUT}/sprites/dog_scraps.png", (150, 150, 158, 255), (196, 196, 204, 2
 top_dog(f"{OUT}/sprites/dog_duchess.png", (238, 236, 240, 255), (255, 255, 255, 255), (220, 214, 224, 255), _duchess)
 top_dog(f"{OUT}/sprites/dog_tiger.png", (40, 36, 40, 255), (70, 64, 70, 255), (30, 26, 30, 255), _tiger, size=1.3)
 
+# ---- Evey, Chad's beagle (based on the owner's dog; colours only, no photo in the repo) -----------
+def _evey(c, k):
+    SADDLE = (112, 100, 92, 255)
+    c.detail_ellipse(34 * k, 27 * k, 17 * k, 7 * k, SADDLE)  # greyish saddle along the back
+    c.detail_ellipse(20 * k, 30 * k, 6 * k, 5 * k, SADDLE)
+    c.detail_ellipse(66 * k, 28 * k, 6 * k, 4.5 * k, (246, 240, 228, 255))  # pale muzzle
+    c.detail_ellipse(36 * k, 41 * k, 13 * k, 4 * k, (246, 240, 228, 255))  # pale chest/belly
+    for x in (19, 29, 47, 57):
+        c.detail_ellipse(x * k, 54 * k, 4 * k, 2.5 * k, (246, 240, 228, 255))  # white paws
+    c.detail_ellipse(4 * k, 13 * k, 3.5 * k, 3 * k, (52, 44, 40, 255))  # dark tail tip
+    c.detail_line([(52 * k, 13 * k), (49 * k, 28 * k)], (150, 98, 58, 255), 5 * k)  # long floppy ear
+
+
+top_dog(f"{OUT}/sprites/evey.png", (214, 178, 128, 255), (232, 206, 162, 255), (166, 112, 66, 255), _evey)
+
 # ---- app icon -------------------------------------------------------------------------------------
 icon = Image.new("RGBA", (256, 256), (0, 0, 0, 0))
 ImageDraw.Draw(icon).rounded_rectangle([0, 0, 255, 255], radius=56, fill=(40, 150, 170, 255))

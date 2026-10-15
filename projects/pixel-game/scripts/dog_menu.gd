@@ -1,6 +1,6 @@
 class_name DogMenu
 extends Control
-## The dog menu: Chad's orders for Brownie. The game pauses while it is open. Pick an order
+## The dog menu: Chad's orders for Evey. The game pauses while it is open. Pick an order
 ## with up/down and Attack or Interact (or tap it); Dog, Pause or Escape closes it. "Sic 'em"
 ## then asks for a target: left/right (or up/down) cycles through enemies nearby, marked by a
 ## red ring in the world, and Attack sends her.
@@ -146,7 +146,7 @@ func _build_rows() -> void:
 			lines.append("%d of %d" % [_target_index + 1, _targets.size()])
 		_show_marker(null if _targets.is_empty() else _targets[_target_index])
 	else:
-		_title.text = "Brownie"
+		_title.text = "Evey"
 		for order in options:
 			lines.append(_order_text(order))
 		_show_marker(null)

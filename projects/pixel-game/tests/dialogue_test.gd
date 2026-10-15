@@ -14,6 +14,7 @@ func _new_game(intro: bool) -> Game:
 	game.save.path = SAVE_PATH
 	game.conversation_finished.connect(func(id): _finished.append(id))
 	root.add_child(game)
+	_bench_evey()
 	return game
 
 
@@ -162,7 +163,15 @@ func _run() -> void:
 		await process_frame
 		if box.is_open():
 			break
-	_check(box.is_open(), "a new game opens with the ibis's welcome")
+	_check(box.is_open(), "a new game opens with Evey waking Chad")
+	var text_label: Label = box.get("_text")
+	_check(text_label.text.contains("nudges"), "her scene comes first")
+	await _read_all(box)
+	for i in 120:
+		await process_frame
+		if box.is_open():
+			break
+	_check(box.is_open(), "then the ibis's welcome")
 	await _read_all(box)
 	_check(game.flags.get("intro_done", false), "the welcome is marked as seen")
 	game.free()

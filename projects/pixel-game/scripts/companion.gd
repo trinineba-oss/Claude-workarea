@@ -1,8 +1,7 @@
 class_name Companion
 extends Interactable
-## Brownie, Chad's pothound. Before she joins she lies in the shade at her spot on the road
-## (`brownie <x> <y>` in a room file) and only has eyes for Chad's bag: give her some food and
-## she follows him everywhere, temples included.
+## Evey, Chad's beagle. She washed up on the wharf with him and is at his side from the
+## first step, temples included.
 ##
 ## Left to herself she runs at enemies near Chad and bites them (a bitten bandit drops what he
 ## stole, and she runs down any bandit making off with Chad's things), sits when Chad stands
@@ -15,7 +14,7 @@ extends Interactable
 
 enum Mode { FOLLOW, STAY, SIC, FETCH, DIG }
 
-const TEXTURE := preload("res://assets/sprites/brownie.png")
+const TEXTURE := preload("res://assets/sprites/evey.png")
 const FOLLOW_DISTANCE := 84.0
 const WALK_SPEED := 250.0
 const RUN_SPEED := 330.0
@@ -37,10 +36,8 @@ const DIG_TIME := 1.2
 ## She sniffs at a buried thing this close, now and then.
 const SNIFF_RANGE := 2.5 * WorldMap.TILE
 const SNIFF_EVERY := 6.0
-const FLAG := "brownie_joined"
 
 var joined := false
-var home := Vector2.ZERO
 var mode := Mode.FOLLOW
 ## The enemy she is after, if any.
 var quarry: Node2D
@@ -80,7 +77,7 @@ func _ready() -> void:
 	collision_mask = 1
 
 
-## Brownie joins (or, from a save, has already joined): she stops blocking Chad.
+## She is with Chad: she follows and never blocks him.
 func join() -> void:
 	joined = true
 	collision_layer = 0
@@ -88,22 +85,7 @@ func join() -> void:
 
 
 func can_interact(_flags: Dictionary) -> bool:
-	return not joined and visible
-
-
-## Talking to her before she joins: food wins her over.
-func use(game: Game) -> void:
-	if joined:
-		return
-	var food := food_in(game.inventory)
-	if food == "":
-		game.talk("brownie_hungry", self)
-		return
-	game.inventory.remove(food)
-	game.flags[FLAG] = true
-	join()
-	Effects.burst(get_parent(), position + Vector2(0, -50), "sparkle")
-	game.talk("brownie_join", self)
+	return false
 
 
 func on_talk(hero: Node2D) -> void:
@@ -230,11 +212,6 @@ func _physics_process(delta: float) -> void:
 	if game == null or player == null:
 		return
 	if not joined:
-		var here := game.map_id == Game.OVERWORLD
-		if visible != here:
-			visible = here
-			_shape.set_deferred("disabled", not here)
-		position = home
 		return
 	if player.frozen or player.health <= 0:
 		return
@@ -266,7 +243,7 @@ func _process(delta: float) -> void:
 		_sprite.position = Vector2(0, -absf(sin(_age * 14.0)) * 5.0)
 		_sprite.scale = Vector2.ONE
 	else:
-		# Lying in the shade before she joins; sitting and wagging after.
+		# Sitting and wagging.
 		_sprite.position = Vector2.ZERO
 		var squash := 0.72 if not joined else 0.86
 		_sprite.scale = Vector2(1.0 + (1.0 - squash) * 0.5, squash)

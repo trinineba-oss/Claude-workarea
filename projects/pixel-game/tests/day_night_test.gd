@@ -21,6 +21,7 @@ func _run() -> void:
 	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
+	_bench_evey()
 	await _physics_frames(2)
 	var clock: DayNight = game.day_night
 	_check(DayNight.current == clock, "the game's clock is current")
@@ -72,6 +73,7 @@ func _run() -> void:
 	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
+	_bench_evey()
 	await _frames(2)
 	_check(absf(game.day_night.hour - 22.0) < 0.1, "the saved hour comes back")
 	game.free()

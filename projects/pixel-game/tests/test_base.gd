@@ -29,6 +29,14 @@ func _physics_frames(count: int) -> void:
 		await physics_frame
 
 
+## Keeps Evey (the companion) out of tests that are not about her: she stays put and bites
+## nothing.
+func _bench_evey() -> void:
+	var evey := get_first_node_in_group("companion") as Companion
+	if evey != null:
+		evey.joined = false
+
+
 ## Waits until a closed conversation or minigame has handed control back (Game waits for
 ## physics ticks, which do not come every frame).
 func _settle() -> void:

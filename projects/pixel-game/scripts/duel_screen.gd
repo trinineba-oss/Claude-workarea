@@ -1,9 +1,9 @@
 class_name DuelScreen
 extends Control
-## The turn-based duel between Brownie and a top dog (rules in DogBattle). The world pauses
-## behind it. Each round Chad picks Brownie's move from a 2x2 menu (arrows and Attack or
+## The turn-based duel between Evey and a top dog (rules in DogBattle). The world pauses
+## behind it. Each round Chad picks Evey's move from a 2x2 menu (arrows and Attack or
 ## Interact, or tap); then the round plays out line by line (press or tap to go on). Winning
-## pays TT$, gives Brownie experience (she levels up) and marks the dog as beaten.
+## pays TT$, gives Evey experience (she levels up) and marks the dog as beaten.
 
 signal line_advanced
 signal move_chosen(move: String)
@@ -29,9 +29,9 @@ var _treats := 0
 var _message: Label
 var _buttons: Array[Label] = []
 var _foe_sprite: TextureRect
-var _brownie_sprite: TextureRect
+var _evey_sprite: TextureRect
 var _foe_panel: Control
-var _brownie_panel: Control
+var _evey_panel: Control
 
 
 func _ready() -> void:
@@ -51,10 +51,10 @@ func _ready() -> void:
 	add_child(ground)
 	_foe_sprite = _sprite_rect(Vector2(820, 70))
 	_foe_sprite.flip_h = true
-	_brownie_sprite = _sprite_rect(Vector2(200, 250))
-	_brownie_sprite.texture = preload("res://assets/sprites/brownie.png")
+	_evey_sprite = _sprite_rect(Vector2(200, 250))
+	_evey_sprite.texture = preload("res://assets/sprites/evey.png")
 	_foe_panel = _stat_panel(Vector2(90, 60))
-	_brownie_panel = _stat_panel(Vector2(760, 330))
+	_evey_panel = _stat_panel(Vector2(760, 330))
 	var box := Panel.new()
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(0.08, 0.05, 0.12, 0.94)
@@ -89,12 +89,12 @@ func is_open() -> bool:
 	return visible
 
 
-## Runs a whole duel against `dog_id`; returns true if Brownie won.
+## Runs a whole duel against `dog_id`; returns true if Evey won.
 func fight(game: Game, dog_id: String) -> bool:
 	_game = game
 	_dog_id = dog_id
 	var data := GameData.dog(dog_id)
-	battle = DogBattle.new(int(game.flags.get("brownie_level", 1)), data)
+	battle = DogBattle.new(int(game.flags.get("evey_level", 1)), data)
 	_foe_sprite.texture = load("res://assets/sprites/%s.png" % data.get("sprite", "dog"))
 	_open_frame = Engine.get_process_frames()
 	var tree := get_tree()
@@ -117,11 +117,11 @@ func fight(game: Game, dog_id: String) -> bool:
 		var lines := battle.play_round(move, heal)
 		await _say(lines)
 	var ending: Array[String] = []
-	if battle.brownie_won:
+	if battle.evey_won:
 		var reward := int(data.get("reward", 0))
 		game.get_node("Player").add_money(reward)
 		game.flags["beat_" + dog_id] = true
-		ending.append("Brownie wins! Chad gets TT$%d." % reward)
+		ending.append("Evey wins! Chad gets TT$%d." % reward)
 		ending.append_array(DogBattle.add_xp(game.flags, int(data.get("xp", 0))))
 	await _say(ending)
 	visible = false
@@ -132,10 +132,10 @@ func fight(game: Game, dog_id: String) -> bool:
 	await tree.physics_frame
 	tree.paused = was_paused
 	game.save_game()
-	return battle.brownie_won
+	return battle.evey_won
 
 
-## Picks Brownie's move (what the menu does when Chad confirms).
+## Picks Evey's move (what the menu does when Chad confirms).
 func choose(move: String) -> void:
 	if _menu_open and _move_allowed(move):
 		_menu_open = false
@@ -196,7 +196,7 @@ func _pick_move() -> String:
 	_menu_open = true
 	if not _move_allowed(DogBattle.MOVES[_index]):
 		_index = 0
-	_message.text = "What will Brownie do?"
+	_message.text = "What will Evey do?"
 	_refresh()
 	return await move_chosen
 
@@ -231,9 +231,9 @@ func _refresh() -> void:
 		if not _move_allowed(move):
 			colour = Color(0.5, 0.5, 0.55)
 		_buttons[i].add_theme_color_override("font_color", colour)
-	var level := int(_game.flags.get("brownie_level", 1))
+	var level := int(_game.flags.get("evey_level", 1))
 	_fill_panel(_foe_panel, battle.foe, "")
-	_fill_panel(_brownie_panel, battle.brownie, "Lv %d" % level)
+	_fill_panel(_evey_panel, battle.evey, "Lv %d" % level)
 
 
 func _fill_panel(panel: Control, fighter: Dictionary, extra: String) -> void:

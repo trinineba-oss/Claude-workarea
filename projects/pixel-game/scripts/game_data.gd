@@ -119,7 +119,7 @@ static func forage_ids() -> Array:
 
 
 ## Which conversation a character starts, given the story flags.
-## A top dog that duels Brownie (data/dogs.json).
+## A top dog that duels Evey (data/dogs.json).
 static func dog(id: String) -> Dictionary:
 	if _dogs == null or _dogs.is_empty():
 		_dogs = _without_notes(_read(DOGS_PATH))

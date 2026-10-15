@@ -43,6 +43,7 @@ func _run() -> void:
 	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
+	_bench_evey()
 	await _physics_frames(2)
 	var box: DialogueBox = game.get_node("HUD/DialogueBox")
 	var fisherman_talk: Array = GameData.character("fisherman")["talk"]

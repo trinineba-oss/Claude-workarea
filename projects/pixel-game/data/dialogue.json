@@ -8,6 +8,10 @@
       },
       {
         "speaker": "Ibis",
+        "text": "And you bring a beagle too! Good nose on that one. She go be more use than you, I bet."
+      },
+      {
+        "speaker": "Ibis",
         "text": "Welcome to San Fernando. Well... a San Fernando. Something feel a little off today, eh?"
       },
       {
@@ -396,42 +400,10 @@
         "text": "(That's the end of the first chapter for now. Thanks for playing!)"
       }
     ],
-    "brownie_hungry": [
-      {
-        "speaker": "",
-        "text": "A brown pothound lies in the shade, watching you."
-      },
-      {
-        "speaker": "",
-        "text": "Her eyes go from your face to your bag. Back to your face. Back to the bag."
-      },
-      {
-        "speaker": "",
-        "text": "She look hungry. Maybe if you had something to eat..."
-      }
-    ],
-    "brownie_join": [
-      {
-        "speaker": "",
-        "text": "You share some food. It disappears in one bite."
-      },
-      {
-        "speaker": "",
-        "text": "She wags her whole back end. Somebody scratch BROWNIE on her old collar."
-      },
-      {
-        "speaker": "",
-        "text": "Brownie will follow you now. She does bite anything that troubles you."
-      }
-    ],
     "topdog_no_dog": [
       {
         "speaker": "",
-        "text": "The dog looks you up and down, then yawns. You're not the one it wants to deal with."
-      },
-      {
-        "speaker": "",
-        "text": "(Maybe if you had a dog of your own...)"
+        "text": "The dog looks you up and down, then yawns. Without Evey, you're not worth its time."
       }
     ],
     "duel_scraps": [
@@ -441,7 +413,7 @@
       },
       {
         "speaker": "",
-        "text": "He growls at Brownie. Brownie growls back. This is happening."
+        "text": "He growls at Evey. Evey growls back. This is happening."
       },
       {
         "speaker": "",
@@ -457,13 +429,13 @@
     "duel_scraps_lose": [
       {
         "speaker": "",
-        "text": "Scraps trots off with his tail high. Brownie sulks. Rest up and try again."
+        "text": "Scraps trots off with his tail high. Evey sulks. Rest up and try again."
       }
     ],
     "duel_scraps_after": [
       {
         "speaker": "",
-        "text": "Scraps wags his tail at Brownie. Still one ear up, one ear down."
+        "text": "Scraps wags his tail at Evey. Still one ear up, one ear down."
       }
     ],
     "duel_duchess": [
@@ -473,7 +445,7 @@
       },
       {
         "speaker": "",
-        "text": "She sniffs at Brownie's old collar and turns her nose up."
+        "text": "She sniffs at Evey's old collar and turns her nose up."
       },
       {
         "speaker": "",
@@ -483,7 +455,7 @@
     "duel_duchess_win": [
       {
         "speaker": "",
-        "text": "Duchess sighs, adjusts her bow, and lets Brownie have the good shade."
+        "text": "Duchess sighs, adjusts her bow, and lets Evey have the good shade."
       }
     ],
     "duel_duchess_lose": [
@@ -495,7 +467,7 @@
     "duel_duchess_after": [
       {
         "speaker": "",
-        "text": "Duchess shares a crumb of doubles with Brownie. A great honour, apparently."
+        "text": "Duchess shares a crumb of doubles with Evey. A great honour, apparently."
       }
     ],
     "duel_tiger": [
@@ -509,7 +481,7 @@
       },
       {
         "speaker": "",
-        "text": "TIGER, the boss of the back lot, accepts Brownie's challenge!"
+        "text": "TIGER, the boss of the back lot, accepts Evey's challenge!"
       }
     ],
     "duel_tiger_win": [
@@ -525,13 +497,59 @@
     "duel_tiger_lose": [
       {
         "speaker": "",
-        "text": "Tiger yawns and lies back down. Brownie needs to toughen up a little."
+        "text": "Tiger yawns and lies back down. Evey needs to toughen up a little."
       }
     ],
     "duel_tiger_after": [
       {
         "speaker": "",
         "text": "Tiger thumps his tail once. From Tiger, that's a speech."
+      }
+    ],
+    "evey_wake": [
+      {
+        "speaker": "",
+        "text": "(Something wet nudges your cheek. Then again. Then a whole tongue.)"
+      },
+      {
+        "speaker": "",
+        "text": "Evey! Your beagle, soaked to the ears and wagging like this was all a big adventure."
+      },
+      {
+        "speaker": "",
+        "text": "She shakes the sea out of her coat, all over you. Thanks, Evey."
+      }
+    ],
+    "duel_brownie": [
+      {
+        "speaker": "",
+        "text": "A brown pothound lies in the shade by the mango tree, one eye open."
+      },
+      {
+        "speaker": "",
+        "text": "She sees Evey and gets up slow. This is HER patch of road, and everybody passing must know it."
+      },
+      {
+        "speaker": "",
+        "text": "BROWNIE wants to see what this beagle is made of!"
+      }
+    ],
+    "duel_brownie_win": [
+      {
+        "speaker": "",
+        "text": "Brownie flops back down in the shade and lets Evey sniff the mango tree. Fair is fair."
+      }
+    ],
+    "duel_brownie_lose": [
+      {
+        "speaker": "",
+        "text": "Brownie goes back to her nap like nothing happened. Evey will get her next time."
+      }
+    ],
+    "duel_brownie_after": [
+      {
+        "speaker": "",
+        "text": "Brownie thumps her tail in the dust when Evey passes. Friends now, more or less."
       }
     ]
   }

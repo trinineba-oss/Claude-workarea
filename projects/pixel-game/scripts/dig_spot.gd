@@ -1,6 +1,6 @@
 class_name DigSpot
 extends Node2D
-## Something buried (`dig <x> <y> <reward>`): invisible until Brownie digs it up. She sniffs at
+## Something buried (`dig <x> <y> <reward>`): invisible until Evey digs it up. She sniffs at
 ## it when she passes ("Sniff sniff?") and digs on command (Companion.dig). The reward works
 ## like a chest's: "tt<amount>" (money) or an item id. A dug spot stays dug.
 
@@ -36,7 +36,7 @@ func _ready() -> void:
 	_hole.visible = dug
 
 
-## Brownie found it: Chad gets the reward.
+## Evey found it: Chad gets the reward.
 func dig_up(game: Game) -> void:
 	if dug:
 		return

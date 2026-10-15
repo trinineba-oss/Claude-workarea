@@ -1,6 +1,6 @@
 class_name Plate
 extends Node2D
-## A pressure plate set into the floor. Slide a push block onto it, or tell Brownie to stay
+## A pressure plate set into the floor. Slide a push block onto it, or tell Evey to stay
 ## on it, and its trigger fires for good (opening gates with the same trigger name).
 
 const UP := preload("res://assets/sprites/plate.png")

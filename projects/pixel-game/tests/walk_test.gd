@@ -20,6 +20,7 @@ func _run() -> void:
 	game.play_intro = false
 	game.save.path = SAVE_PATH
 	root.add_child(game)
+	_bench_evey()
 	await _physics_frames(2)
 	var player: Player = game.get_node("Player")
 	var size := WorldMap.room_size()
