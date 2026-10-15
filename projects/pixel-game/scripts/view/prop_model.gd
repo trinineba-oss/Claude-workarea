@@ -56,6 +56,8 @@ static func make(node: Node2D) -> PropModel:
 		model._build_prop(node.prop_id, GameData.prop(node.prop_id), node)
 	elif node is Car:
 		model._build_car(node._sprite.texture.resource_path.get_file().get_basename())
+	elif node is Cauldron:
+		model._build_cauldron()
 	elif node is Forage:
 		model._build_forage(node.forage_id)
 	elif node is Signpost:
@@ -105,6 +107,16 @@ func refresh(source: Node2D, delta: float) -> void:
 			var bob := sin(_time * 2.2) * 0.04
 			_up.position.y = bob
 			_down.position.y = bob
+		"cauldron":
+			var pot: Sprite2D = source._sprite
+			var lid: Sprite2D = source._lid
+			_up.visible = pot.visible
+			_up.position = Vector3(pot.position.x, -pot.position.y, 0) * View3D.PX
+			_up.scale = Vector3(pot.scale.x, pot.scale.y, pot.scale.x)
+			_up.rotation.z = -pot.rotation
+			_down.visible = lid.visible
+			_down.position = Vector3(lid.position.x, -lid.position.y, 0) * View3D.PX
+			_down.rotation.z = -lid.rotation
 		"forage":
 			_up.visible = source._sprite.texture == source._full
 			if _down != null:
@@ -519,6 +531,36 @@ func _build_forage(id: String) -> void:
 	_add(b)
 	_up = fruit.build("Fruit")
 	add_child(_up)
+
+
+# --- the temple's boss --------------------------------------------------------------------------
+
+
+func _build_cauldron() -> void:
+	kind = "cauldron"
+	var iron := Color(0.52, 0.5, 0.56)
+	var pot := MeshBuilder.new()
+	pot.sphere(1.2, Vector3(0, 1.05, 0), iron, F.PAINT, Vector3(1, 0.8, 1), 18)
+	pot.cylinder(1.12, 0.14, Vector3(0, 1.85, 0), iron.lightened(0.15), F.METAL, Basis(), -1.0, 18)
+	pot.cylinder(1.0, 0.05, Vector3(0, 1.9, 0), Color(0.3, 0.62, 0.15), F.GLOW, Basis(), -1.0, 18)
+	for i in 3:
+		var at := Basis(Vector3.UP, TAU * i / 3.0 + 0.5) * Vector3(0.75, 0.15, 0)
+		pot.cylinder(0.12, 0.35, at, iron, F.METAL, Basis(), 0.16, 8)
+	for side: float in [-1.0, 1.0]:
+		pot.box(Vector3(0.3, 0.12, 0.12), Vector3(side * 1.25, 1.55, 0), iron, F.METAL)
+	# Cross eyes on the front: it is a very angry pot.
+	for side: float in [-1.0, 1.0]:
+		pot.sphere(0.17, Vector3(side * 0.36, 1.15, 0.92), WHITE, F.PAINT, Vector3(1, 1, 0.5), 10)
+		pot.sphere(0.08, Vector3(side * 0.31, 1.13, 1.0), DARK, F.PAINT, Vector3(1, 1, 0.5), 8)
+		var brow := Basis(Vector3.BACK, side * -0.4)
+		pot.box(Vector3(0.38, 0.07, 0.06), Vector3(side * 0.36, 1.38, 0.98), DARK, F.PAINT, brow)
+	_up = pot.build("Pot")
+	add_child(_up)
+	var lid := MeshBuilder.new()
+	lid.cylinder(1.18, 0.16, Vector3.ZERO, iron.lightened(0.08), F.METAL, Basis(), 0.85, 18)
+	lid.sphere(0.16, Vector3(0, 0.18, 0), BRASS, F.METAL, Vector3(1, 0.8, 1), 10)
+	_down = lid.build("Lid")
+	add_child(_down)
 
 
 # --- the temple -------------------------------------------------------------------------------

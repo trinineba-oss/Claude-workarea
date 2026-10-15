@@ -99,8 +99,9 @@ static func material(finish: int) -> Material:
 	mat.roughness = 0.6
 	match finish:
 		Finish.METAL:
-			mat.metallic = 0.65
-			mat.roughness = 0.32
+			# Not too shiny: indoors there is little for metal to reflect.
+			mat.metallic = 0.35
+			mat.roughness = 0.4
 		Finish.GLASS:
 			mat.metallic = 0.4
 			mat.roughness = 0.06

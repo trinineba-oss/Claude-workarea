@@ -50,9 +50,8 @@ func _ready() -> void:
 	ground.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(ground)
 	_foe_sprite = _sprite_rect(Vector2(820, 70))
-	_foe_sprite.flip_h = true
 	_evey_sprite = _sprite_rect(Vector2(200, 250))
-	_evey_sprite.texture = preload("res://assets/sprites/evey.png")
+	_evey_sprite.texture = Looks.frame(Looks.sheet_by_key("companion"), "idle", Vector2.RIGHT)
 	_foe_panel = _stat_panel(Vector2(90, 60))
 	_evey_panel = _stat_panel(Vector2(760, 330))
 	var box := Panel.new()
@@ -95,7 +94,12 @@ func fight(game: Game, dog_id: String) -> bool:
 	_dog_id = dog_id
 	var data := GameData.dog(dog_id)
 	battle = DogBattle.new(int(game.flags.get("evey_level", 1)), data)
-	_foe_sprite.texture = load("res://assets/sprites/%s.png" % data.get("sprite", "dog"))
+	var foe_sheet := Looks.sheet_by_key("dog:" + dog_id)
+	_foe_sprite.flip_h = foe_sheet == ""
+	if foe_sheet != "":
+		_foe_sprite.texture = Looks.frame(foe_sheet, "idle", Vector2.LEFT)
+	else:
+		_foe_sprite.texture = load("res://assets/sprites/%s.png" % data.get("sprite", "dog"))
 	_open_frame = Engine.get_process_frames()
 	var tree := get_tree()
 	var was_paused := tree.paused
@@ -277,5 +281,6 @@ func _sprite_rect(at: Vector2) -> TextureRect:
 	rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	rect.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(rect)
 	return rect

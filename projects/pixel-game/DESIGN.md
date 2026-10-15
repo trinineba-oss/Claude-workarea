@@ -151,7 +151,10 @@ gossips), jumbies, steups teens (a teeth-suck shockwave). Bosses are themed on t
 
 ## Art and audio direction
 
-- **HD 2D, smooth and lit** (switched from pixel art): clean cartoon shapes with soft
+- **2.5D (current):** the game plays in 2D but is drawn in 3D with a tilted camera, real
+  lights and shadows, solid props and pixel-art characters (LPC people, hand-made animals).
+  Chosen over moving to Unity: the same look as modern 2.5D games, without rewriting the game.
+- **HD 2D, smooth and lit** (before 2.5D; still the 2D drawing): clean cartoon shapes with soft
   shadows, organic blended ground (sand, grass, dirt and water melt into each other), animated
   water with shore foam, depth-sorted scenery, particles, a soft vignette. A hot, saturated
   Caribbean palette: flamboyant red and poui yellow blooms, mango green, concrete pastels,

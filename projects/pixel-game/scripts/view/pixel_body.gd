@@ -18,6 +18,8 @@ const LOOK_RANGE := 230.0
 
 var sheet := ""
 var anim_name := "idle"
+## How many times bigger than the sheet's usual size (the Big Blue Crab).
+var size := 1.0
 var facing := Vector2.DOWN
 
 var _time := 0.0
@@ -31,6 +33,7 @@ var _velocity := Vector2.ZERO
 func setup(sheet_name: String, source: Node2D) -> void:
 	sheet = sheet_name
 	texture = Looks.texture(sheet)
+	size = Looks.size_for(source)
 	hframes = int(texture.get_width() / 64.0)
 	vframes = int(texture.get_height() / 64.0)
 	pixel_size = SCALE

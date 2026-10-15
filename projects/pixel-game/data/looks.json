@@ -1,5 +1,5 @@
 {
-  "_note": "Which sprite sheet (assets/characters/<sheet>.png, layouts in sheets.json) draws each thing in the 2.5D view. Keys: player, companion, npc:<character id>, dog:<top dog id>, or an enemy's class name. Things not listed are drawn from their 2D sprite.",
+  "_note": "Which sprite sheet (assets/characters/<sheet>.png, layouts in sheets.json) draws each thing in the 2.5D view. Keys: player, companion, npc:<character id>, dog:<top dog id>, or an enemy's class name. A value is a sheet name, or {\"sheet\", \"size\"} to draw it bigger. Things not listed are drawn from their 2D sprite.",
   "player": "chad",
   "companion": "evey",
   "npc:ibis": "ibis",
@@ -19,5 +19,6 @@
   "Pothound": "stray",
   "Corbeau": "corbeau",
   "Crab": "crab",
+  "BigCrab": {"sheet": "crab", "size": 2.6},
   "Soucouyant": "soucouyant"
 }

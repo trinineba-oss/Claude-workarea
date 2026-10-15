@@ -2,12 +2,17 @@
 
 The hero is Chad.
 
-The folder is still called `pixel-game`, but the game is HD 2D now (it started as pixel art).
+The folder is still called `pixel-game`, but the game is 2.5D now (it started as pixel art, then HD 2D).
 
 - HD 2D: 1280x704 base resolution, `canvas_items` stretch, linear filtering. One tile is
   64 px and rooms are 20x11 tiles; distances and speeds in code are in these pixels.
 - Node origins are at the character's feet (or the base of a tree/wall): depth sorting uses
   them, so sprites are offset upward. Keep that convention for new art and scenes.
+- The game plays in 2D and is drawn in 2.5D by `scripts/view/` (see README "Look"). Keep game
+  logic in 2D; the view only reads it. New characters get a sheet in `data/looks.json`, new props
+  a model in `prop_model.gd`, or they show as an upright copy of their 2D sprite.
+- Pixel sheets come from `tools/lpc_build.py` (LPC parts, CC-BY-SA: keep
+  `assets/characters/CREDITS.md` up to date by re-running it) and `tools/pixel_animals.py`.
 - Placeholder art comes from `tools/gen_art.py` (Pillow + numpy, run with
   `uv run --with pillow --with numpy python -I tools/gen_art.py`). Real art replaces the PNGs
   at the same size and anchor.

@@ -15,6 +15,38 @@ static var _sheets: Dictionary
 
 ## The sheet name for a 2D node, or "".
 static func sheet_for(node: Node) -> String:
+	var look: Variant = _look(node)
+	return look.get("sheet", "") if look is Dictionary else str(look)
+
+
+## How much bigger than usual its sheet is drawn (1 unless looks.json gives a size).
+static func size_for(node: Node) -> float:
+	var look: Variant = _look(node)
+	return float(look.get("size", 1.0)) if look is Dictionary else 1.0
+
+
+## The sheet for a looks.json key ("companion", "dog:scraps"...), or "".
+static func sheet_by_key(key: String) -> String:
+	var look: Variant = _load_looks().get(key, "")
+	return look.get("sheet", "") if look is Dictionary else str(look)
+
+
+## The first frame of an animation, facing that way, as a texture for the 2D screens (the dog
+## duel); null if the sheet has no such animation.
+static func frame(sheet: String, anim_name: String, facing: Vector2) -> Texture2D:
+	var layout := anim(sheet, anim_name)
+	if layout.is_empty():
+		return null
+	var row: int = layout["row"]
+	if int(layout["rows"]) == 4:
+		row += direction_index(facing)
+	var atlas := AtlasTexture.new()
+	atlas.atlas = texture(sheet)
+	atlas.region = Rect2(0, row * 64, 64, 64)
+	return atlas
+
+
+static func _look(node: Node) -> Variant:
 	var looks := _load_looks()
 	var key := ""
 	if node is Player:

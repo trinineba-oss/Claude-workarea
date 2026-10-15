@@ -167,6 +167,20 @@ func _run() -> void:
 	var bandit := Entities.create("bandit")
 	_check(PropModel.make(bandit) == null, "people stay pixel sprites")
 	bandit.free()
+	var pot: Node = load("res://scenes/cauldron.tscn").instantiate()
+	var pot_model := PropModel.make(pot)
+	_check(
+		pot_model != null and pot_model.kind == "cauldron", "the Callaloo Cauldron is a real pot"
+	)
+	pot_model.free()
+	pot.free()
+	var big := BigCrab.new()
+	_check(
+		Looks.sheet_for(big) == "crab" and Looks.size_for(big) > 2.0,
+		"the Big Blue Crab is a big pixel crab"
+	)
+	big.free()
+	_check(Looks.frame("evey", "idle", Vector2.RIGHT) is AtlasTexture, "the duel shows pixel Evey")
 
 	# --- the camera ---------------------------------------------------------------------------
 	game.go_to(road, _at(road, 10, 5))
