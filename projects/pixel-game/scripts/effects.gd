@@ -10,6 +10,8 @@ const SPARK := preload("res://assets/sprites/spark.png")
 static func float_text(parent: Node, pos: Vector2, text: String, color := Color.WHITE) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
+	if View3D.current != null:
+		View3D.current.float_text(_global(parent, pos), text, color)
 	var label := Label.new()
 	label.text = text
 	label.z_index = 20
@@ -29,6 +31,9 @@ static func float_text(parent: Node, pos: Vector2, text: String, color := Color.
 
 static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	if parent == null or not parent.is_inside_tree():
+		return
+	if View3D.current != null:
+		View3D.current.burst(_global(parent, pos), kind)
 		return
 	var p := CPUParticles2D.new()
 	p.texture = SPARK
@@ -74,3 +79,8 @@ static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	p.finished.connect(p.queue_free)
 	p.emitting = true
 	parent.add_child(p)
+
+
+## A position given in `parent`'s coordinates, in world coordinates.
+static func _global(parent: Node, pos: Vector2) -> Vector2:
+	return (parent as Node2D).to_global(pos) if parent is Node2D else pos

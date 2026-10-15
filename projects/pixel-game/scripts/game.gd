@@ -33,6 +33,8 @@ const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 
 ## Play the ibis's welcome the first time a game starts (tests turn this off).
 @export var play_intro := true
+## Draw the world in 2.5D (View3D); off, the plain 2D drawing shows instead.
+@export var use_3d := true
 
 var save := SaveGame.new()
 ## The map Chad is on (a key of MAPS).
@@ -56,6 +58,7 @@ var _fishing := false
 var _was_night := false
 var _boomerang: Boomerang
 var _companion: Companion
+var _view: View3D
 var _dog_menu: DogMenu
 var _worlds: Dictionary = {}  # map id -> WorldMap
 var _fade: ColorRect
@@ -124,6 +127,10 @@ func _ready() -> void:
 	_update_keys()
 	_entry_position = _player.position
 	_add_companion()
+	if use_3d:
+		_view = View3D.new()
+		_view.setup(self)
+		add_child(_view)
 	_was_night = day_night.is_night()
 	_setup_camera()
 	_refresh_rooms()
@@ -295,6 +302,8 @@ func go_to(room_coords: Vector2i, pos: Vector2) -> void:
 	_refresh_rooms()
 	_setup_camera()
 	_snap_camera()
+	if _view != null:
+		_view.snap_camera()
 	_on_room_entered()
 	save_game()
 

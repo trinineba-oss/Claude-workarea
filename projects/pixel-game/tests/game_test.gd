@@ -43,6 +43,8 @@ func _run() -> void:
 	await _physics_frames(10)
 	Input.action_release(&"move_right")
 	_check(player.position.x > x0 + 20.0, "moves right")
+	# process_frame fires before _process runs, so wait for a second one.
+	await _frames(2)
 	_check(camera.position == player.position, "the camera follows Chad")
 	player.position = origin + Vector2(10.5 * t, 8.5 * t)  # last plank row above the water
 	Input.action_press(&"move_down")

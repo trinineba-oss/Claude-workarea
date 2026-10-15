@@ -58,6 +58,10 @@ var coords := Vector2i.ZERO
 var key_prefix := ""
 ## True for the plain sea/grass rooms that fill gaps at the edges of the world.
 var filler := false
+## The room's map rows, and the same with a one-tile border from its neighbours (the 3D view
+## builds its ground and scenery from these).
+var map_lines := PackedStringArray()
+var padded_lines := PackedStringArray()
 
 
 ## `padded` is the map with a one-tile border from the neighbouring rooms (see
@@ -71,9 +75,11 @@ func build(
 ) -> void:
 	coords = room_coords
 	filler = is_filler
+	map_lines = lines
+	padded_lines = padded if not padded.is_empty() else _pad(lines)
 	position = WorldMap.room_origin(coords)
 	y_sort_enabled = true
-	add_child(_make_ground(padded if not padded.is_empty() else _pad(lines)))
+	add_child(_make_ground(padded_lines))
 	if filler:
 		return
 	add_child(_make_collision(lines))
