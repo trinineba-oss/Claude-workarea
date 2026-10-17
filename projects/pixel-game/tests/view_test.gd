@@ -87,6 +87,10 @@ func _run() -> void:
 	var body: PixelBody = chad_view.find_children("*", "PixelBody", true, false)[0]
 	_check(body.sheet == "chad", "Chad is drawn from his LPC sheet")
 	_check(body.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "with crisp pixels")
+	_check(
+		Looks.frame_size("chad") == 64 and not Looks.is_smooth("chad"),
+		"pixel sheets have 64 px frames unless sheets.json says otherwise"
+	)
 	player.facing = Vector2.LEFT
 	Input.action_press(&"move_left")
 	await _physics_frames(6)

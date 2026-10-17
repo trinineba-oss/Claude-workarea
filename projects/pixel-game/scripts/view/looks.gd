@@ -42,7 +42,8 @@ static func frame(sheet: String, anim_name: String, facing: Vector2) -> Texture2
 		row += direction_index(facing)
 	var atlas := AtlasTexture.new()
 	atlas.atlas = texture(sheet)
-	atlas.region = Rect2(0, row * 64, 64, 64)
+	var cell := frame_size(sheet)
+	atlas.region = Rect2(0, row * cell, cell, cell)
 	return atlas
 
 
@@ -64,7 +65,18 @@ static func _look(node: Node) -> Variant:
 
 ## {"row", "frames", "rows"} for one animation of a sheet, or {} if it has none.
 static func anim(sheet: String, name: String) -> Dictionary:
-	return _load_sheets().get("characters", {}).get(sheet, {}).get(name, {})
+	var found: Variant = _load_sheets().get("characters", {}).get(sheet, {}).get(name, {})
+	return found if found is Dictionary else {}
+
+
+## Pixels per (square) frame: 64 unless sheets.json says otherwise ("frame").
+static func frame_size(sheet: String) -> int:
+	return int(_load_sheets().get("characters", {}).get(sheet, {}).get("frame", 64))
+
+
+## Painted (not pixel) art, drawn with smooth filtering ("smooth" in sheets.json).
+static func is_smooth(sheet: String) -> bool:
+	return bool(_load_sheets().get("characters", {}).get(sheet, {}).get("smooth", false))
 
 
 static func texture(sheet: String) -> Texture2D:

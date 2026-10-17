@@ -34,12 +34,19 @@ func setup(sheet_name: String, source: Node2D) -> void:
 	sheet = sheet_name
 	texture = Looks.texture(sheet)
 	size = Looks.size_for(source)
-	hframes = int(texture.get_width() / 64.0)
-	vframes = int(texture.get_height() / 64.0)
-	pixel_size = SCALE
+	var cell := float(Looks.frame_size(sheet))
+	hframes = int(texture.get_width() / cell)
+	vframes = int(texture.get_height() / cell)
+	# Bigger frames hold finer art at the same size in the world.
+	pixel_size = SCALE * 64.0 / cell
 	billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
-	texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
-	alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	if Looks.is_smooth(sheet):
+		# Painted art: smooth filtering and soft edges.
+		texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		alpha_cut = SpriteBase3D.ALPHA_CUT_OPAQUE_PREPASS
+	else:
+		texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+		alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 	shaded = true
 	double_sided = true
 	cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
@@ -130,7 +137,9 @@ func _show_frame(source: Node2D, velocity: Vector2) -> void:
 			if frames == 9:
 				col = 1 + int(_time * WALK_FPS * speed) % 8  # LPC: frame 0 is the standing pose
 			else:
-				col = int(_time * WALK_FPS * speed) % frames
+				# Short cycles (two painted steps) step slower.
+				var fps := WALK_FPS if frames > 3 else WALK_FPS * 0.5
+				col = int(_time * fps * speed) % frames
 		"idle":
 			col = int(_time * IDLE_FPS) % frames
 		"slash":
