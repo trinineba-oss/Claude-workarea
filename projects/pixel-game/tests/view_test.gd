@@ -85,8 +85,23 @@ func _run() -> void:
 
 	# --- pixel bodies ---------------------------------------------------------------------------
 	var body: PixelBody = chad_view.find_children("*", "PixelBody", true, false)[0]
-	_check(body.sheet == "chad", "Chad is drawn from his LPC sheet")
-	_check(body.texture_filter == BaseMaterial3D.TEXTURE_FILTER_NEAREST, "with crisp pixels")
+	_check(body.sheet == Looks.sheet_by_key("player"), "Chad is drawn from his sheet")
+	var smooth := Looks.is_smooth(body.sheet)
+	_check(
+		(
+			body.texture_filter
+			== (
+				BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+				if smooth
+				else BaseMaterial3D.TEXTURE_FILTER_NEAREST
+			)
+		),
+		"painted sheets are smooth, pixel sheets crisp"
+	)
+	_check(
+		is_equal_approx(body.pixel_size, PixelBody.SCALE * 64.0 / Looks.frame_size(body.sheet)),
+		"bigger frames are drawn at the same size in the world"
+	)
 	_check(
 		Looks.frame_size("chad") == 64 and not Looks.is_smooth("chad"),
 		"pixel sheets have 64 px frames unless sheets.json says otherwise"
@@ -109,7 +124,10 @@ func _run() -> void:
 	await _physics_frames(20)
 	var evey: Companion = get_first_node_in_group("companion")
 	var evey_body: Array = view.entity_view(evey).find_children("*", "PixelBody", true, false)
-	_check(not evey_body.is_empty() and evey_body[0].sheet == "evey", "Evey is the pixel beagle")
+	_check(
+		not evey_body.is_empty() and evey_body[0].sheet == Looks.sheet_by_key("companion"),
+		"Evey is the beagle"
+	)
 	var fisher: Npc = npcs.filter(func(n): return n.character_id == "fisherman")[0]
 	var fisher_body: Array = view.entity_view(fisher).find_children("*", "PixelBody", true, false)
 	_check(not fisher_body.is_empty(), "townspeople have pixel bodies")
@@ -184,7 +202,13 @@ func _run() -> void:
 		"the Big Blue Crab is a big pixel crab"
 	)
 	big.free()
-	_check(Looks.frame("evey", "idle", Vector2.RIGHT) is AtlasTexture, "the duel shows pixel Evey")
+	for sheet in ["evey", "evey_painted"]:
+		var still := Looks.frame(sheet, "idle", Vector2.RIGHT) as AtlasTexture
+		_check(
+			still != null and still.region.size.x == Looks.frame_size(sheet),
+			"the duel can show %s" % sheet
+		)
+	_check(Looks.frame_size("chad_painted") == 128, "the painted sheets have 128 px frames")
 
 	# --- the camera ---------------------------------------------------------------------------
 	game.go_to(road, _at(road, 10, 5))

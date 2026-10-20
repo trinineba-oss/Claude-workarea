@@ -32,6 +32,13 @@ friendships). Seasoning 1 is the Sacred Chadon Beni ("for Chad").
 **Doner Dread**, a smug fast-food baron, chases the same prize and turns up at each temple one
 step ahead, gloating.
 
+### Side quests
+
+- **The Orange Castle** (proposal): the orange-castle hospital near Cross Crossing, where the
+  owner works as a phlebotomist, as a side-view platformer stage. See
+  [Side quest: the Orange Castle](12-side-quest-orange-castle.md).
+- The trading quest along the Cross Crossing stalls (see [Gameplay](07-gameplay.md)).
+
 ## Your input
 
 1. **Seasonings 2–4.** Which three? (Ideas: pimento/scotch bonnet, shado beni is taken, culantro,

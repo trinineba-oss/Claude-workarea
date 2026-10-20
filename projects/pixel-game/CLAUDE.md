@@ -11,7 +11,8 @@ The folder is still called `pixel-game`, but the game is 2.5D now (it started as
 - The game plays in 2D and is drawn in 2.5D by `scripts/view/` (see README "Look"). Keep game
   logic in 2D; the view only reads it. New characters get a sheet in `data/looks.json`, new props
   a model in `prop_model.gd`, or they show as an upright copy of their 2D sprite.
-- Pixel sheets come from `tools/lpc_build.py` (LPC parts, CC-BY-SA: keep
+- Chad and Evey use painted sheets for now (an option under review): `tools/painted_sheets.py`
+  cuts the pose sheets in `art_src/painted/` (Godot ignores `art_src/`). Pixel sheets come from `tools/lpc_build.py` (LPC parts, CC-BY-SA: keep
   `assets/characters/CREDITS.md` up to date by re-running it) and `tools/pixel_animals.py`.
 - Placeholder art comes from `tools/gen_art.py` (Pillow + numpy, run with
   `uv run --with pillow --with numpy python -I tools/gen_art.py`). Real art replaces the PNGs

@@ -37,6 +37,7 @@ Cauldron.
 | Skinner Park | Minigame | Cricket or football |
 | Temples 2–4 | Dungeons | Quarry caves, market at night, refinery tower, old wharf |
 | San Fernando Hill | Finale | Opens after four seasonings |
+| The Orange Castle | Side quest (proposal) | The orange-castle hospital near Cross Crossing, possibly side-view; see [the proposal](12-side-quest-orange-castle.md) |
 
 ## Your input
 

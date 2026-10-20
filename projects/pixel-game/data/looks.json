@@ -1,7 +1,7 @@
 {
-  "_note": "Which sprite sheet (assets/characters/<sheet>.png, layouts in sheets.json) draws each thing in the 2.5D view. Keys: player, companion, npc:<character id>, dog:<top dog id>, or an enemy's class name. A value is a sheet name, or {\"sheet\", \"size\"} to draw it bigger. Things not listed are drawn from their 2D sprite.",
-  "player": "chad",
-  "companion": "evey",
+  "_note": "Which sprite sheet (assets/characters/<sheet>.png, layouts in sheets.json) draws each thing in the 2.5D view. Keys: player, companion, npc:<character id>, dog:<top dog id>, or an enemy's class name. A value is a sheet name, or {\"sheet\", \"size\"} to draw it bigger. Things not listed are drawn from their 2D sprite. Chad and Evey use the painted sheets (an option under review, see docs/03-art-style.md); set player to \"chad\" and companion to \"evey\" for the pixel ones.",
+  "player": "chad_painted",
+  "companion": "evey_painted",
   "npc:ibis": "ibis",
   "npc:fisherman": "fisherman",
   "npc:limer": "limer",

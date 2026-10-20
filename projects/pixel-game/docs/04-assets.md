@@ -15,7 +15,8 @@ background**, figures with a dark outline and no overlapping.
 
 Action poses: attack / hurt for people and enemies, sit / bark for dogs. More walk steps per
 direction (4–8) look smoother. Same light direction, outline and size for the whole cast.
-Claude cuts these into game sheets (transparent frames of 128 px).
+Put the sheet in `art_src/painted/<name>_poses.jpg` and add the character's layout to
+`tools/painted_sheets.py`; the tool cuts it into a game sheet (transparent frames of 128 px).
 
 Small icons: **square, transparent PNG, 128×128**, one object, no background.
 
@@ -33,7 +34,7 @@ Small icons: **square, transparent PNG, 128×128**, one object, no background.
 - [ ] Doner Dread (the rival)
 
 **Dogs**
-- [x] Evey (example sheet; see [Art style](03-art-style.md))
+- [x] Evey (painted sheet in the game, subject to change; see [Art style](03-art-style.md))
 - [ ] Brownie (top dog)
 - [ ] Scraps (top dog)
 - [ ] Duchess (top dog)
@@ -52,7 +53,9 @@ Small icons: **square, transparent PNG, 128×128**, one object, no background.
 - [ ] Callaloo Cauldron (currently a code-built 3D pot; keep 3D or paint it)
 
 **Hero**
-- [x] Chad (example sheet; final look still to decide)
+- [x] Chad (painted sheet in the game, subject to change; final look still to decide)
+- [ ] Chad side poses (jump, fall, climb), if the [Orange Castle](12-side-quest-orange-castle.md)
+      becomes a side-view stage
 
 ## 2. Item icons (128×128)
 

@@ -31,6 +31,7 @@
 | Maxi taxis | Fast travel between hubs |
 | Selling | Fish and forage can't be sold yet |
 | Chad's own food truck | On hold, by request |
+| Side-view platforming | For the [Orange Castle](12-side-quest-orange-castle.md) side quest (proposal) |
 
 ## Your input
 

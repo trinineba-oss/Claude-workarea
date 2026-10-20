@@ -426,6 +426,54 @@
         "frames": 2,
         "rows": 4
       }
+    },
+    "chad_painted": {
+      "frame": 128,
+      "smooth": true,
+      "idle": {
+        "row": 0,
+        "frames": 2,
+        "rows": 4
+      },
+      "walk": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "slash": {
+        "row": 8,
+        "frames": 2,
+        "rows": 1
+      },
+      "hurt": {
+        "row": 9,
+        "frames": 1,
+        "rows": 1
+      }
+    },
+    "evey_painted": {
+      "frame": 128,
+      "smooth": true,
+      "idle": {
+        "row": 0,
+        "frames": 2,
+        "rows": 4
+      },
+      "walk": {
+        "row": 4,
+        "frames": 2,
+        "rows": 4
+      },
+      "sit": {
+        "row": 8,
+        "frames": 1,
+        "rows": 4
+      },
+      "bite": {
+        "row": 12,
+        "frames": 1,
+        "rows": 4
+      }
     }
   }
 }

@@ -31,7 +31,9 @@ camera looks down on real lighting and shadows, with pixel-art characters standi
   [Universal LPC Spritesheet](https://github.com/LiberatedPixelCup/Universal-LPC-Spritesheet-Character-Generator)
   parts by `tools/lpc_build.py` (the sheets are shared under CC-BY-SA 3.0; every part, author and licence is listed in
   `assets/characters/CREDITS.md`, which ships with the game). Evey, the stray dogs, corbeaux,
-  crabs, the soucouyant and the ibis are drawn by `tools/pixel_animals.py`.
+  crabs, the soucouyant and the ibis are drawn by `tools/pixel_animals.py`. Chad and Evey
+  currently use **painted** sheets instead (an option under review): `tools/painted_sheets.py`
+  cuts the pose sheets in `art_src/painted/` into 128 px frames drawn with smooth filtering.
 - **Props** (`prop_model.gd`, `mesh_builder.gd`): food trucks, cars, poles, shops, buildings, the
   gas station, the boat, the cave mouth, signs, torches, chests, doors and gates, blocks, plates,
   switches, plants and the Callaloo Cauldron are solid models built in code from simple shapes,
