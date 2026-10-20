@@ -1,5 +1,9 @@
 # Game Design (draft v3)
 
+> The game is now planned in parts in [`docs/`](docs/README.md) (storyline, theme, art style,
+> assets, characters, world, gameplay, audio, UI, tech, roadmap). Those files hold the open
+> questions and to-do lists; this file keeps the overview, the tone pillars and the legal rules.
+
 Title: **Chad and the Legendary Lamb Gyro** (a parody of *Link's Awakening*). The hero is **Chad**.
 
 ## Pitch

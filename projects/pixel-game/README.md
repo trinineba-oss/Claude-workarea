@@ -3,7 +3,8 @@
 A top-down adventure for Android, played in 2D and drawn in 2.5D, built with [Godot](https://godotengine.org) 4.7
 (GL Compatibility renderer). A Link's Awakening-style parody set in San Fernando,
 Trinidad: explore room by room, fight with a cutlass, and chase the Legendary Lamb Gyro.
-See `DESIGN.md` for the full design.
+See `DESIGN.md` for the full design and [`docs/`](docs/README.md) to work on it in parts
+(setting up on your own PC is in [`docs/00-local-setup.md`](docs/00-local-setup.md)).
 
 ## Look (2.5D)
 
@@ -74,6 +75,8 @@ camera looks down on real lighting and shadows, with pixel-art characters standi
   out, or prints a script error
 - `export_presets.cfg` – Android and Web export presets
 - `DESIGN.md` – the game design and milestone plan
+- `docs/` – the design split into sections to work on (storyline, art style, assets...)
+- `tools/run_tests.py` – the tests on any system (`python tools/run_tests.py`)
 
 ## Controls
 

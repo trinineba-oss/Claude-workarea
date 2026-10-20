@@ -27,6 +27,9 @@ The folder is still called `pixel-game`, but the game is 2.5D now (it started as
 - After adding assets, run `godot --headless --path projects/pixel-game --import` so the
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
 - The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.
+- Planning lives in `docs/` (one file per area). What the owner writes under "Your input" is
+  their direction: read the relevant file before working on that area, and tick its "To do"
+  items and update "Decided" when work lands.
 - Design lives in `DESIGN.md` (Zelda/Link's Awakening-style parody about the Legendary
   Lamb Gyro, set in San Fernando, Trinidad). Follow its tone pillars and milestones; update it when decisions change.
 - Keep local references respectful and accurate; dialogue text belongs in data files for
