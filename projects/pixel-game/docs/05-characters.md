@@ -9,6 +9,7 @@ Data lives in `data/characters.json` (people), `data/dogs.json` (top dogs) and
 | --- | --- | --- |
 | **Chad** | The hero | Washes up at the wharf; cutlass; speaks or silent (undecided) |
 | **Evey** | Chad's beagle, companion | Based on the owner's dog who passed away. Wakes Chad on the wharf, follows him, bites enemies, chases thieves, takes orders (Sic 'em, Stay/Come, Fetch, Dig), fights turn-based duels and levels up. Stays in the dream at the end |
+| **Evey (playable?)** | Proposal | Playing as her: see [Playing as Evey](13-playing-as-evey.md) |
 | **The ibis** | Guide | A scarlet ibis who explains the dream world; sleeps at night |
 | **Doner Dread** | Rival | Smug fast-food baron after the same gyro; one step ahead at each temple |
 | **The Gyro God** | Final "boss" | Sleeps inside a giant roti on San Fernando Hill; you wake him, not fight him |

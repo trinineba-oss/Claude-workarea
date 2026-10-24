@@ -38,7 +38,8 @@ gimmick. Play it, then decide whether it grows into B or stays a one-off.
 - **Touch controls:** a jump button (A becomes jump; attack moves to B?).
 - **Level format:** side-view rooms as text maps, like the overworld (`data/castle/...`).
 - **Evey:** "No dogs allowed!" She waits at the entrance, or sneaks in as a gag, or the castle
-  has a bit only she can reach. Your call.
+  has a bit only she can reach. Or you **play as Evey** outside while Chad is in (see
+  [Playing as Evey](13-playing-as-evey.md)). Your call.
 
 ## Story and gameplay ideas (pick, change or throw out)
 

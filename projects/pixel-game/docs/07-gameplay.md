@@ -32,6 +32,7 @@
 | Selling | Fish and forage can't be sold yet |
 | Chad's own food truck | On hold, by request |
 | Side-view platforming | For the [Orange Castle](12-side-quest-orange-castle.md) side quest (proposal) |
+| Playing as Evey | Swap to Evey or play Evey chapters: sniff, dig, squeeze, bark, talk to animals ([proposal](13-playing-as-evey.md)) |
 
 ## Your input
 

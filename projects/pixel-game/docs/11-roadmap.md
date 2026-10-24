@@ -25,8 +25,10 @@ Also done: day and night, night dangers, foraging, fishing, Evey and her orders,
 6. **Temples 2–4.**
 7. **Finale**: San Fernando Hill, the Gyro God, the wake-up ending, credits.
 
-Undecided: the [Orange Castle](12-side-quest-orange-castle.md) side quest. A small side-view
-prototype could slot in anywhere after step 1.
+Undecided: the [Orange Castle](12-side-quest-orange-castle.md) side quest and
+[playing as Evey](13-playing-as-evey.md). A small prototype of either could slot in anywhere
+after step 1, and they could meet: "No dogs allowed!" at the castle makes a natural first Evey
+chapter.
 
 ## Your input
 

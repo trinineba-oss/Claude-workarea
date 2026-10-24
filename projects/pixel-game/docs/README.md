@@ -22,6 +22,7 @@ worked on separately. Each file has the same shape:
 | 10 | [Tech](10-tech.md) | How the code is laid out, data files, tests, builds |
 | 11 | [Roadmap](11-roadmap.md) | Milestones: done, next, later |
 | 12 | [Side quest: the Orange Castle](12-side-quest-orange-castle.md) | Proposal: the orange-castle hospital as a side-view platformer or metroidvania stage |
+| 13 | [Playing as Evey](13-playing-as-evey.md) | Proposal: control Evey herself: sniff, dig, squeeze, bark, talk to animals |
 
 `../DESIGN.md` keeps the short pitch, the tone pillars and the legal rules. When a decision in
 one of these files changes, update the file. Claude reads these docs too.
