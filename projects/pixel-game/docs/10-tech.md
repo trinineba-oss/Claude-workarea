@@ -49,6 +49,26 @@ script error. Run them with `make test` or `python tools/run_tests.py` (see
 - **Desktop:** add a Windows/Mac/Linux export preset in the editor (*Project → Export*) and
   download the export templates (*Editor → Manage Export Templates*).
 
+## Low-end phones
+
+The illustrated look itself is cheap: painted characters and props are single flat pictures
+(one quad each), and painted ground is one texture lookup per material. What costs the most on
+a weak phone is the lighting and screen effects around it:
+
+| Feature | Cost | Low-end setting |
+| --- | --- | --- |
+| Real-time sun shadows | High (the scene is drawn twice) | Off; use soft blob shadows under characters |
+| Tilt-shift blur | Medium (a full-screen pass) | Off |
+| Glow | Medium | Off |
+| Ink outlines on 3D props | Each outlined mesh drawn twice | Keep (few meshes), or off |
+| Painted textures | Memory | Import as compressed (ETC2/ASTC); 128 px frames are fine |
+| Resolution | Scales everything | Render at 75% and scale up |
+
+The GL Compatibility renderer is already the right choice for low-end Android. Plan: a
+**graphics quality setting** (Low / High) that switches the rows above, picked automatically on
+first launch. None of this has been measured on a real phone yet: test on the cheapest phone
+available before the look is final.
+
 ## Your input
 
 1. Do you want a desktop build too, or just Android?
@@ -60,4 +80,5 @@ script error. Run them with `make test` or `python tools/run_tests.py` (see
 - [ ] Desktop export preset
 - [ ] Test on a real Android phone
 - [ ] Performance check on a low-end phone (3D view, shadows)
+- [ ] Graphics quality setting (Low: no shadows, glow or tilt-shift; 75% resolution)
 - [ ] Settings save (volume, controls)

@@ -24,6 +24,7 @@ worked on separately. Each file has the same shape:
 | 12 | [Side quest: the Orange Castle](12-side-quest-orange-castle.md) | Proposal: the orange-castle hospital as a side-view platformer or metroidvania stage |
 | 13 | [Playing as Evey](13-playing-as-evey.md) | Proposal: control Evey herself: sniff, dig, squeeze, bark, talk to animals |
 | 14 | [Beach style test](14-beach-style-test.md) | The illustrated look, trialled on the beach: what's in, and the art to make for it |
+| 15 | [Character art prompts](15-character-art-prompts.md) | Prompts for every animation and angle of Chad and Evey, and the rules that keep frames consistent |
 
 `../DESIGN.md` keeps the short pitch, the tone pillars and the legal rules. When a decision in
 one of these files changes, update the file. Claude reads these docs too.
