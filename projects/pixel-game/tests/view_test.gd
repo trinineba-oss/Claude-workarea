@@ -227,6 +227,55 @@ func _run() -> void:
 	_check(aim.x >= View3D.VIEW_MARGIN.x - 0.01, "but not past the edge of the world")
 	_check(view.room_views().size() == game.loaded_rooms().size(), "rooms are redrawn after a jump")
 
+	# --- the illustrated-look trial (data/illustrated.json: the beach) ------------------------
+	var beach := Vector2i(1, 1)
+	game.go_to(beach, _at(beach, 10, 6))
+	await _frames(3)
+	var beach_view: RoomView = view.room_views().filter(func(v): return v.room.coords == beach)[0]
+	var plain_view: RoomView = view.room_views().filter(func(v): return v.room.coords == road)[0]
+	_check(beach_view.illustrated and not plain_view.illustrated, "only the beach is illustrated")
+	var beach_floor: ShaderMaterial = beach_view.get_node("Floor").material_override
+	var plain_floor: ShaderMaterial = plain_view.get_node("Floor").material_override
+	_check(
+		(
+			beach_floor.get_shader_parameter("ink") > 0.0
+			and plain_floor.get_shader_parameter("ink") in [null, 0.0]
+		),
+		"the beach's ground borders are inked"
+	)
+	var sand: Texture2D = beach_floor.get_shader_parameter("sand_tex")
+	_check(sand.resource_path.contains("illustrated/ground/sand"), "with painted sand")
+	var rocks: MultiMeshInstance3D = beach_view.get_node_or_null("rock")
+	_check(
+		rocks != null and rocks.material_overlay == Illustrated.outline(),
+		"rocks get an ink outline"
+	)
+	_check(
+		(rocks.material_override as StandardMaterial3D).diffuse_mode == BaseMaterial3D.DIFFUSE_TOON,
+		"and toon shading"
+	)
+	_check(
+		plain_view.find_children("*", "GeometryInstance3D", false, false).all(
+			func(m): return m.material_overlay == null
+		),
+		"other rooms are unchanged"
+	)
+	var beach_plants := get_nodes_in_group("interactables").filter(
+		func(n): return n is Forage and Illustrated.room_of(n) == beach_view.room
+	)
+	var plant_view := view.entity_view(beach_plants[0])
+	var palm_meshes: Array = plant_view.find_children("*", "MeshInstance3D", true, false)
+	_check(
+		palm_meshes.any(func(m): return m.material_overlay == Illustrated.outline()),
+		"plants on the beach are outlined too"
+	)
+	var picture := Illustrated.painted_sprite(PlaceholderTexture2D.new())
+	_check(
+		is_equal_approx(picture.pixel_size, 1.0 / 128.0) and picture.offset.y > 0.0,
+		"painted props stand on their bottom edge at 128 px a tile"
+	)
+	picture.free()
+
 	# --- day, night and indoors ---------------------------------------------------------------
 	game.day_night.set_hour(12.0)
 	await _frames(2)

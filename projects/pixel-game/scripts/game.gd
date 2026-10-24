@@ -609,12 +609,15 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
-## puts an item in the bag and `&duel=scraps` opens a dog duel (used to take screenshots).
+## puts an item in the bag, `&duel=scraps` opens a dog duel and `&illustrated=0` turns the
+## illustrated-look trial off (used to take screenshots).
 ## Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	if query.contains("illustrated=0"):
+		Illustrated.config()["enabled"] = false  # compare with the illustrated-look trial off
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
 		if GameData.has_item(gift.get_string(1)):
 			inventory.add(gift.get_string(1))

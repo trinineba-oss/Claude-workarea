@@ -1,0 +1,8 @@
+{
+  "_note": "The illustrated look (owner's painted mockup), on trial. rooms = \"<map>:<x>_<y>\". Painted ground textures go in assets/illustrated/ground/<material>.png (sand, grass, dirt, water, stone, wood, road), painted props in assets/illustrated/props/<kind>[_<n>].png (rock, bush, tree, flowers, palm, mango_tree, pepper_bush, chadon_beni_patch, sign, cave_mouth). See docs/14-beach-style-test.md. Set enabled to false to turn the trial off.",
+  "enabled": true,
+  "rooms": ["overworld:1_1"],
+  "ink": [0.12, 0.08, 0.07],
+  "outline_width": 0.03,
+  "ground_ink": 0.7
+}

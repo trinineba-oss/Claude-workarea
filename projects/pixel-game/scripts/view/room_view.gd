@@ -22,12 +22,15 @@ static var _meshes: Dictionary = {}
 static var _materials: Dictionary = {}
 
 var room: Room
+## Drawn in the illustrated look (Illustrated, data/illustrated.json).
+var illustrated := false
 
 
 func build(source: Room, indoors: bool) -> void:
 	room = source
 	name = "RoomView_%d_%d" % [room.coords.x, room.coords.y]
 	position = View3D.to_3d(room.position)
+	illustrated = Illustrated.applies_to(room)
 	var filler_rock := room.filler and room.map_lines.size() > 0 and room.map_lines[0][0] == "#"
 	if not filler_rock:
 		_add_floor()
@@ -41,6 +44,8 @@ func build(source: Room, indoors: bool) -> void:
 		var row := room.map_lines[y]
 		for x in row.length():
 			var at := Vector3(x + 0.5, 0.0, y + 0.5)
+			if illustrated and _add_painted(row[x], at, rng):
+				continue
 			match row[x]:
 				"#":
 					var h := (
@@ -118,6 +123,21 @@ func build(source: Room, indoors: bool) -> void:
 	for kind: String in spots:
 		_add_multimesh(kind, spots[kind])
 	_add_wires()
+	if illustrated:
+		Illustrated.stylize(self)
+
+
+## In the illustrated look, a painted picture stands in for this tile's scenery if there is one
+## (assets/illustrated/props/rock*.png, bush*, tree*, flowers*). Returns whether it did.
+func _add_painted(ch: String, at: Vector3, rng: RandomNumberGenerator) -> bool:
+	var kind: String = {"#": "rock", "b": "bush", "T": "tree", ",": "flowers"}.get(ch, "")
+	var pictures := Illustrated.prop_textures(kind) if kind != "" else []
+	if pictures.is_empty():
+		return false
+	var sprite := Illustrated.painted_sprite(pictures[rng.randi_range(0, pictures.size() - 1)])
+	sprite.position = at + Vector3(rng.randf_range(-0.08, 0.08), 0, 0.3)
+	add_child(sprite)
+	return true
 
 
 func _put(
@@ -223,6 +243,12 @@ func _add_floor() -> void:
 	mat.set_shader_parameter("room_origin", room.position)
 	mat.set_shader_parameter("grid_size", source.get_shader_parameter("grid_size"))
 	mat.set_shader_parameter("tile_size", float(WorldMap.TILE))
+	if illustrated:
+		for param: String in Room.GROUND_TEXTURES:
+			var painted := Illustrated.ground_texture(param)
+			if painted != null:
+				mat.set_shader_parameter(param, painted)
+		mat.set_shader_parameter("ink", Illustrated.ground_ink())
 	floor_mesh.material_override = mat
 	floor_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(floor_mesh)

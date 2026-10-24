@@ -25,6 +25,8 @@ var _body: PixelBody
 var _body_source: Sprite2D
 ## A solid 3D model (PropModel) drawn instead of the 2D sprites and labels, if it has one.
 var _model: PropModel
+## A painted picture drawn instead of the model and sprites (illustrated look), if there is one.
+var _painted: Sprite3D
 
 
 func setup(node: Node2D) -> void:
@@ -72,10 +74,18 @@ func _rebuild() -> void:
 			pair[1].queue_free()
 	_pairs.clear()
 	_child_count = source.get_child_count()
-	if _model == null and _body == null:
+	var styled := Illustrated.applies_to(Illustrated.room_of(source))
+	if styled and _painted == null and _model == null:
+		var pictures := Illustrated.prop_textures(Illustrated.prop_kind(source))
+		if not pictures.is_empty():
+			_painted = Illustrated.painted_sprite(pictures[0])
+			add_child(_painted)
+	if _model == null and _body == null and _painted == null:
 		_model = PropModel.make(source)
 		if _model != null:
 			add_child(_model)
+			if styled:
+				Illustrated.stylize(_model)
 	if _body == null and _model == null:
 		var sheet := Looks.sheet_for(source)
 		if sheet != "":
@@ -92,7 +102,7 @@ func _rebuild() -> void:
 		var made: Node3D = null
 		if node == _body_source and _body != null:
 			continue
-		if _model != null and (node is Sprite2D or node is Label):
+		if (_model != null or _painted != null) and (node is Sprite2D or node is Label):
 			continue
 		if node is Sprite2D:
 			made = _make_sprite(node, index)

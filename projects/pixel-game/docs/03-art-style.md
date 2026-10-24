@@ -45,7 +45,8 @@ engine. What it takes:
   is flat (walls are blocks). Doable, but real engine work.
 - **HUD:** hearts, a stamina bar (a new mechanic, e.g. for sprinting) and a minimap.
 - The hard part is **volume and consistency**: every town piece (food trucks, shops, poles)
-  painted in the same hand. A one-room test comes first.
+  painted in the same hand. A one-room test comes first: **set up on the beach**, see
+  [Beach style test](14-beach-style-test.md).
 
 The engine supports both (painted sheets use 128 px frames with smooth filtering; pixel sheets
 use 64 px frames with crisp pixels). See [Assets](04-assets.md) for the sheet format.

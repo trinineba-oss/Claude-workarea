@@ -21,6 +21,9 @@ uniform vec2 grid_size = vec2(22.0, 13.0);
 uniform float tile_size = 64.0;
 uniform float texture_world_size = 256.0;
 uniform float sharpness = 10.0;
+// The illustrated look: dark ink lines where two ground materials meet (0 = off).
+uniform float ink = 0.0;
+uniform vec3 ink_color : source_color = vec3(0.16, 0.11, 0.08);
 
 varying vec2 world;
 varying vec2 wuv;
@@ -70,6 +73,22 @@ void fragment() {
 	float shore = clamp(1.0 - abs(water_line - 0.5) / 0.11, 0.0, 1.0);
 	float pulse = 0.55 + 0.45 * sin(TIME * 2.2 + (world.x + world.y) * 0.02 + big * 12.0);
 	col = mix(col, vec3(0.94, 0.97, 1.0), shore * pulse * 0.7);
+	if (ink > 0.0) {
+		// Where the two strongest materials are nearly equal, a border runs: ink it.
+		float a = max(max(max(g, m.x), max(m.y, m.z)), max(max(m.w, m2.x), m2.y));
+		float b = 0.0;
+		b = max(b, g < a ? g : 0.0);
+		b = max(b, m.x < a ? m.x : 0.0);
+		b = max(b, m.y < a ? m.y : 0.0);
+		b = max(b, m.z < a ? m.z : 0.0);
+		b = max(b, m.w < a ? m.w : 0.0);
+		b = max(b, m2.x < a ? m2.x : 0.0);
+		b = max(b, m2.y < a ? m2.y : 0.0);
+		float line = smoothstep(0.55, 0.9, 1.0 - (a - b));
+		col = mix(col, ink_color, line * ink);
+		// A soft painted shadow just inside each border.
+		col *= 1.0 - smoothstep(0.3, 0.6, 1.0 - (a - b)) * 0.12 * ink;
+	}
 	ALBEDO = col;
 	// Water is glossy (it catches the sun and the lamps); everything else is matte.
 	ROUGHNESS = mix(0.95, 0.12, m.z);
