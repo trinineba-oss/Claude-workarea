@@ -28,6 +28,25 @@ Chad and Evey are **painted**. They look like they come from different games. Pi
 | **B. Pixel cast** | The current townspeople | Chad and Evey get redrawn as pixel art |
 | **C. Mix on purpose** | Painted heroes, pixel "dream people" | Cheapest; risky, may look accidental |
 
+**Candidate look for A: the illustrated world.** The owner's mockup (a hand-painted, outlined
+world: a dirt path through grass terraces, rocks, bushes, flowers, a stream with a plank
+bridge, Chad and Evey walking, hearts, a stamina bar and a round minimap) is doable in this
+engine. What it takes:
+
+- **Characters:** painted cycles like the 8-frame run and 6-frame trot sheets. Those are
+  side-on only (fine for left and right); up and down need their own cycles. Frames must keep
+  the same size and foot line, or they wobble.
+- **Ground:** painted, tileable textures (path, grass, dirt, cliff edges, water) instead of the
+  current ones.
+- **Props:** a kit of painted pieces (trees, bushes, rocks, flowers, barrels, crates), drawn as
+  upright painted pictures or as 3D models with painted textures.
+- **Ink outlines:** an outline shader so 3D props get the same dark linework.
+- **Raised ground:** the mockup's terraces and stream banks need height levels; today's world
+  is flat (walls are blocks). Doable, but real engine work.
+- **HUD:** hearts, a stamina bar (a new mechanic, e.g. for sprinting) and a minimap.
+- The hard part is **volume and consistency**: every town piece (food trucks, shops, poles)
+  painted in the same hand. A one-room test comes first.
+
 The engine supports both (painted sheets use 128 px frames with smooth filtering; pixel sheets
 use 64 px frames with crisp pixels). See [Assets](04-assets.md) for the sheet format.
 
