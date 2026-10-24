@@ -4,6 +4,22 @@ Prompts for generating every animation and angle Chad and Evey need, in the pain
 owner's mockup and sheets (`art_src/painted/`), laid out so `tools/painted_sheets.py` can cut them
 into smooth in-game animation.
 
+## Status
+
+**In the game** (from `art_src/painted/sheet_v2.jpg`): turnarounds for both, Chad's 7-frame
+side walk and 4-frame cutlass swing, Evey's 5-frame side trot and 3-frame bite. That sheet
+settled Evey's look: **red collar, white tail tip** (change the description below if that's
+not right).
+
+**Still needed, in order:**
+
+1. Walking **toward** and **away from** the camera (Chad 8 frames each, Evey 8 each). Today
+   those directions slide the standing pose with a small bob.
+2. **Idle** loops (4 frames, all three directions) for both.
+3. Evey **sit** (2 frames, front and side); she uses her standing pose for now.
+4. Chad's swing **facing down and up** as full sequences (the sheet has one frame per angle).
+5. Then priorities 2 and 3 in the tables below.
+
 ## How the game uses the art
 
 - **Four directions:** facing the camera (down), back to the camera (up), and side (right).

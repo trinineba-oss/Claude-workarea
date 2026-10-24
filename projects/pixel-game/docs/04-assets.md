@@ -38,7 +38,8 @@ Small icons: **square, transparent PNG, 128×128**, one object, no background.
 - [ ] Doner Dread (the rival)
 
 **Dogs**
-- [x] Evey (painted sheet in the game, subject to change; see [Art style](03-art-style.md))
+- [x] Evey (painted sheet in the game, subject to change; see [Art style](03-art-style.md);
+      still to come: front/back trot, idle, sit, see [the prompts](15-character-art-prompts.md))
 - [ ] Evey extra poses (sniff, dig, bark, run, carry, lying down tired), if she becomes
       [playable](13-playing-as-evey.md)
 - [ ] Brownie (top dog)
@@ -59,7 +60,8 @@ Small icons: **square, transparent PNG, 128×128**, one object, no background.
 - [ ] Callaloo Cauldron (currently a code-built 3D pot; keep 3D or paint it)
 
 **Hero**
-- [x] Chad (painted sheet in the game, subject to change; final look still to decide)
+- [x] Chad (painted sheet in the game, subject to change; still to come: front/back walk,
+      idle loops and more, see [the prompts](15-character-art-prompts.md))
 - [ ] Chad side poses (jump, fall, climb), if the [Orange Castle](12-side-quest-orange-castle.md)
       becomes a side-view stage
 

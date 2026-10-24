@@ -11,9 +11,10 @@
   concrete pastels, sea blue.
 - **Tilt-shift.** A soft blur at the top and bottom of the screen makes the town feel like a
   model.
-- **Chad and Evey: painted sheets (in the game now, subject to change).** Painted, outlined,
-  3/4-view characters (green jacket, backpack, cargo pants; Evey the tricolour beagle). Source
-  pose sheets are in `art_src/painted/`; `tools/painted_sheets.py` cuts them into game sheets
+- **Chad and Evey: painted sheets (in the game now, subject to change).** Clean, outlined
+  cartoon characters (olive jacket, backpack, cargo pants; Evey the tricolour beagle with a red
+  collar), from the owner's sheet `art_src/painted/sheet_v2.jpg` (earlier drafts are kept next
+  to it). `tools/painted_sheets.py` cuts it into game sheets
   (`assets/characters/chad_painted.png`, `evey_painted.png`). To go back to the pixel versions,
   set `"player": "chad"` and `"companion": "evey"` in `data/looks.json`.
 

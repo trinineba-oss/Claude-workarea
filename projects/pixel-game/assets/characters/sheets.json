@@ -437,16 +437,16 @@
       },
       "walk": {
         "row": 4,
-        "frames": 4,
+        "frames": 7,
         "rows": 4
       },
       "slash": {
         "row": 8,
         "frames": 2,
-        "rows": 1
+        "rows": 4
       },
       "hurt": {
-        "row": 9,
+        "row": 12,
         "frames": 1,
         "rows": 1
       }
@@ -461,7 +461,7 @@
       },
       "walk": {
         "row": 4,
-        "frames": 4,
+        "frames": 5,
         "rows": 4
       },
       "sit": {
@@ -471,7 +471,7 @@
       },
       "bite": {
         "row": 12,
-        "frames": 1,
+        "frames": 3,
         "rows": 4
       }
     }

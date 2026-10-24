@@ -1,12 +1,11 @@
-"""Painted character sheets (Chad and Evey, option under review): cuts the 4x2 pose sheets in
-art_src/painted/ (flat grey background, outlined figures) into transparent poses and packs them
-into game sheets with 128 px frames, adding their layouts to assets/characters/sheets.json.
+"""Painted character sheets (Chad and Evey, option under review): cuts the figures out of the
+owner's sheet in art_src/painted/ (flat grey background, outlined figures) and packs them into
+game sheets with 128 px frames, adding their layouts to assets/characters/sheets.json.
 
     uv run --with pillow --with numpy python -I tools/painted_sheets.py
 
-Pose sheet layout: row 1 = facing camera, 3/4 view, back, back 3/4; row 2 = walk step 1,
-walk step 2, action 1, action 2 (see docs/04-assets.md). cycles.jpg holds side-on motion cycles
-(Chad's run, Evey's trot), used for walking left and right.
+New sheets made with docs/15-character-art-prompts.md: add their rectangles to REGIONS and
+their frames to LAYOUTS.
 """
 
 import json
@@ -24,63 +23,91 @@ FRAME = 128
 FOOT = 8  # feet sit this many pixels above the bottom of a frame
 DIRS = ["up", "left", "down", "right"]
 
-# Height of a pose -> height in the frame (keeps the cast at the same size as the LPC sheets).
-SCALES = {"chad": 110 / 227, "evey": 0.39}
+# The current source: one sheet with Chad on the left and Evey on the right, in named
+# rectangles (x0, x1, y0, y1) of figures read left to right (art_src/painted/sheet_v2.jpg).
+# Earlier drafts (chad_poses.jpg, evey_poses.jpg, cycles.jpg) are kept for reference only.
+SOURCE_SHEET = "sheet_v2.jpg"
+REGIONS = {
+    "chad_turn": (0, 520, 0, 225),  # front, 3/4, side (right), back 3/4, back
+    "chad_walk": (0, 520, 225, 390),  # 7-frame walk, facing right
+    "chad_swing": (0, 520, 390, 572),  # cutlass: front, 3/4 right, back 3/4, back
+    "evey_turn": (520, 1024, 0, 225),  # front, side (right), 3/4, 3/4 left, back
+    "evey_trot": (520, 1024, 225, 430),  # 5-frame trot, facing right
+    "evey_bite": (520, 1024, 430, 572),  # crouch, lunge, bark, facing right
+}
+# The generator drew each group at its own size; these bring every group to the same character
+# size in the game (Chad about 110 px tall in a 128 px frame).
+SCALES = {
+    "chad_turn": 110 / 208,
+    "chad_walk": 106 / 135,
+    "chad_swing": 110 / 152,
+    "evey_turn": 0.6,
+    "evey_trot": 0.7,
+    "evey_bite": 0.65,
+}
+# Up-and-down step bob (pixels) for walking towards or away from the camera, which has no
+# drawn frames yet.
+BOB = [0, -2, -4, -2, 0, -2, -4]
 
-# Motion cycles from art_src/painted/cycles.jpg: Chad's run on top, Evey's trot below. The
-# cycle sheet is drawn smaller than the pose sheets, so it has its own scale (matched by eye
-# to the same height in the game). Frames are referred to as "cycle:<n>" in LAYOUTS.
-CYCLES_SOURCE = "cycles.jpg"
-CYCLE_BANDS = {"chad": (0, 245), "evey": (245, 400)}
-CYCLE_SCALES = {"chad": 110 / 165, "evey": 0.39 * 200 / 132}
 
-# For each animation: rows (one per direction, or one) of [pose, mirrored] frames.
+def _bob(ref: str, frames: int) -> list:
+    return [(ref, False, BOB[i % len(BOB)]) for i in range(frames)]
+
+
+def _row(group: str, count: int, mirror: bool) -> list:
+    return [(f"{group}:{i}", mirror) for i in range(count)]
+
+
+# For each animation: rows (one per direction, or one "all") of frames: (figure, mirrored[, dy]).
 LAYOUTS = {
     "chad": {
         "idle": {
-            "up": [(2, False), (3, False)],
-            "left": [(1, False), (1, False)],
-            "down": [(0, False), (0, False)],
-            "right": [(1, True), (1, True)],
+            "up": [("turn:4", False)] * 2,
+            "left": [("turn:2", True)] * 2,
+            "down": [("turn:0", False)] * 2,
+            "right": [("turn:2", False)] * 2,
         },
         "walk": {
-            "up": [(2, False), (3, False), (2, False), (3, False)],
-            "left": [("cycle:0", True), ("cycle:1", True), ("cycle:2", True), ("cycle:3", True)],
-            "down": [(0, False), (1, False), (0, False), (1, False)],
-            "right": [("cycle:0", False), ("cycle:1", False), ("cycle:2", False), ("cycle:3", False)],
+            "up": _bob("turn:4", 7),
+            "left": _row("walk", 7, True),
+            "down": _bob("turn:0", 7),
+            "right": _row("walk", 7, False),
         },
-        "slash": {"all": [(6, False), (7, False)]},
-        "hurt": {"all": [(6, False)]},
+        "slash": {
+            "up": [("swing:3", False), ("swing:2", False)],
+            "left": [("swing:1", True), ("swing:1", True)],
+            "down": [("swing:0", False), ("swing:1", False)],
+            "right": [("swing:1", False), ("swing:1", False)],
+        },
+        "hurt": {"all": [("turn:0", False)]},
     },
     "evey": {
         "idle": {
-            "up": [(2, False), (3, False)],
-            "left": [(0, True), (1, True)],
-            "down": [(0, False), (1, False)],
-            "right": [(0, False), (1, False)],
+            "up": [("turn:4", False)] * 2,
+            "left": [("turn:3", False)] * 2,
+            "down": [("turn:0", False)] * 2,
+            "right": [("turn:1", False)] * 2,
         },
         "walk": {
-            "up": [(2, False), (3, False), (2, False), (3, False)],
-            "left": [("cycle:0", True), ("cycle:1", True), ("cycle:2", True), ("cycle:3", True)],
-            "down": [("cycle:0", False), ("cycle:1", False), ("cycle:2", False), ("cycle:3", False)],
-            "right": [("cycle:0", False), ("cycle:1", False), ("cycle:2", False), ("cycle:3", False)],
+            "up": _bob("turn:4", 5),
+            "left": _row("trot", 5, True),
+            "down": _bob("turn:0", 5),
+            "right": _row("trot", 5, False),
         },
         "sit": {
-            "up": [(6, False)],
-            "left": [(6, True)],
-            "down": [(6, False)],
-            "right": [(6, False)],
+            "up": [("turn:4", False)],
+            "left": [("turn:3", False)],
+            "down": [("turn:0", False)],
+            "right": [("turn:1", False)],
         },
         "bite": {
-            "up": [(7, False)],
-            "left": [(7, False)],
-            "down": [(7, False)],
-            "right": [(7, True)],
+            "up": _row("bite", 3, False),
+            "left": _row("bite", 3, True),
+            "down": _row("bite", 3, False),
+            "right": _row("bite", 3, False),
         },
     },
 }
-
-
 
 
 def background_mask(rgb: np.ndarray) -> np.ndarray:
@@ -137,94 +164,76 @@ def _components(mask: np.ndarray) -> tuple[np.ndarray, list]:
     return label, found
 
 
-def cut_cycles(path: Path, bands: dict, clear_low: tuple = ()) -> dict:
-    """Animation strips laid out left to right in horizontal bands (e.g. a run cycle on top, a
-    trot below): {band: [frames left to right]}. Pieces close together (a head, a strap) are
-    kept with their figure; small marks (frame numbers, arrows) are dropped. For bands in
-    `clear_low`, shadow-grey pixels in the bottom quarter of each frame are cleared too (painted
-    shadow trapped between legs, which the flood fill can't reach)."""
+def cut_regions(path: Path, regions: dict, dilate: int = 5, clear_low: tuple = ()) -> dict:
+    """Figures laid out in named rectangles of one sheet, {name: (x0, x1, y0, y1)}, each read
+    left to right: {name: [frames]}. A figure belongs to the rectangle holding its centre."""
     rgb = np.asarray(Image.open(path).convert("RGB")).astype(int)
     solid = ~background_mask(rgb)
     solid = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(3))) > 0
-    near = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(9))) > 0
+    near = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(dilate))) > 0
     label, found = _components(near)
-    strips = {}
-    for band, (y0, y1) in bands.items():
+    groups = {}
+    for name, (x0, x1, y0, y1) in regions.items():
         figures = sorted(
-            (c for c in found if c[1] > 4000 and y0 <= (c[2] + c[3]) // 2 < y1), key=lambda c: c[4]
+            (
+                c
+                for c in found
+                if c[1] > 1500 and x0 <= (c[4] + c[5]) // 2 < x1 and y0 <= (c[2] + c[3]) // 2 < y1
+            ),
+            key=lambda c: c[4],
         )
-        frames = []
-        for n, _size, top, bottom, left, right in figures:
-            keep = (label[top : bottom + 1, left : right + 1] == n) & solid[top : bottom + 1, left : right + 1]
-            # Drop small loose marks (arrows, speed lines) that sit near the figure.
-            parts, pieces = _components(keep)
-            for m, size, *_ in pieces:
-                if size < 400:
-                    keep[parts == m] = False
-            if band in clear_low:
-                patch = rgb[top : bottom + 1, left : right + 1]
-                pr, pg, pb = patch[..., 0], patch[..., 1], patch[..., 2]
-                shadow = (np.abs(pr - pg) < 12) & (np.abs(pg - pb) < 12) & (patch.max(axis=2) < 80)
-                low = np.zeros_like(keep)
-                low[int(keep.shape[0] * 0.75) :, :] = True
-                keep &= ~(shadow & low)
-            ys, xs = np.nonzero(keep)
-            box = (ys.min(), ys.max() + 1, xs.min(), xs.max() + 1)
-            rgba = np.dstack(
-                [rgb[top : bottom + 1, left : right + 1].astype(np.uint8), (keep * 255).astype(np.uint8)]
-            )[box[0] : box[1], box[2] : box[3]]
-            frames.append(Image.fromarray(rgba, "RGBA"))
-        strips[band] = frames
-    return strips
+        groups[name] = [_figure(rgb, solid, label, c, name in clear_low) for c in figures]
+    return groups
 
 
-def cut_poses(path: Path) -> list[Image.Image]:
-    """The eight figures of a 4x2 pose sheet, each cropped, on transparency."""
-    rgb = np.asarray(Image.open(path).convert("RGB")).astype(int)
-    alpha = np.where(background_mask(rgb), 0, 255).astype(np.uint8)
-    # Pull the cut edge in by a pixel so JPEG fringes don't show.
-    alpha = np.asarray(Image.fromarray(alpha).filter(ImageFilter.MinFilter(3)))
-    rgba = np.dstack([rgb.astype(np.uint8), alpha])
-    h, w = alpha.shape
-    cw, ch = w // 4, h // 2
-    poses = []
-    for i in range(8):
-        cx, cy = (i % 4) * cw, (i // 4) * ch
-        cell = rgba[cy : cy + ch, cx : cx + cw]
-        ys, xs = np.nonzero(cell[..., 3])
-        poses.append(Image.fromarray(cell[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], "RGBA"))
-    return poses
+def _figure(rgb, solid, label, component, clear_low: bool) -> Image.Image:
+    n, _size, top, bottom, left, right = component
+    keep = (label[top : bottom + 1, left : right + 1] == n) & solid[top : bottom + 1, left : right + 1]
+    parts, pieces = _components(keep)
+    for m, size, *_ in pieces:
+        if size < 300:
+            keep[parts == m] = False
+    if clear_low:
+        patch = rgb[top : bottom + 1, left : right + 1]
+        pr, pg, pb = patch[..., 0], patch[..., 1], patch[..., 2]
+        shadow = (np.abs(pr - pg) < 12) & (np.abs(pg - pb) < 12) & (patch.max(axis=2) < 80)
+        low = np.zeros_like(keep)
+        low[int(keep.shape[0] * 0.75) :, :] = True
+        keep &= ~(shadow & low)
+    ys, xs = np.nonzero(keep)
+    rgba = np.dstack(
+        [rgb[top : bottom + 1, left : right + 1].astype(np.uint8), (keep * 255).astype(np.uint8)]
+    )[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
+    return Image.fromarray(rgba, "RGBA")
 
 
-def frame_of(pose: Image.Image, scale: float, mirror: bool) -> Image.Image:
+def frame_of(pose: Image.Image, scale: float, mirror: bool, dy: int = 0) -> Image.Image:
     size = (max(1, round(pose.width * scale)), max(1, round(pose.height * scale)))
     img = pose.resize(size, Image.LANCZOS)
     if mirror:
         img = ImageOps.mirror(img)
     cell = Image.new("RGBA", (FRAME, FRAME))
-    cell.alpha_composite(img, ((FRAME - img.width) // 2, FRAME - FOOT - img.height))
+    cell.alpha_composite(img, ((FRAME - img.width) // 2, FRAME - FOOT - img.height + dy))
     return cell
 
 
 def main() -> None:
     sheets_path = OUT / "sheets.json"
     sheets = json.loads(sheets_path.read_text())
-    cycles = cut_cycles(SOURCE / CYCLES_SOURCE, CYCLE_BANDS, clear_low=("evey",))
+    groups = cut_regions(SOURCE / SOURCE_SHEET, REGIONS, dilate=3)
     for name, layout in LAYOUTS.items():
-        poses = cut_poses(SOURCE / f"{name}_poses.jpg")
-
-        def cell(ref, mirror, name=name, poses=poses):
-            if isinstance(ref, str):
-                return frame_of(cycles[name][int(ref.split(":")[1])], CYCLE_SCALES[name], mirror)
-            return frame_of(poses[ref], SCALES[name], mirror)
-
         rows: list[list[Image.Image]] = []
         entry: dict = {"frame": FRAME, "smooth": True}
         for anim, spec in layout.items():
             order = DIRS if "all" not in spec else ["all"]
             entry[anim] = {"row": len(rows), "frames": len(spec[order[0]]), "rows": len(order)}
             for key in order:
-                rows.append([cell(p, m) for p, m in spec[key]])
+                row = []
+                for ref, mirror, *dy in spec[key]:
+                    group, index = ref.split(":")
+                    figure = groups[f"{name}_{group}"][int(index)]
+                    row.append(frame_of(figure, SCALES[f"{name}_{group}"], mirror, dy[0] if dy else 0))
+                rows.append(row)
         cols = max(len(r) for r in rows)
         sheet = Image.new("RGBA", (cols * FRAME, len(rows) * FRAME))
         for y, row in enumerate(rows):
