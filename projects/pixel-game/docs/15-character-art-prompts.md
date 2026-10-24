@@ -6,17 +6,18 @@ into smooth in-game animation.
 
 ## Status
 
-**In the game** (from `art_src/painted/sheet_v2.jpg`): turnarounds for both, Chad's 7-frame
-side walk and 4-frame cutlass swing, Evey's 5-frame side trot and 3-frame bite. That sheet
-settled Evey's look: **red collar, white tail tip** (change the description below if that's
-not right).
+**In the game:** Chad from `art_src/painted/sheet_v2.jpg` (turnaround, 7-frame side walk,
+4-frame cutlass swing). Evey from `sheet_v3.jpg` (turnaround, 4-frame side walk, crouch and
+leap, a biting lunge, sniff, a happy standing pose). Evey's look is now the v3 one: **no
+collar, white tail tip** (update her description below to match before generating more).
 
 **Still needed, in order:**
 
 1. Walking **toward** and **away from** the camera (Chad 8 frames each, Evey 8 each). Today
    those directions slide the standing pose with a small bob.
 2. **Idle** loops (4 frames, all three directions) for both.
-3. Evey **sit** (2 frames, front and side); she uses her standing pose for now.
+3. Evey **sit** (2 frames, front and side); she uses her standing pose for now. A longer
+   **walk** for her (8 frames; the sheet has 4).
 4. Chad's swing **facing down and up** as full sequences (the sheet has one frame per angle).
 5. Then priorities 2 and 3 in the tables below.
 

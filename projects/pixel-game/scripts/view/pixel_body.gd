@@ -108,6 +108,8 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 			next = "sit"
 		elif float(source.get("_bite_cooldown")) > Companion.BITE_COOLDOWN - 0.3:
 			next = "bite"
+		elif not moving and _sniffing(source):
+			next = "sniff"
 	elif source is Npc or source is TopDog:
 		var player := source.get_tree().get_first_node_in_group("player") as Node2D
 		if player != null and not moving:
@@ -121,6 +123,13 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 	if next != anim_name:
 		anim_name = next
 		_time = 0.0
+
+
+## Evey noses the ground while digging and for a moment after catching a buried scent.
+func _sniffing(dog: Node2D) -> bool:
+	if dog.mode == Companion.Mode.DIG:
+		return true
+	return float(dog.get("_sniff_cooldown")) > Companion.SNIFF_EVERY - 1.2
 
 
 func _show_frame(source: Node2D, velocity: Vector2) -> void:

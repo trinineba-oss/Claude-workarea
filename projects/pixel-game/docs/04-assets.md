@@ -39,7 +39,8 @@ Small icons: **square, transparent PNG, 128×128**, one object, no background.
 
 **Dogs**
 - [x] Evey (painted sheet in the game, subject to change; see [Art style](03-art-style.md);
-      still to come: front/back trot, idle, sit, see [the prompts](15-character-art-prompts.md))
+      from sheet_v3; still to come: front/back walk, idle, sit, see
+      [the prompts](15-character-art-prompts.md))
 - [ ] Evey extra poses (sniff, dig, bark, run, carry, lying down tired), if she becomes
       [playable](13-playing-as-evey.md)
 - [ ] Brownie (top dog)

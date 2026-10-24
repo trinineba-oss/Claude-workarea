@@ -461,7 +461,7 @@
       },
       "walk": {
         "row": 4,
-        "frames": 5,
+        "frames": 4,
         "rows": 4
       },
       "sit": {
@@ -472,6 +472,11 @@
       "bite": {
         "row": 12,
         "frames": 3,
+        "rows": 4
+      },
+      "sniff": {
+        "row": 16,
+        "frames": 1,
         "rows": 4
       }
     }

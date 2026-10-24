@@ -128,6 +128,12 @@ func _run() -> void:
 		not evey_body.is_empty() and evey_body[0].sheet == Looks.sheet_by_key("companion"),
 		"Evey is the beagle"
 	)
+	evey.set("_sniff_cooldown", Companion.SNIFF_EVERY)
+	await _frames(2)
+	_check(evey_body[0].anim_name == "sniff", "she noses the ground when she catches a scent")
+	evey.set("_sniff_cooldown", 0.0)
+	await _frames(2)
+	_check(evey_body[0].anim_name != "sniff", "and looks up again")
 	var fisher: Npc = npcs.filter(func(n): return n.character_id == "fisherman")[0]
 	var fisher_body: Array = view.entity_view(fisher).find_children("*", "PixelBody", true, false)
 	_check(not fisher_body.is_empty(), "townspeople have pixel bodies")

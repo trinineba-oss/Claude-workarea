@@ -23,27 +23,31 @@ FRAME = 128
 FOOT = 8  # feet sit this many pixels above the bottom of a frame
 DIRS = ["up", "left", "down", "right"]
 
-# The current source: one sheet with Chad on the left and Evey on the right, in named
-# rectangles (x0, x1, y0, y1) of figures read left to right (art_src/painted/sheet_v2.jpg).
-# Earlier drafts (chad_poses.jpg, evey_poses.jpg, cycles.jpg) are kept for reference only.
-SOURCE_SHEET = "sheet_v2.jpg"
+# Where each group of figures comes from: (sheet in art_src/painted/, x0, x1, y0, y1), the
+# figures in that rectangle read left to right. Chad comes from sheet_v2.jpg, Evey from
+# sheet_v3.jpg; earlier drafts (chad_poses.jpg, evey_poses.jpg, cycles.jpg) are kept for
+# reference only.
 REGIONS = {
-    "chad_turn": (0, 520, 0, 225),  # front, 3/4, side (right), back 3/4, back
-    "chad_walk": (0, 520, 225, 390),  # 7-frame walk, facing right
-    "chad_swing": (0, 520, 390, 572),  # cutlass: front, 3/4 right, back 3/4, back
-    "evey_turn": (520, 1024, 0, 225),  # front, side (right), 3/4, 3/4 left, back
-    "evey_trot": (520, 1024, 225, 430),  # 5-frame trot, facing right
-    "evey_bite": (520, 1024, 430, 572),  # crouch, lunge, bark, facing right
+    "chad_turn": ("sheet_v2.jpg", 0, 520, 0, 225),  # front, 3/4, side (right), back 3/4, back
+    "chad_walk": ("sheet_v2.jpg", 0, 520, 225, 390),  # 7-frame walk, facing right
+    "chad_swing": ("sheet_v2.jpg", 0, 520, 390, 572),  # cutlass: front, 3/4 right, back 3/4, back
+    "evey_turn": ("sheet_v3.jpg", 510, 1024, 0, 225),  # front, 3/4 right, back 3/4, back
+    "evey_walk": ("sheet_v3.jpg", 0, 650, 225, 380),  # 4-frame walk, facing right
+    "evey_pounce": ("sheet_v3.jpg", 650, 1024, 225, 380),  # crouch, leap
+    "evey_more": ("sheet_v3.jpg", 510, 1024, 380, 572),  # sniff, lunge, happy standing
 }
+# Groups whose figures stand on a painted floor shadow that gets trapped between the legs.
+CLEAR_LOW = ("evey_turn", "evey_walk", "evey_pounce", "evey_more")
 # The generator drew each group at its own size; these bring every group to the same character
 # size in the game (Chad about 110 px tall in a 128 px frame).
 SCALES = {
     "chad_turn": 110 / 208,
     "chad_walk": 106 / 135,
     "chad_swing": 110 / 152,
-    "evey_turn": 0.6,
-    "evey_trot": 0.7,
-    "evey_bite": 0.65,
+    "evey_turn": 0.54,
+    "evey_walk": 0.54,
+    "evey_pounce": 0.54,
+    "evey_more": 0.54,
 }
 # Up-and-down step bob (pixels) for walking towards or away from the camera, which has no
 # drawn frames yet.
@@ -83,28 +87,34 @@ LAYOUTS = {
     },
     "evey": {
         "idle": {
-            "up": [("turn:4", False)] * 2,
-            "left": [("turn:3", False)] * 2,
+            "up": [("turn:3", False)] * 2,
+            "left": [("more:2", True)] * 2,
             "down": [("turn:0", False)] * 2,
-            "right": [("turn:1", False)] * 2,
+            "right": [("more:2", False)] * 2,
         },
         "walk": {
-            "up": _bob("turn:4", 5),
-            "left": _row("trot", 5, True),
-            "down": _bob("turn:0", 5),
-            "right": _row("trot", 5, False),
+            "up": _bob("turn:3", 4),
+            "left": _row("walk", 4, True),
+            "down": _bob("turn:0", 4),
+            "right": _row("walk", 4, False),
         },
         "sit": {
-            "up": [("turn:4", False)],
-            "left": [("turn:3", False)],
+            "up": [("turn:3", False)],
+            "left": [("turn:1", True)],
             "down": [("turn:0", False)],
             "right": [("turn:1", False)],
         },
         "bite": {
-            "up": _row("bite", 3, False),
-            "left": _row("bite", 3, True),
-            "down": _row("bite", 3, False),
-            "right": _row("bite", 3, False),
+            "up": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
+            "left": [("pounce:0", True), ("more:1", True), ("pounce:1", True)],
+            "down": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
+            "right": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
+        },
+        "sniff": {
+            "up": [("more:0", False)],
+            "left": [("more:0", True)],
+            "down": [("more:0", False)],
+            "right": [("more:0", False)],
         },
     },
 }
@@ -220,7 +230,10 @@ def frame_of(pose: Image.Image, scale: float, mirror: bool, dy: int = 0) -> Imag
 def main() -> None:
     sheets_path = OUT / "sheets.json"
     sheets = json.loads(sheets_path.read_text())
-    groups = cut_regions(SOURCE / SOURCE_SHEET, REGIONS, dilate=3)
+    groups = {}
+    for sheet_file in sorted({spec[0] for spec in REGIONS.values()}):
+        regions = {name: spec[1:] for name, spec in REGIONS.items() if spec[0] == sheet_file}
+        groups.update(cut_regions(SOURCE / sheet_file, regions, dilate=3, clear_low=CLEAR_LOW))
     for name, layout in LAYOUTS.items():
         rows: list[list[Image.Image]] = []
         entry: dict = {"frame": FRAME, "smooth": True}
