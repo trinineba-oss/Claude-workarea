@@ -1,0 +1,6 @@
+id=producer-mode
+name=Producer Mode
+version=v0.1.0
+versionCode=1
+author=trinineba
+description=Toggleable low-latency music production mode (Moto G 2022). Reversible; never touches thermal protection. Use the Action button to toggle.

@@ -1,0 +1,6 @@
+# One package name per line. Used for the Doze whitelist and auto mode.
+com.imageline.FLM
+com.roland.zenbeats
+com.elf.koalasampler
+de.planegames.gstomper
+com.google.sample.oboe.manualtest

@@ -1,0 +1,3 @@
+# Intentionally empty. Props are added here only after measurements in
+# results/RESULTS.md show a real improvement. Test them at runtime first
+# (lib/audio.sh uses resetprop).
