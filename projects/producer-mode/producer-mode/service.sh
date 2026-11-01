@@ -3,6 +3,7 @@ MODDIR=${0%/*}
 . "$MODDIR/lib/common.sh"; . "$MODDIR/lib/toggle.sh"
 wait_boot
 pm_log "boot: module $(grep ^version= "$MODDIR/module.prop")"
+caps_report > "$PM_STATE/caps.txt"; pm_log "capabilities: $(tr '\n' ';' < "$PM_STATE/caps.txt")"
 # Clean "off" state on every boot. Settings/Doze persist across reboots, so restore them;
 # sysfs and props were already reset by the reboot.
 lock

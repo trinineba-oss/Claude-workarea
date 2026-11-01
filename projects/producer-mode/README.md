@@ -1,6 +1,6 @@
-# Producer Mode (Magisk module, Moto G 2022)
+# Producer Mode (Magisk / KernelSU / APatch module)
 
-Toggleable "music production" mode for a rooted Moto G (2022) used with an Akai MPK Mini II and
+Toggleable "music production" mode for any rooted Android 9+ device, used with a USB MIDI controller and
 Android DAWs (FL Studio Mobile, Zenbeats, Koala, G-Stomper). Aims for fewer dropouts and steadier
 latency. Off = normal phone. Everything it changes is backed up and restored.
 
@@ -9,7 +9,25 @@ latency. Off = normal phone. Everything it changes is backed up and restored.
 ## Before you install
 - Keep Magisk's stock boot image backup and a known-good module zip.
 - Know the rescue path (below).
-- Magisk v27+ gives you the Action button. Older versions: `su -c sh /data/adb/modules/producer-mode/action.sh`.
+- Magisk v27+, KernelSU and APatch give you the Action button. Older Magisk: `su -c sh /data/adb/modules/producer-mode/action.sh`.
+
+## Device compatibility
+One zip for every device. Nothing is hard-coded to a chipset: each tweak checks what the device
+has and skips cleanly (and says so) when it's missing.
+
+| Need | Supported |
+|---|---|
+| Android | 9+ (API 28) |
+| Root | Magisk, KernelSU, APatch |
+| CPU | any architecture (pure shell, no binaries) |
+| CPU frequency | `cpufreq/policy*`, or per-CPU `cpuN/cpufreq` on older kernels |
+| Foreground boost | `uclamp` (newer kernels) or `schedtune.boost` (older 4.x kernels) |
+| Audio props | `resetprop` required for `ro.*` props; skipped without it |
+
+The installer prints a capability report for your device; it is also saved to
+`/data/adb/producer-mode/state/caps.txt` and refreshed every boot. Vendor performance daemons
+(MediaTek PPM, Qualcomm `msm_performance`/`cpu_boost`) can override CPU settings: the module
+detects that, logs `OVERRIDE`, and never fights it.
 
 ## Install
 From a PC with adb: `tools/install.sh` then `adb reboot`.
@@ -37,12 +55,12 @@ State and backups: `/data/adb/producer-mode/state/`.
 
 ## Bootloop recovery
 - From a PC: `tools/rescue.sh` (waits for adb, then disables all Magisk modules).
-- On the phone: boot to safe mode (on Motorola, usually hold Volume Down during boot); Magisk then
-  disables modules.
+- On the phone: boot to safe mode (the key combo varies; often hold Volume Down during boot); Magisk and
+  KernelSU then disable modules.
 The module does nothing in `post-fs-data`, so a boot hang from it is unlikely.
 
 ## Uninstall
-Remove it in Magisk and reboot. `uninstall.sh` waits for boot, restores any leftover settings and
+Remove it in your root manager and reboot. `uninstall.sh` waits for boot, restores any leftover settings and
 Doze entries, then deletes `/data/adb/producer-mode`.
 
 ## Developer workflow

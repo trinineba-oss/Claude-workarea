@@ -1,5 +1,9 @@
 # CPU tweaks. Thermal is never touched here.
-cpu_policies() { ls -d /sys/devices/system/cpu/cpufreq/policy* 2>/dev/null; }
+cpu_policies() {
+  ls -d /sys/devices/system/cpu/cpufreq/policy* 2>/dev/null && return
+  # Older kernels: one cpufreq dir per CPU (duplicates for shared clusters are harmless).
+  ls -d /sys/devices/system/cpu/cpu[0-9]*/cpufreq 2>/dev/null
+}
 
 # Lowest available step >= pct% of cpuinfo_max_freq.
 cpu_pick_step() { # policy pct
@@ -30,9 +34,13 @@ cpu_apply() {
     say "CPU performance governor: $n policies"
   fi
   if [ "${TOPAPP_UCLAMP_MIN:-0}" -gt 0 ]; then
-    if sysfs_set /dev/cpuctl/top-app/cpu.uclamp.min "$TOPAPP_UCLAMP_MIN"; then
-      say "top-app uclamp.min=$TOPAPP_UCLAMP_MIN"
-    else say "top-app uclamp: not available"; fi
+    case $(boost_iface) in
+      uclamp) sysfs_set /dev/cpuctl/top-app/cpu.uclamp.min "$TOPAPP_UCLAMP_MIN" \
+        && say "top-app uclamp.min=$TOPAPP_UCLAMP_MIN" ;;
+      schedtune) sysfs_set /dev/stune/top-app/schedtune.boost "$TOPAPP_UCLAMP_MIN" \
+        && say "top-app schedtune.boost=$TOPAPP_UCLAMP_MIN" ;;
+      *) say "top-app boost: not available on this kernel" ;;
+    esac
   fi
   # Detect vendor perf HAL / PPM overrides: re-read once, log, don't fight.
   if [ -n "$checks" ]; then

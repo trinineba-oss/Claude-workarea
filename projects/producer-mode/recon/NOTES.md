@@ -1,4 +1,4 @@
-# Recon notes (Moto G 2022)
+# Recon notes (per device; copy this table for each phone you test)
 
 **Status: not run yet.** Run `tools/recon.sh` with the phone attached, then fill in below.
 Phase 3 tweaks stay disabled until this confirms they are possible.

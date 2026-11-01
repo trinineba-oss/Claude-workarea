@@ -74,7 +74,11 @@ setting_set() { # namespace key value
 prop_set() { # name value
   old=$(getprop "$1")
   bk_save prop "$1" "$old"
-  resetprop "$1" "$2" && pm_log "prop $1: '$old' -> '$2'"
+  if command -v resetprop >/dev/null 2>&1; then resetprop "$1" "$2"
+  else
+    case $1 in ro.*) pm_log "skip: $1 needs resetprop"; return 1;; esac
+    setprop "$1" "$2"
+  fi && pm_log "prop $1: '$old' -> '$2'"
 }
 
 doze_add() { # pkg
@@ -105,7 +109,8 @@ restore_all() {
         [ "$1" = boot ] || { echo "$v" > "$tg" 2>/dev/null && pm_log "restored $tg = '$v'" || pm_log "restore failed: $tg"; } ;;
       prop)
         if [ "$1" != boot ]; then
-          if [ -z "$v" ]; then resetprop --delete "$tg" 2>/dev/null; else resetprop "$tg" "$v"; fi
+          if ! command -v resetprop >/dev/null 2>&1; then setprop "$tg" "$v"
+          elif [ -z "$v" ]; then resetprop --delete "$tg" 2>/dev/null; else resetprop "$tg" "$v"; fi
           pm_log "restored prop $tg = '$v'"
         fi ;;
       setting)

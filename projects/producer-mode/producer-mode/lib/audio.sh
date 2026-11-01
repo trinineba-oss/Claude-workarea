@@ -21,14 +21,14 @@ audio_apply() {
   restart=0
   if [ "${AUDIO_MMAP:-0}" = 1 ]; then
     if audio_mmap_supported; then
-      prop_set aaudio.mmap_policy 2
-      prop_set aaudio.mmap_exclusive_policy 2
-      say "AAudio MMAP policy=2"; restart=1
+      prop_set aaudio.mmap_policy 2 && prop_set aaudio.mmap_exclusive_policy 2 \
+        && { say "AAudio MMAP policy=2"; restart=1; }
     else say "AAudio MMAP: HAL shows no MMAP support, skipped"; fi
   fi
   if [ "${AUDIO_STANDBY_MS:-0}" -gt 0 ]; then
-    prop_set ro.audio.flinger_standbytime_ms "$AUDIO_STANDBY_MS"
-    say "flinger standby=${AUDIO_STANDBY_MS}ms"; restart=1
+    if prop_set ro.audio.flinger_standbytime_ms "$AUDIO_STANDBY_MS"; then
+      say "flinger standby=${AUDIO_STANDBY_MS}ms"; restart=1
+    else say "flinger standby: needs resetprop, skipped"; fi
   fi
   if [ $restart = 1 ]; then
     if [ "${AUDIO_RESTART:-0}" = 1 ]; then
