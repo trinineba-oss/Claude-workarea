@@ -432,21 +432,29 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 2,
-        "rows": 4
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
       },
       "walk": {
-        "row": 4,
+        "row": 3,
         "frames": 7,
-        "rows": 4
+        "rows": 3,
+        "mirror": true,
+        "counts": [
+          7,
+          4,
+          4
+        ]
       },
       "slash": {
-        "row": 8,
+        "row": 6,
         "frames": 2,
-        "rows": 4
+        "rows": 3,
+        "mirror": true
       },
       "hurt": {
-        "row": 12,
+        "row": 9,
         "frames": 1,
         "rows": 1
       }
@@ -456,28 +464,45 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 2,
-        "rows": 4
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
       },
       "walk": {
-        "row": 4,
+        "row": 3,
+        "frames": 6,
+        "rows": 3,
+        "mirror": true
+      },
+      "run": {
+        "row": 6,
         "frames": 4,
-        "rows": 4
+        "rows": 3,
+        "mirror": true
       },
       "sit": {
-        "row": 8,
+        "row": 9,
         "frames": 1,
-        "rows": 4
+        "rows": 3,
+        "mirror": true
       },
       "bite": {
         "row": 12,
         "frames": 3,
-        "rows": 4
+        "rows": 3,
+        "mirror": true
       },
       "sniff": {
-        "row": 16,
-        "frames": 1,
-        "rows": 4
+        "row": 15,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      },
+      "dig": {
+        "row": 18,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
       }
     }
   }

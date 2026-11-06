@@ -38,7 +38,9 @@ static func frame(sheet: String, anim_name: String, facing: Vector2) -> Texture2
 	if layout.is_empty():
 		return null
 	var row: int = layout["row"]
-	if int(layout["rows"]) == 4:
+	if bool(layout.get("mirror", false)):
+		row += 1  # the side row, drawn facing right
+	elif int(layout["rows"]) == 4:
 		row += direction_index(facing)
 	var atlas := AtlasTexture.new()
 	atlas.atlas = texture(sheet)

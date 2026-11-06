@@ -112,6 +112,11 @@ func _run() -> void:
 	await _frames(1)
 	_check(body.anim_name == "walk", "walking plays the walk cycle")
 	_check(Looks.direction_index(body.facing) == 1, "facing left")
+	if bool(Looks.anim(body.sheet, "walk").get("mirror", false)):
+		_check(body.flip_h, "drawn facing right, flipped to walk left")
+	var phase_before: float = body.get("_phase")
+	await _frames(3)
+	_check(body.get("_phase") > phase_before, "the walk cycle moves on as he moves")
 	Input.action_release(&"move_left")
 	await _physics_frames(4)
 	await _frames(2)
@@ -144,6 +149,20 @@ func _run() -> void:
 		"and their old 2D picture is not drawn as well"
 	)
 	_check(Looks.sheet_for(Entities.create("dog")) == "stray", "stray dogs have a sheet")
+	var turner := PixelBody.new()
+	turner.call("_turn", Vector2(1, 0))
+	_check(turner.get("_dir") == "side" and not turner.get("_flip"), "walking right is side-on")
+	turner.call("_turn", Vector2(1, 1.1))
+	_check(turner.get("_dir") == "side", "a near diagonal doesn't flip-flop to front")
+	turner.call("_turn", Vector2(0.2, 1))
+	_check(
+		turner.get("_dir") == "down" and not turner.get("_flip"), "walking down faces the camera"
+	)
+	turner.call("_turn", Vector2(-1, 0.1))
+	_check(turner.get("_dir") == "side" and turner.get("_flip"), "walking left is mirrored")
+	turner.call("_turn", Vector2(0, -1))
+	_check(turner.get("_dir") == "up" and turner.get("_flip"), "and he keeps his last side")
+	turner.free()
 
 	# --- solid props -------------------------------------------------------------------------
 	var road := Vector2i(0, 0)

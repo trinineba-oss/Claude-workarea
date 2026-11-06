@@ -12,9 +12,10 @@
 - **Tilt-shift.** A soft blur at the top and bottom of the screen makes the town feel like a
   model.
 - **Chad and Evey: painted sheets (in the game now, subject to change).** Clean, outlined
-  cartoon characters: Chad (olive jacket, backpack, cargo pants) from the owner's
-  `art_src/painted/sheet_v2.jpg`, Evey (a tricolour beagle, no collar) from `sheet_v3.jpg`
-  (earlier drafts are kept next to them). `tools/painted_sheets.py` cuts it into game sheets
+  cartoon characters: Chad (olive jacket, backpack, cargo pants) and Evey (a tricolour beagle,
+  no collar) from the owner's `art_src/painted/sheet_v4.jpg`, with a few poses from
+  `sheet_v3.jpg` (earlier drafts are kept next to them). Animation is being polished on the
+  beach first: see [Character art prompts](15-character-art-prompts.md#status). `tools/painted_sheets.py` cuts it into game sheets
   (`assets/characters/chad_painted.png`, `evey_painted.png`). To go back to the pixel versions,
   set `"player": "chad"` and `"companion": "evey"` in `data/looks.json`.
 

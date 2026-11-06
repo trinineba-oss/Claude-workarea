@@ -11,6 +11,15 @@ const SCALE := 0.029
 const FOOT := 4.0
 const WALK_FPS := 10.0
 const IDLE_FPS := 2.5
+## How far (2D px) one full walk or run cycle carries a person; the cycle follows the distance
+## moved, so feet don't slide. Dogs take shorter strides.
+const CYCLE_PX := {"walk": 150.0, "run": 190.0}
+const DOG_STRIDE := 0.75
+## A dog moving faster than this (2D px a second) gallops, if its sheet has a "run".
+const RUN_SPEED := 290.0
+## Turning between side-on and up/down needs this much more of one than the other, so moving
+## along a diagonal doesn't flicker between the two.
+const TURN_MARGIN := 1.25
 ## Moving slower than this (2D pixels per second) counts as standing still.
 const MOVING := 18.0
 ## How close (2D px) Chad has to be for people and top dogs to turn to him.
@@ -23,6 +32,11 @@ var size := 1.0
 var facing := Vector2.DOWN
 
 var _time := 0.0
+## Walk and run cycles advance by distance, through this phase (in frames).
+var _phase := 0.0
+## Row family for mirrored sheets: "up", "side" or "down"; and whether to flip for facing left.
+var _dir := "down"
+var _flip := false
 var _last := Vector2.INF
 var _fliers := false
 ## Seconds left in which the body counts as moving (frames can pass without a physics step).
@@ -79,7 +93,8 @@ func update(source: Node2D, body: Sprite2D, delta: float) -> void:
 	_last = pos
 	_time += delta
 	_choose(source, velocity, moving)
-	_show_frame(source, velocity)
+	_advance(source, velocity, delta)
+	_show_frame(source)
 	var lift := 0.0
 	if body != null:
 		visible = body.visible
@@ -95,7 +110,8 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 		facing = velocity
 	var next := "walk" if moving else "idle"
 	if source is Player:
-		facing = source.facing
+		# Moving: face the way he goes (diagonals too); standing: the way he last faced.
+		facing = velocity if moving else source.facing
 		match source.state:
 			Player.State.ATTACK:
 				next = "slash"
@@ -106,6 +122,8 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 	elif source is Companion:
 		if source.mode == Companion.Mode.STAY:
 			next = "sit"
+		elif not moving and source.mode == Companion.Mode.DIG and _has("dig"):
+			next = "dig"
 		elif float(source.get("_bite_cooldown")) > Companion.BITE_COOLDOWN - 0.3:
 			next = "bite"
 		elif not moving and _sniffing(source):
@@ -118,11 +136,61 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 				facing = Vector2(signf(to.x), 0) if source is TopDog else to
 	elif _fliers or source is Soucouyant:
 		next = "walk"
+	if next == "walk" and velocity.length() > RUN_SPEED and _has("run"):
+		next = "run"
 	if Looks.anim(sheet, next).is_empty():
 		next = "walk" if moving else "idle"
 	if next != anim_name:
+		# Walk and run share a cycle: keep the step going when switching between them.
+		var striding := next in ["walk", "run"] and anim_name in ["walk", "run"]
 		anim_name = next
 		_time = 0.0
+		if not striding:
+			_phase = 0.0
+	_turn(facing)
+
+
+func _has(anim: String) -> bool:
+	return not Looks.anim(sheet, anim).is_empty()
+
+
+## Picks the row family (up, side or down) and the flip, with a margin against flicker.
+func _turn(direction: Vector2) -> void:
+	var ax := absf(direction.x)
+	var ay := absf(direction.y)
+	if ax + ay < 0.001:
+		return
+	if _dir == "side":
+		if ay > ax * TURN_MARGIN:
+			_dir = "up" if direction.y < 0.0 else "down"
+	elif ax > ay * TURN_MARGIN:
+		_dir = "side"
+	else:
+		_dir = "up" if direction.y < 0.0 else "down"
+	if ax > 0.25 * (ax + ay):
+		_flip = direction.x < 0.0
+
+
+## Moves walk and run cycles on by the distance travelled this frame.
+func _advance(source: Node2D, velocity: Vector2, delta: float) -> void:
+	if not anim_name in CYCLE_PX:
+		return
+	var layout := Looks.anim(sheet, anim_name)
+	if layout.is_empty():
+		return
+	var cycle: float = CYCLE_PX[anim_name] * (DOG_STRIDE if _is_dog(source) else 1.0)
+	_phase += velocity.length() * delta / cycle * _row_frames(layout)
+
+
+static func _is_dog(source: Node2D) -> bool:
+	return source is Companion or source is TopDog or source is Pothound
+
+
+## Frames in the row being shown (rows of a mirrored sheet can differ in length).
+func _row_frames(layout: Dictionary) -> int:
+	if layout.has("counts") and bool(layout.get("mirror", false)):
+		return int(layout["counts"][["up", "side", "down"].find(_dir)])
+	return int(layout["frames"])
 
 
 ## Evey noses the ground while digging and for a moment after catching a buried scent.
@@ -132,23 +200,20 @@ func _sniffing(dog: Node2D) -> bool:
 	return float(dog.get("_sniff_cooldown")) > Companion.SNIFF_EVERY - 1.2
 
 
-func _show_frame(source: Node2D, velocity: Vector2) -> void:
+func _show_frame(source: Node2D) -> void:
 	var layout := Looks.anim(sheet, anim_name)
 	if layout.is_empty():
 		layout = Looks.anim(sheet, "walk")
 		if layout.is_empty():
 			return
-	var frames: int = layout["frames"]
+	var frames := _row_frames(layout)
 	var col := 0
 	match anim_name:
-		"walk":
-			var speed := clampf(velocity.length() / 180.0, 0.7, 1.7)
+		"walk", "run":
 			if frames == 9:
-				col = 1 + int(_time * WALK_FPS * speed) % 8  # LPC: frame 0 is the standing pose
+				col = 1 + int(_phase * 8.0 / 9.0) % 8  # LPC: frame 0 is the standing pose
 			else:
-				# Short cycles (two painted steps) step slower.
-				var fps := WALK_FPS if frames > 3 else WALK_FPS * 0.5
-				col = int(_time * fps * speed) % frames
+				col = int(_phase) % frames
 		"idle":
 			col = int(_time * IDLE_FPS) % frames
 		"slash":
@@ -158,9 +223,16 @@ func _show_frame(source: Node2D, velocity: Vector2) -> void:
 			col = frames - 1 if source.get("health") == 0 else int(_time * 18.0) % frames
 		"bite":
 			col = mini(int(_time * 10.0), frames - 1)
+		"sniff", "dig":
+			col = int(_time * (3.0 if anim_name == "sniff" else 8.0)) % frames
 		_:
 			col = 0
 	var row: int = layout["row"]
-	if int(layout["rows"]) == 4:
+	if bool(layout.get("mirror", false)):
+		# Drawn facing right with up, side and down rows; flipped when facing left.
+		row += ["up", "side", "down"].find(_dir)
+		flip_h = _flip
+	elif int(layout["rows"]) == 4:
 		row += Looks.direction_index(facing)
+		flip_h = false
 	frame = row * hframes + mini(col, hframes - 1)

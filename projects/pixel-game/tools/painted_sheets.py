@@ -22,35 +22,42 @@ OUT = ROOT / "assets" / "characters"
 FRAME = 128
 FOOT = 8  # feet sit this many pixels above the bottom of a frame
 DIRS = ["up", "left", "down", "right"]
+# Mirrored animations are drawn facing right only: rows for up, side and down. The game flips
+# the side and down rows when the character last moved left.
+MIRROR_DIRS = ["up", "side", "down"]
 
-# Where each group of figures comes from: (sheet in art_src/painted/, x0, x1, y0, y1), the
-# figures in that rectangle read left to right. Chad comes from sheet_v2.jpg, Evey from
-# sheet_v3.jpg; earlier drafts (chad_poses.jpg, evey_poses.jpg, cycles.jpg) are kept for
-# reference only.
+# Where each group of figures comes from: (sheet in art_src/painted/, x0, x1, y0, y1, strict),
+# the figures in that rectangle read left to right. `strict` uses the tighter backdrop test that
+# keeps dark clothes and strips painted floor shadows. Chad and Evey come from sheet_v4.jpg,
+# with the cutlass swing and Evey's front and back views from sheet_v3.jpg; earlier drafts
+# (chad_poses.jpg, evey_poses.jpg, cycles.jpg, sheet_v2.jpg) are kept for reference only.
 REGIONS = {
-    "chad_turn": ("sheet_v2.jpg", 0, 520, 0, 225),  # front, 3/4, side (right), back 3/4, back
-    "chad_walk": ("sheet_v2.jpg", 0, 520, 225, 390),  # 7-frame walk, facing right
-    "chad_swing": ("sheet_v2.jpg", 0, 520, 390, 572),  # cutlass: front, 3/4 right, back 3/4, back
-    "evey_turn": ("sheet_v3.jpg", 510, 1024, 0, 225),  # front, 3/4 right, back 3/4, back
-    "evey_walk": ("sheet_v3.jpg", 0, 650, 225, 380),  # 4-frame walk, facing right
-    "evey_pounce": ("sheet_v3.jpg", 650, 1024, 225, 380),  # crouch, leap
-    "evey_more": ("sheet_v3.jpg", 510, 1024, 380, 572),  # sniff, lunge, happy standing
+    # front idle, 3/4 walk x3, back walk x4
+    "chad_a": ("sheet_v4.jpg", 0, 1024, 0, 215, True),
+    # back walk x3, side x3, 3/4 walk, 3/4 standing
+    "chad_b": ("sheet_v4.jpg", 0, 1024, 215, 365, True),
+    # cutlass: front, lunge, raised, back
+    "chad_swing": ("sheet_v3.jpg", 0, 510, 380, 572, True),
+    # trot x6, gallop x2
+    "evey_run": ("sheet_v4.jpg", 0, 1024, 365, 462, True),
+    # sniff, dig x2, sniff, crouch, lunge, bark, happy standing
+    "evey_act": ("sheet_v4.jpg", 0, 1024, 462, 572, True),
+    # front, 3/4 right, back 3/4, back
+    "evey_turn": ("sheet_v3.jpg", 510, 1024, 0, 225, True),
 }
-# Groups whose figures stand on a painted floor shadow that gets trapped between the legs.
-CLEAR_LOW = ("evey_turn", "evey_walk", "evey_pounce", "evey_more")
+# The colour of each sheet's painted floor shadows, for telling them from dark clothes.
+SHADOW_TINT = {"sheet_v3.jpg": "neutral", "sheet_v4.jpg": "warm"}
 # The generator drew each group at its own size; these bring every group to the same character
-# size in the game (Chad about 110 px tall in a 128 px frame).
+# size in the game (Chad about 110 px tall in a 128 px frame, Evey about 60).
 SCALES = {
-    "chad_turn": 110 / 208,
-    "chad_walk": 106 / 135,
-    "chad_swing": 110 / 152,
-    "evey_turn": 0.54,
-    "evey_walk": 0.54,
-    "evey_pounce": 0.54,
-    "evey_more": 0.54,
+    "chad_a": 110 / 165,
+    "chad_b": 110 / 134,
+    "chad_swing": 110 / 166,
+    "evey_run": 0.72,
+    "evey_act": 0.72,
+    "evey_turn": 0.5,
 }
-# Up-and-down step bob (pixels) for walking towards or away from the camera, which has no
-# drawn frames yet.
+# Up-and-down step bob (pixels) for a pose with no drawn walk frames.
 BOB = [0, -2, -4, -2, 0, -2, -4]
 
 
@@ -58,63 +65,66 @@ def _bob(ref: str, frames: int) -> list:
     return [(ref, False, BOB[i % len(BOB)]) for i in range(frames)]
 
 
-def _row(group: str, count: int, mirror: bool) -> list:
-    return [(f"{group}:{i}", mirror) for i in range(count)]
+def _frames(group: str, indices) -> list:
+    return [(f"{group}:{i}", False) for i in indices]
 
 
-# For each animation: rows (one per direction, or one "all") of frames: (figure, mirrored[, dy]).
+# For each animation: rows of frames, (figure, mirrored[, dy]). Rows are keyed up/side/down
+# (drawn facing right, flipped by the game for left) or up/left/down/right, or "all".
 LAYOUTS = {
     "chad": {
         "idle": {
-            "up": [("turn:4", False)] * 2,
-            "left": [("turn:2", True)] * 2,
-            "down": [("turn:0", False)] * 2,
-            "right": [("turn:2", False)] * 2,
+            "up": _frames("b", [1]),
+            "side": _frames("b", [7]),
+            "down": _frames("a", [0]),
         },
         "walk": {
-            "up": _bob("turn:4", 7),
-            "left": _row("walk", 7, True),
-            "down": _bob("turn:0", 7),
-            "right": _row("walk", 7, False),
+            "up": _frames("a", [4, 5, 6, 7]) + _frames("b", [0, 1, 2]),
+            "side": _frames("a", [1, 2, 3]) + _frames("b", [6]),
+            "down": _frames("a", [1, 2, 3]) + _frames("b", [6]),
         },
         "slash": {
-            "up": [("swing:3", False), ("swing:2", False)],
-            "left": [("swing:1", True), ("swing:1", True)],
-            "down": [("swing:0", False), ("swing:1", False)],
-            "right": [("swing:1", False), ("swing:1", False)],
+            "up": _frames("swing", [3, 3]),
+            "side": _frames("swing", [2, 1]),
+            "down": _frames("swing", [0, 1]),
         },
-        "hurt": {"all": [("turn:0", False)]},
+        "hurt": {"all": _frames("a", [0])},
     },
     "evey": {
         "idle": {
-            "up": [("turn:3", False)] * 2,
-            "left": [("more:2", True)] * 2,
-            "down": [("turn:0", False)] * 2,
-            "right": [("more:2", False)] * 2,
+            "up": _frames("turn", [3]),
+            "side": _frames("act", [7]),
+            "down": _frames("turn", [0]),
         },
         "walk": {
+            "up": _bob("turn:3", 6),
+            "side": _frames("run", range(6)),
+            "down": _bob("turn:0", 6),
+        },
+        "run": {
             "up": _bob("turn:3", 4),
-            "left": _row("walk", 4, True),
+            "side": _frames("run", [4, 5, 6, 7]),
             "down": _bob("turn:0", 4),
-            "right": _row("walk", 4, False),
         },
         "sit": {
-            "up": [("turn:3", False)],
-            "left": [("turn:1", True)],
-            "down": [("turn:0", False)],
-            "right": [("turn:1", False)],
+            "up": _frames("turn", [3]),
+            "side": _frames("turn", [1]),
+            "down": _frames("turn", [0]),
         },
         "bite": {
-            "up": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
-            "left": [("pounce:0", True), ("more:1", True), ("pounce:1", True)],
-            "down": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
-            "right": [("pounce:0", False), ("more:1", False), ("pounce:1", False)],
+            "up": _frames("act", [4, 5, 6]),
+            "side": _frames("act", [4, 5, 6]),
+            "down": _frames("act", [4, 5, 6]),
         },
         "sniff": {
-            "up": [("more:0", False)],
-            "left": [("more:0", True)],
-            "down": [("more:0", False)],
-            "right": [("more:0", False)],
+            "up": _frames("act", [0, 3]),
+            "side": _frames("act", [0, 3]),
+            "down": _frames("act", [0, 3]),
+        },
+        "dig": {
+            "up": _frames("act", [1, 2]),
+            "side": _frames("act", [1, 2]),
+            "down": _frames("act", [1, 2]),
         },
     },
 }
@@ -150,6 +160,34 @@ def background_mask(rgb: np.ndarray) -> np.ndarray:
 
 
 
+def backdrop_mask(rgb: np.ndarray, tolerance: float = 9.0) -> np.ndarray:
+    """A stricter backdrop test for sheets whose dark clothes are close to the backdrop grey:
+    only pixels within `tolerance` of the backdrop colour (the median of the image border),
+    reachable from the edges."""
+    border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+    backdrop = np.median(border, axis=0)
+    passable = np.sqrt(((rgb - backdrop) ** 2).sum(axis=2)) < tolerance
+    return _flood_from_edges(passable)
+
+
+def _flood_from_edges(passable: np.ndarray) -> np.ndarray:
+    h, w = passable.shape
+    seen = np.zeros_like(passable)
+    queue = deque()
+    for y in range(h):
+        for x in range(w):
+            if (y in (0, h - 1) or x in (0, w - 1)) and passable[y, x]:
+                seen[y, x] = True
+                queue.append((y, x))
+    while queue:
+        y, x = queue.popleft()
+        for ny, nx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+            if 0 <= ny < h and 0 <= nx < w and passable[ny, nx] and not seen[ny, nx]:
+                seen[ny, nx] = True
+                queue.append((ny, nx))
+    return seen
+
+
 def _components(mask: np.ndarray) -> tuple[np.ndarray, list]:
     """Label 4-connected blobs: (labels, [(label, size, top, bottom, left, right)])."""
     h, w = mask.shape
@@ -174,11 +212,19 @@ def _components(mask: np.ndarray) -> tuple[np.ndarray, list]:
     return label, found
 
 
-def cut_regions(path: Path, regions: dict, dilate: int = 5, clear_low: tuple = ()) -> dict:
+def cut_regions(
+    path: Path,
+    regions: dict,
+    dilate: int = 5,
+    clear_low: tuple = (),
+    strict: bool = False,
+    shadow_tint: str = "warm",
+) -> dict:
     """Figures laid out in named rectangles of one sheet, {name: (x0, x1, y0, y1)}, each read
-    left to right: {name: [frames]}. A figure belongs to the rectangle holding its centre."""
+    left to right: {name: [frames]}. A figure belongs to the rectangle holding its centre.
+    `strict` uses the tighter backdrop test and strips painted floor shadows."""
     rgb = np.asarray(Image.open(path).convert("RGB")).astype(int)
-    solid = ~background_mask(rgb)
+    solid = ~(backdrop_mask(rgb) if strict else background_mask(rgb))
     solid = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(3))) > 0
     near = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(dilate))) > 0
     label, found = _components(near)
@@ -192,13 +238,45 @@ def cut_regions(path: Path, regions: dict, dilate: int = 5, clear_low: tuple = (
             ),
             key=lambda c: c[4],
         )
-        groups[name] = [_figure(rgb, solid, label, c, name in clear_low) for c in figures]
+        groups[name] = [
+            _figure(rgb, solid, label, c, name in clear_low, strict, shadow_tint) for c in figures
+        ]
     return groups
 
 
-def _figure(rgb, solid, label, component, clear_low: bool) -> Image.Image:
+def _floor_shadows(patch: np.ndarray, keep: np.ndarray, tint: str = "warm") -> np.ndarray:
+    """A painted floor shadow under a figure: colourless grey in the bottom of its box that
+    joins the empty space around it. The ink outline walls the figure off, so boots and dark
+    trousers are safe. `tint` is the shadow's grey on that sheet: "warm" (sheet_v4, where dark
+    trousers lean blue) or "neutral" (sheet_v3); either way shadows are mid-grey, trousers darker."""
+    value = patch.max(axis=2)
+    spread = value - patch.min(axis=2)
+    if tint == "warm":
+        hue = patch[..., 2] <= patch[..., 0] - 1
+    else:
+        hue = np.abs(patch[..., 2] - patch[..., 0]) <= 5
+    shadowy = (spread < 20) & hue & (value >= 44) & (value <= 72)
+    top = int(keep.shape[0] * 0.8)
+    band = np.zeros_like(keep)
+    band[top:, :] = True
+    # Boots are the shadow's colour too, but their soles are inked: only grey below the lowest
+    # ink in each column can be shadow.
+    ink = value < 30
+    below_ink = np.zeros_like(keep)
+    for x in range(keep.shape[1]):
+        inked = np.nonzero(ink[top:, x] & keep[top:, x])[0]
+        below_ink[top + (inked.max() + 1 if len(inked) else 0) :, x] = True
+    return _flood_from_edges(band & ((shadowy & below_ink) | ~keep)) & keep
+
+
+def _figure(
+    rgb, solid, label, component, clear_low: bool, floor_shadow: bool = False, tint: str = "warm"
+) -> Image.Image:
     n, _size, top, bottom, left, right = component
     keep = (label[top : bottom + 1, left : right + 1] == n) & solid[top : bottom + 1, left : right + 1]
+    shadow = np.zeros_like(keep)
+    if floor_shadow:
+        shadow = _floor_shadows(rgb[top : bottom + 1, left : right + 1], keep, tint)
     parts, pieces = _components(keep)
     for m, size, *_ in pieces:
         if size < 300:
@@ -210,20 +288,32 @@ def _figure(rgb, solid, label, component, clear_low: bool) -> Image.Image:
         low = np.zeros_like(keep)
         low[int(keep.shape[0] * 0.75) :, :] = True
         keep &= ~(shadow & low)
-    ys, xs = np.nonzero(keep)
-    rgba = np.dstack(
-        [rgb[top : bottom + 1, left : right + 1].astype(np.uint8), (keep * 255).astype(np.uint8)]
-    )[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1]
-    return Image.fromarray(rgba, "RGBA")
+    patch = rgb[top : bottom + 1, left : right + 1].astype(float)
+    alpha = keep * 255.0
+    colour = patch.copy()
+    if shadow.any():
+        # The painted floor shadow becomes a real, see-through one: dark, as strong as it was
+        # darker than the backdrop.
+        backdrop = float(np.median(np.concatenate([rgb[0], rgb[-1]]).max(axis=1)))
+        darkness = np.clip((backdrop - patch.max(axis=2)) / backdrop, 0.0, 1.0)
+        alpha = np.where(shadow, np.clip(darkness * 1.6, 0.0, 0.6) * 255.0, alpha)
+        colour[shadow] = (24, 18, 12)
+    ys, xs = np.nonzero(alpha > 8)
+    rgba = np.dstack([colour.astype(np.uint8), alpha.astype(np.uint8)])
+    return Image.fromarray(rgba[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], "RGBA")
 
 
 def frame_of(pose: Image.Image, scale: float, mirror: bool, dy: int = 0) -> Image.Image:
+    """One frame: the figure scaled, feet on the baseline, and centred on its mass (not its box),
+    so swinging arms and legs don't shift the body from frame to frame."""
     size = (max(1, round(pose.width * scale)), max(1, round(pose.height * scale)))
     img = pose.resize(size, Image.LANCZOS)
     if mirror:
         img = ImageOps.mirror(img)
+    alpha = np.asarray(img)[..., 3].astype(float)
+    centre = (alpha.sum(axis=0) * np.arange(img.width)).sum() / max(alpha.sum(), 1.0)
     cell = Image.new("RGBA", (FRAME, FRAME))
-    cell.alpha_composite(img, ((FRAME - img.width) // 2, FRAME - FOOT - img.height + dy))
+    cell.alpha_composite(img, (round(FRAME / 2 - centre), FRAME - FOOT - img.height + dy))
     return cell
 
 
@@ -232,14 +322,30 @@ def main() -> None:
     sheets = json.loads(sheets_path.read_text())
     groups = {}
     for sheet_file in sorted({spec[0] for spec in REGIONS.values()}):
-        regions = {name: spec[1:] for name, spec in REGIONS.items() if spec[0] == sheet_file}
-        groups.update(cut_regions(SOURCE / sheet_file, regions, dilate=3, clear_low=CLEAR_LOW))
+        for strict in (False, True):
+            regions = {
+                name: spec[1:5]
+                for name, spec in REGIONS.items()
+                if spec[0] == sheet_file and spec[5] == strict
+            }
+            if regions:
+                tint = SHADOW_TINT.get(sheet_file, "warm")
+                groups.update(
+                    cut_regions(
+                        SOURCE / sheet_file, regions, dilate=3, strict=strict, shadow_tint=tint
+                    )
+                )
     for name, layout in LAYOUTS.items():
         rows: list[list[Image.Image]] = []
         entry: dict = {"frame": FRAME, "smooth": True}
         for anim, spec in layout.items():
-            order = DIRS if "all" not in spec else ["all"]
-            entry[anim] = {"row": len(rows), "frames": len(spec[order[0]]), "rows": len(order)}
+            order = MIRROR_DIRS if "side" in spec else (["all"] if "all" in spec else DIRS)
+            counts = [len(spec[key]) for key in order]
+            entry[anim] = {"row": len(rows), "frames": max(counts), "rows": len(order)}
+            if "side" in spec:
+                entry[anim]["mirror"] = True
+            if len(set(counts)) > 1:
+                entry[anim]["counts"] = counts
             for key in order:
                 row = []
                 for ref, mirror, *dy in spec[key]:

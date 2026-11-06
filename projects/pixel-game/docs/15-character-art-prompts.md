@@ -6,20 +6,31 @@ into smooth in-game animation.
 
 ## Status
 
-**In the game:** Chad from `art_src/painted/sheet_v2.jpg` (turnaround, 7-frame side walk,
-4-frame cutlass swing). Evey from `sheet_v3.jpg` (turnaround, 4-frame side walk, crouch and
-leap, a biting lunge, sniff, a happy standing pose). Evey's look is now the v3 one: **no
-collar, white tail tip** (update her description below to match before generating more).
+**In the game** (from `art_src/painted/sheet_v4.jpg`, with the cutlass swing and Evey's front and
+back views from `sheet_v3.jpg`):
 
-**Still needed, in order:**
+- Chad: a 7-frame walk away from the camera, a 4-frame three-quarter walk (used for right and
+  down, mirrored for left), front and side standing poses, the cutlass swing.
+- Evey: a 6-frame trot, a 4-frame gallop (when she runs to catch up), sniff and dig loops, a
+  crouch-lunge-bark bite, a happy standing pose.
 
-1. Walking **toward** and **away from** the camera (Chad 8 frames each, Evey 8 each). Today
-   those directions slide the standing pose with a small bob.
-2. **Idle** loops (4 frames, all three directions) for both.
-3. Evey **sit** (2 frames, front and side); she uses her standing pose for now. A longer
-   **walk** for her (8 frames; the sheet has 4).
-4. Chad's swing **facing down and up** as full sequences (the sheet has one frame per angle).
-5. Then priorities 2 and 3 in the tables below.
+**How the game plays them** (for smooth motion): every sheet is drawn facing **right**, with
+rows for up, side and down; the game mirrors it for left and remembers the last sideways
+direction. Walk frames follow the **distance walked**, not the clock, so feet don't slide and
+speed changes don't make frames jump. Frames are lined up on the body's centre of mass, so arms
+and legs swinging don't shift the body. The generator's painted floor shadows become a soft,
+see-through contact shadow.
+
+**Still needed, in order (draw facing right):**
+
+1. A full **8-frame side walk** for Chad (today the side and front-ish walk share 4 frames).
+2. A **walk toward the camera** for Chad (8 frames) and for Evey (6), and **away** for Evey.
+3. **Idle** loops (4 frames) for both, all three directions.
+4. Evey **sit** (2 frames, front and side).
+5. Chad's **swing** in the new sheet's style, front and back (4–6 frames each).
+
+Tip: ask for **no floor shadow** and **no motion lines** again; the tool can soften them but a
+clean sheet always cuts better.
 
 ## How the game uses the art
 
