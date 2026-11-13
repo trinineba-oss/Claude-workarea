@@ -610,13 +610,14 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
 ## puts an item in the bag, `&duel=scraps` opens a dog duel and `&illustrated=0` turns the
-## illustrated-look trial off and `&intro=0` skips the opening conversation (used to take
-## screenshots and recordings).
+## illustrated-look trial off and `&intro=0` skips the opening conversation and `&look=comic`
+## shows the comic-book mockup (used to take screenshots and recordings).
 ## Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
+	View3D.comic_look = query.contains("look=comic")
 	if query.contains("intro=0"):
 		play_intro = false
 	if query.contains("illustrated=0"):

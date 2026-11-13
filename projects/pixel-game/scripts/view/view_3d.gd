@@ -22,6 +22,9 @@ const INDOOR_MARGIN := Vector2(6.0, 2.2)
 
 ## The view in play (Effects draws its floating texts here).
 static var current: View3D
+## The comic-book look (shaders/comic_screen.gdshader) in place of the tilt-shift: a mockup,
+## off by default; the Web build turns it on with `&look=comic`.
+static var comic_look := false
 
 var camera: Camera3D
 var sun: DirectionalLight3D
@@ -377,13 +380,16 @@ func _update_cutlass() -> void:
 
 func _make_post() -> void:
 	var layer := CanvasLayer.new()
-	layer.name = "TiltShift"
+	layer.name = "Comic" if comic_look else "TiltShift"
 	layer.layer = 4
 	add_child(layer)
 	var rect := ColorRect.new()
 	rect.set_anchors_preset(Control.PRESET_FULL_RECT)
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var mat := ShaderMaterial.new()
-	mat.shader = preload("res://shaders/tilt_shift.gdshader")
+	if comic_look:
+		mat.shader = preload("res://shaders/comic_screen.gdshader")
+	else:
+		mat.shader = preload("res://shaders/tilt_shift.gdshader")
 	rect.material = mat
 	layer.add_child(rect)

@@ -53,7 +53,15 @@ engine. What it takes:
 The engine supports both (painted sheets use 128 px frames with smooth filtering; pixel sheets
 use 64 px frames with crisp pixels). See [Assets](04-assets.md) for the sheet format.
 
-## Your input
+## Comic-book mockup (on trial)
+
+`shaders/comic_screen.gdshader` redraws the whole 3D view as a printed comic panel: ink lines
+where shapes change, flat colour bands, halftone dots in shadows, bolder colour, paper grain. It
+covers everything at once (ground, props, characters), so the cast and the world match. Off by
+default; see it with `&look=comic` in the Web build, or set `View3D.comic_look = true`. Tune it
+with the uniforms at the top of the shader (line threshold, bands, dot size).
+
+
 
 1. **Option A, B or C?**
 2. **Chad's look.** The earlier plan was "based on the owner" (short dark hair, thick brows,
