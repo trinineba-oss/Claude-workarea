@@ -59,7 +59,8 @@ use 64 px frames with crisp pixels). See [Assets](04-assets.md) for the sheet fo
 where shapes change, flat colour bands, halftone dots in shadows, bolder colour, paper grain. It
 covers everything at once (ground, props, characters), so the cast and the world match. Off by
 default; see it with `&look=comic` in the Web build, or set `View3D.comic_look = true`. Tune it
-with the uniforms at the top of the shader (line threshold, bands, dot size).
+with the uniforms at the top of the shader (line threshold, bands, dot size). Chad and Evey switch to
+matching comic sheets in this look (see [the prompts](15-character-art-prompts.md#comic-book-version)).
 
 
 

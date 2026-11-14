@@ -55,6 +55,23 @@ clean sheet always cuts better.
 5. Save as `art_src/painted/<character>_<animation>_<direction>.png`, e.g.
    `chad_walk_side.png`, and ask Claude to add them to the game.
 
+## Comic-book version
+
+With the comic look on (`&look=comic`), Chad and Evey use comic versions of their sheets
+(`chad_comic.png`, `evey_comic.png`), made by `tools/painted_sheets.py` from the same frames:
+bold ink outline, inked details, flat colour bands, halftone in the deepest shadows, matched to
+`shaders/comic_screen.gdshader`. A filter can't redraw shapes, so for the real thing generate the
+sheets in comic style. Swap the style sentence in the rules below for:
+
+```
+Bold comic-book illustration: thick confident black ink outlines, flat cel colours in two or
+three tones, solid black shadow shapes, a little halftone dot shading, clean graphic shapes,
+like a modern colour comic.
+```
+
+Keep everything else the same (one row, plain grey background, no floor shadow, no motion
+lines), and drop the new sheets in `art_src/painted/` as before.
+
 ## Rules for every sheet (paste these into every prompt)
 
 ```

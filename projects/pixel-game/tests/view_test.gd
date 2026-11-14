@@ -234,6 +234,11 @@ func _run() -> void:
 			"the duel can show %s" % sheet
 		)
 	_check(Looks.frame_size("chad_painted") == 128, "the painted sheets have 128 px frames")
+	View3D.comic_look = true
+	_check(Looks.styled("chad_painted") == "chad_comic", "the comic look uses Chad's comic sheet")
+	_check(Looks.styled("stray") == "stray", "and leaves sheets without a comic version alone")
+	View3D.comic_look = false
+	_check(Looks.styled("chad_painted") == "chad_painted", "off, he stays painted")
 
 	# --- the camera ---------------------------------------------------------------------------
 	game.go_to(road, _at(road, 10, 5))

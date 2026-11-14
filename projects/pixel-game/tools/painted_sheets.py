@@ -303,11 +303,78 @@ def _figure(
     return Image.fromarray(rgba[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1], "RGBA")
 
 
-def frame_of(pose: Image.Image, scale: float, mirror: bool, dy: int = 0) -> Image.Image:
+# The comic look, matched to shaders/comic_screen.gdshader (the environment's comic mockup).
+COMIC_INK = (18, 13, 13)
+COMIC_BANDS = 4.0
+COMIC_SATURATION = 1.3
+
+
+def comic(img: Image.Image) -> Image.Image:
+    """The comic pass for a character, run at twice its final size: a bold ink outline, ink
+    where shapes change inside, flat colour bands, bolder colour, and halftone dots in the
+    deepest shadows (never on skin or fur). The soft contact shadow is left alone."""
+    a = np.asarray(img).astype(float)
+    alpha = a[..., 3]
+    solid = alpha > 200
+    raw = np.asarray(img.convert("RGB")).astype(float) / 255
+    rgb = np.asarray(img.convert("RGB").filter(ImageFilter.MedianFilter(3))).astype(float) / 255
+    lum = rgb @ np.array([0.299, 0.587, 0.114])
+    # Lift the darkest clothes a little so the olive jacket and trousers read as colour, not
+    # black, once the screen's own comic pass darkens them again.
+    lift = np.clip(0.16 - lum, 0, 1) * 0.6
+    rgb = np.clip(rgb + lift[..., None] * (rgb / np.maximum(lum, 0.02)[..., None]), 0, 1)
+    lum = rgb @ np.array([0.299, 0.587, 0.114])
+    banded = (np.floor(lum * COMIC_BANDS) + 0.5) / COMIC_BANDS
+    banded = banded * 0.65 + lum * 0.35
+    flat = rgb * (banded / np.maximum(lum, 0.001))[..., None]
+    grey = (flat @ np.array([0.299, 0.587, 0.114]))[..., None]
+    flat = np.clip(grey + (flat - grey) * COMIC_SATURATION, 0, 1) * 255
+    # Ink inside: strong brightness edges only, so faces stay clean.
+    gx = np.zeros_like(lum)
+    gy = np.zeros_like(lum)
+    gx[:, 1:-1] = lum[:, 2:] - lum[:, :-2]
+    gy[1:-1, :] = lum[2:, :] - lum[:-2, :]
+    ink = (np.hypot(gx, gy) > 0.22) & solid
+    # Small dark details (eyes, brows, mouth) are drawn from the unfiltered art, so the median
+    # filter and the colour bands don't wipe out the face.
+    raw_lum = raw @ np.array([0.299, 0.587, 0.114])
+    local = np.asarray(
+        Image.fromarray((raw_lum * 255).astype(np.uint8)).filter(ImageFilter.BoxBlur(3))
+    ) / 255.0
+    ink |= (raw_lum < local - 0.12) & (raw_lum < 0.35) & solid
+    flat[ink] = flat[ink] * 0.2 + np.array(COMIC_INK) * 0.8
+    # Halftone: a 45-degree dot screen in the darkest tones, not on warm browns.
+    yy, xx = np.mgrid[0 : lum.shape[0], 0 : lum.shape[1]]
+    cell = (np.stack([(xx + yy), (xx - yy)]) * 0.7071 / 8.0) % 1.0 - 0.5
+    shade = np.clip((0.2 - lum) / 0.2, 0, 1)
+    warm = (rgb[..., 0] - rgb[..., 2] > 0.08) & (rgb[..., 2] <= rgb[..., 1])
+    shade[warm] = 0
+    dots = np.hypot(cell[0], cell[1]) < np.sqrt(shade) * 0.5
+    flat[dots & solid & ~ink] *= 0.5
+    # A bold, rounded outline around the silhouette.
+    grow = np.asarray(
+        Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2.2))
+    ) / 255.0
+    rim = np.clip((grow - 0.06) * 7.0, 0, 1) * 255
+    rgba = np.dstack([flat, alpha])
+    rgba[~solid, :3] = a[~solid, :3]
+    outside = ~solid & (rim > alpha)
+    rgba[outside, :3] = COMIC_INK
+    rgba[outside, 3] = rim[outside]
+    return Image.fromarray(np.clip(rgba, 0, 255).astype(np.uint8), "RGBA")
+
+
+def frame_of(
+    pose: Image.Image, scale: float, mirror: bool, dy: int = 0, style: str = "painted"
+) -> Image.Image:
     """One frame: the figure scaled, feet on the baseline, and centred on its mass (not its box),
     so swinging arms and legs don't shift the body from frame to frame."""
     size = (max(1, round(pose.width * scale)), max(1, round(pose.height * scale)))
-    img = pose.resize(size, Image.LANCZOS)
+    if style == "comic":
+        img = comic(pose.resize((size[0] * 2, size[1] * 2), Image.LANCZOS))
+        img = img.resize(size, Image.LANCZOS)
+    else:
+        img = pose.resize(size, Image.LANCZOS)
     if mirror:
         img = ImageOps.mirror(img)
     alpha = np.asarray(img)[..., 3].astype(float)
@@ -336,32 +403,39 @@ def main() -> None:
                     )
                 )
     for name, layout in LAYOUTS.items():
-        rows: list[list[Image.Image]] = []
-        entry: dict = {"frame": FRAME, "smooth": True}
-        for anim, spec in layout.items():
-            order = MIRROR_DIRS if "side" in spec else (["all"] if "all" in spec else DIRS)
-            counts = [len(spec[key]) for key in order]
-            entry[anim] = {"row": len(rows), "frames": max(counts), "rows": len(order)}
-            if "side" in spec:
-                entry[anim]["mirror"] = True
-            if len(set(counts)) > 1:
-                entry[anim]["counts"] = counts
-            for key in order:
-                row = []
-                for ref, mirror, *dy in spec[key]:
-                    group, index = ref.split(":")
-                    figure = groups[f"{name}_{group}"][int(index)]
-                    row.append(frame_of(figure, SCALES[f"{name}_{group}"], mirror, dy[0] if dy else 0))
-                rows.append(row)
-        cols = max(len(r) for r in rows)
-        sheet = Image.new("RGBA", (cols * FRAME, len(rows) * FRAME))
-        for y, row in enumerate(rows):
-            for x, cell in enumerate(row):
-                sheet.alpha_composite(cell, (x * FRAME, y * FRAME))
-        sheet.save(OUT / f"{name}_painted.png")
-        sheets["characters"][f"{name}_painted"] = entry
-        print(f"{name}_painted.png", sheet.size)
+        for style in ("painted", "comic"):
+            _pack(name, style, layout, groups, sheets)
     sheets_path.write_text(json.dumps(sheets, indent=2) + "\n")
+
+
+def _pack(name: str, style: str, layout: dict, groups: dict, sheets: dict) -> None:
+    """One character's frames as a game sheet, assets/characters/<name>_<style>.png."""
+    rows: list[list[Image.Image]] = []
+    entry: dict = {"frame": FRAME, "smooth": True}
+    for anim, spec in layout.items():
+        order = MIRROR_DIRS if "side" in spec else (["all"] if "all" in spec else DIRS)
+        counts = [len(spec[key]) for key in order]
+        entry[anim] = {"row": len(rows), "frames": max(counts), "rows": len(order)}
+        if "side" in spec:
+            entry[anim]["mirror"] = True
+        if len(set(counts)) > 1:
+            entry[anim]["counts"] = counts
+        for key in order:
+            row = []
+            for ref, mirror, *dy in spec[key]:
+                group, index = ref.split(":")
+                figure = groups[f"{name}_{group}"][int(index)]
+                scale = SCALES[f"{name}_{group}"]
+                row.append(frame_of(figure, scale, mirror, dy[0] if dy else 0, style))
+            rows.append(row)
+    cols = max(len(r) for r in rows)
+    sheet = Image.new("RGBA", (cols * FRAME, len(rows) * FRAME))
+    for y, row in enumerate(rows):
+        for x, cell in enumerate(row):
+            sheet.alpha_composite(cell, (x * FRAME, y * FRAME))
+    sheet.save(OUT / f"{name}_{style}.png")
+    sheets["characters"][f"{name}_{style}"] = entry
+    print(f"{name}_{style}.png", sheet.size)
 
 
 if __name__ == "__main__":

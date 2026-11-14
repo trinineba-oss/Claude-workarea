@@ -16,7 +16,16 @@ static var _sheets: Dictionary
 ## The sheet name for a 2D node, or "".
 static func sheet_for(node: Node) -> String:
 	var look: Variant = _look(node)
-	return look.get("sheet", "") if look is Dictionary else str(look)
+	return styled(look.get("sheet", "") if look is Dictionary else str(look))
+
+
+## With the comic look on (View3D.comic_look), a painted sheet's comic version, if it has one.
+static func styled(sheet: String) -> String:
+	if View3D.comic_look and sheet.ends_with("_painted"):
+		var comic := sheet.trim_suffix("_painted") + "_comic"
+		if not anim(comic, "idle").is_empty():
+			return comic
+	return sheet
 
 
 ## How much bigger than usual its sheet is drawn (1 unless looks.json gives a size).

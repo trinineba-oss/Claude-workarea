@@ -504,6 +504,84 @@
         "rows": 3,
         "mirror": true
       }
+    },
+    "chad_comic": {
+      "frame": 128,
+      "smooth": true,
+      "idle": {
+        "row": 0,
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
+      },
+      "walk": {
+        "row": 3,
+        "frames": 7,
+        "rows": 3,
+        "mirror": true,
+        "counts": [
+          7,
+          4,
+          4
+        ]
+      },
+      "slash": {
+        "row": 6,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      },
+      "hurt": {
+        "row": 9,
+        "frames": 1,
+        "rows": 1
+      }
+    },
+    "evey_comic": {
+      "frame": 128,
+      "smooth": true,
+      "idle": {
+        "row": 0,
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
+      },
+      "walk": {
+        "row": 3,
+        "frames": 6,
+        "rows": 3,
+        "mirror": true
+      },
+      "run": {
+        "row": 6,
+        "frames": 4,
+        "rows": 3,
+        "mirror": true
+      },
+      "sit": {
+        "row": 9,
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
+      },
+      "bite": {
+        "row": 12,
+        "frames": 3,
+        "rows": 3,
+        "mirror": true
+      },
+      "sniff": {
+        "row": 15,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      },
+      "dig": {
+        "row": 18,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      }
     }
   }
 }

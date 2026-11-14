@@ -14,7 +14,7 @@ uniform float bands = 4.0;
 uniform float saturation = 1.3;
 // Halftone dots in the shadows: cell size in screen pixels, and how dark a tone gets dots.
 uniform float dot_size = 5.0;
-uniform float dot_below = 0.38;
+uniform float dot_below = 0.3;
 uniform vec3 paper : source_color = vec3(1.0, 0.97, 0.9);
 
 float luma(vec3 c) {
