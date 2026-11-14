@@ -25,6 +25,9 @@ static var current: View3D
 ## The comic-book look (shaders/comic_screen.gdshader) in place of the tilt-shift: a mockup,
 ## off by default; the Web build turns it on with `&look=comic`.
 static var comic_look := false
+## The "modern digital art" look (shaders/digital_screen.gdshader): soft painterly shading,
+## bloom, colour grading and tinted outlines. A mockup, off by default; `&look=digital`.
+static var digital_look := false
 
 var camera: Camera3D
 var sun: DirectionalLight3D
@@ -380,7 +383,7 @@ func _update_cutlass() -> void:
 
 func _make_post() -> void:
 	var layer := CanvasLayer.new()
-	layer.name = "Comic" if comic_look else "TiltShift"
+	layer.name = "Comic" if comic_look else ("Digital" if digital_look else "TiltShift")
 	layer.layer = 4
 	add_child(layer)
 	var rect := ColorRect.new()
@@ -389,6 +392,8 @@ func _make_post() -> void:
 	var mat := ShaderMaterial.new()
 	if comic_look:
 		mat.shader = preload("res://shaders/comic_screen.gdshader")
+	elif digital_look:
+		mat.shader = preload("res://shaders/digital_screen.gdshader")
 	else:
 		mat.shader = preload("res://shaders/tilt_shift.gdshader")
 	rect.material = mat

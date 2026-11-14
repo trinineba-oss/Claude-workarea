@@ -53,6 +53,15 @@ engine. What it takes:
 The engine supports both (painted sheets use 128 px frames with smooth filtering; pixel sheets
 use 64 px frames with crisp pixels). See [Assets](04-assets.md) for the sheet format.
 
+## Modern digital art mockup (on trial)
+
+`shaders/digital_screen.gdshader` gives the 3D view the polished painterly look of current
+indie games: soft painted shading, a warm bloom from lamps and signs (not from bright ground),
+cool coloured shadows and warm highlights, thin outlines tinted from the colours they sit on,
+soft focus at the top and bottom, and a gentle vignette. Off by default; see it with
+`&look=digital` in the Web build, or set `View3D.digital_look = true`. Tune it with the
+uniforms at the top of the shader.
+
 ## Comic-book mockup (on trial)
 
 `shaders/comic_screen.gdshader` redraws the whole 3D view as a printed comic panel: ink lines

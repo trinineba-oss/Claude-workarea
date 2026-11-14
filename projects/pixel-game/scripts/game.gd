@@ -618,6 +618,7 @@ func _apply_debug_start() -> void:
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
 	View3D.comic_look = query.contains("look=comic")
+	View3D.digital_look = query.contains("look=digital")
 	if query.contains("intro=0"):
 		play_intro = false
 	if query.contains("illustrated=0"):
