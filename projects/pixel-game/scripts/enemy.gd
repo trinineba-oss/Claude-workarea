@@ -14,6 +14,11 @@ const MARGIN := 32.0
 @export var knockback_speed := 520.0
 @export_range(0.0, 1.0) var coin_chance := 0.5
 @export_range(0.0, 1.0) var snack_chance := 0.2
+## XP Chad gets for beating it.
+@export var xp := 1
+
+## How hard the next hit throws it (the cutlass sets this: the combo finisher hits harder).
+var hit_force := 1.0
 
 var health := 0
 
@@ -55,8 +60,9 @@ func take_hit(damage: int, from_position: Vector2) -> bool:
 	if health <= 0:
 		return false
 	health -= damage
-	_knockback = (global_position - from_position).normalized() * knockback_speed
-	_stun = KNOCKBACK_TIME
+	_knockback = (global_position - from_position).normalized() * knockback_speed * hit_force
+	_stun = KNOCKBACK_TIME * (1.0 + (hit_force - 1.0) * 0.6)
+	hit_force = 1.0
 	_flash()
 	if health <= 0:
 		_die()
@@ -114,6 +120,9 @@ func _player_in_my_room() -> bool:
 
 func _die() -> void:
 	died.emit()
+	var hero := get_tree().get_first_node_in_group("player") as Player
+	if hero != null:
+		hero.gain_xp(xp)
 	var room := get_parent()
 	Effects.burst(room, position + Vector2(0, -24), "poof")
 	var roll := randf()

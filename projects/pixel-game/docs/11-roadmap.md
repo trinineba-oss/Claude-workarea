@@ -14,6 +14,9 @@ Each milestone ends in a playable build with passing tests.
 Also done: day and night, night dangers, foraging, fishing, Evey and her orders, dog duels, the
 2.5D look (3D lighting, props, pixel characters).
 
+**Direction (decided):** a well-animated action RPG with tight controls and fast combat. The
+wharf demo (waves, combo, roll, XP) is the base to build from.
+
 ## Next (suggested order)
 
 1. **Art direction**: choose one style for the cast ([Art style](03-art-style.md)) and replace

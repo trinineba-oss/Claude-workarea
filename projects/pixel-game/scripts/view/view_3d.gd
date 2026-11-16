@@ -258,7 +258,14 @@ func _update_camera(delta: float) -> void:
 	else:
 		_aim = _aim.lerp(target, 1.0 - exp(-CAMERA_SMOOTHING * delta))
 	var back := Vector3(0, sin(CAMERA_PITCH), cos(CAMERA_PITCH)) * CAMERA_DISTANCE
-	camera.position = _aim + back
+	# Screen shake (Juice): a quick jitter that dies away.
+	var jolt := Vector3.ZERO
+	if Juice.shake_amount > 0.001:
+		jolt = Vector3(randf_range(-1, 1), randf_range(-1, 1), 0) * Juice.shake_amount
+		Juice.shake_amount = lerpf(
+			Juice.shake_amount, 0.0, minf(get_process_delta_time() * 14.0, 1.0)
+		)
+	camera.position = _aim + back + jolt
 	camera.look_at(_aim + Vector3(0, 0.4, 0), Vector3.UP)
 
 
@@ -370,7 +377,8 @@ func _update_cutlass() -> void:
 	var duration: float = cutlass.get("_duration")
 	var dir: Vector2 = cutlass.get("_dir")
 	var t := clampf(elapsed / duration, 0.0, 1.0)
-	var angle := dir.angle() - Cutlass.SWEEP / 2.0 + Cutlass.SWEEP * ease(t, 0.5)
+	var sweep: float = cutlass.get("_sweep")
+	var angle := dir.angle() - sweep / 2.0 + sweep * ease(t, 0.5)
 	var reach := Vector2.from_angle(angle)
 	var centre := to_3d(cutlass.global_position, 0.55)
 	_cutlass.visible = true

@@ -18,6 +18,9 @@ var _hour := 7.0
 var _day := 1
 var _keys := -1
 var _boss_key := false
+var _xp := 0
+var _xp_needed := 8
+var _level := 1
 
 
 func _draw() -> void:
@@ -31,6 +34,7 @@ func _draw() -> void:
 		elif halves == 1:
 			var half := Rect2(Vector2.ZERO, Vector2(size.x / 2.0, size.y))
 			draw_texture_rect_region(DOUBLE, Rect2(at, half.size), half)
+	_draw_level()
 	var font := ThemeDB.fallback_font
 	var money_at := Vector2(0, size.y + 10)
 	draw_texture(COIN, money_at)
@@ -60,6 +64,39 @@ func _draw() -> void:
 		draw_string(font, key_text_at, key_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 26, Color.WHITE)
 		if _boss_key:
 			draw_texture(BOSS_KEY, key_at + Vector2(96, -4))
+
+
+func set_xp(xp: int, needed: int, level: int) -> void:
+	_xp = xp
+	_xp_needed = maxi(needed, 1)
+	_level = level
+	queue_redraw()
+
+
+## Chad's level and an XP bar, to the right of the doubles.
+func _draw_level() -> void:
+	var font := ThemeDB.fallback_font
+	var at := Vector2(_max_health / 2 * STEP + 18.0, 6.0)
+	var text := "Lv %d" % _level
+	draw_string_outline(
+		font,
+		at + Vector2(0, 26),
+		text,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		28,
+		6,
+		Color(0.1, 0.06, 0.14)
+	)
+	draw_string(
+		font, at + Vector2(0, 26), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color(1, 0.92, 0.5)
+	)
+	var bar := Rect2(at + Vector2(76, 8), Vector2(150, 16))
+	draw_rect(bar.grow(3), Color(0.1, 0.06, 0.14, 0.85))
+	draw_rect(bar, Color(0.25, 0.2, 0.3))
+	var fill := bar
+	fill.size.x *= clampf(float(_xp) / _xp_needed, 0.0, 1.0)
+	draw_rect(fill, Color(0.45, 0.85, 1.0))
 
 
 func set_health(health: int, max_health: int) -> void:

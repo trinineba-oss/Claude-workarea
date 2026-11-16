@@ -115,6 +115,10 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 		match source.state:
 			Player.State.ATTACK:
 				next = "slash"
+				facing = source.aim
+			Player.State.DODGE:
+				next = "walk"
+				facing = velocity
 			Player.State.HURT:
 				next = "hurt"
 		if source.health <= 0:
@@ -218,7 +222,7 @@ func _show_frame(source: Node2D) -> void:
 			col = int(_time * IDLE_FPS) % frames
 		"slash":
 			var left: float = source.get("_state_time")
-			col = int(clampf(1.0 - left / Player.ATTACK_TIME, 0.0, 0.999) * frames)
+			col = int(clampf(1.0 - left / float(source.get("attack_time")), 0.0, 0.999) * frames)
 		"hurt":
 			col = frames - 1 if source.get("health") == 0 else int(_time * 18.0) % frames
 		"bite":

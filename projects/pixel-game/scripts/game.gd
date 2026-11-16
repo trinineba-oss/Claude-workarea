@@ -33,6 +33,8 @@ const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 
 ## Play the ibis's welcome the first time a game starts (tests turn this off).
 @export var play_intro := true
+## The demo's waves of enemies on the wharf start after the opening (WharfDemo).
+@export var wharf_demo := true
 ## Draw the world in 2.5D (View3D); off, the plain 2D drawing shows instead.
 @export var use_3d := true
 
@@ -49,6 +51,8 @@ var coords := Vector2i.ZERO
 var inventory := Inventory.new()
 ## Forage plant key -> game day it is ready again. Saved with the game.
 var forage_state: Dictionary = {}
+## The wharf demo's wave director.
+var demo: WharfDemo
 
 var _loaded: Dictionary = {}  # Vector2i -> Room
 var _entry_position := Vector2.ZERO
@@ -59,6 +63,8 @@ var _was_night := false
 var _boomerang: Boomerang
 var _companion: Companion
 var _view: View3D
+## Web build, `&demo=1`: start the wharf demo's waves straight away (with `&intro=0`).
+var _debug_demo := false
 var _dog_menu: DogMenu
 var _worlds: Dictionary = {}  # map id -> WorldMap
 var _fade: ColorRect
@@ -135,8 +141,15 @@ func _ready() -> void:
 	_setup_camera()
 	_refresh_rooms()
 	_snap_camera()
-	if play_intro and not flags.get("intro_done", false):
+	demo = WharfDemo.new()
+	demo.setup(self)
+	add_child(demo)
+	_player.xp_changed.connect(_status.set_xp)
+	_status.set_xp(_player.xp, _player.xp_needed(), _player.level)
+	if play_intro:
 		_play_intro.call_deferred()
+	elif _debug_demo:
+		demo.start()
 
 
 func _physics_process(_delta: float) -> void:
@@ -610,7 +623,8 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
 ## puts an item in the bag, `&duel=scraps` opens a dog duel and `&illustrated=0` turns the
-## illustrated-look trial off and `&intro=0` skips the opening conversation and `&look=comic`
+## illustrated-look trial off and `&intro=0` skips the opening conversation (add `&demo=1` to start
+## the wharf waves at once) and `&look=comic`
 ## shows the comic-book mockup (used to take screenshots and recordings).
 ## Ignored everywhere else.
 func _apply_debug_start() -> void:
@@ -621,6 +635,7 @@ func _apply_debug_start() -> void:
 	View3D.digital_look = query.contains("look=digital")
 	if query.contains("intro=0"):
 		play_intro = false
+	_debug_demo = query.contains("demo=1")
 	if query.contains("illustrated=0"):
 		Illustrated.config()["enabled"] = false  # compare with the illustrated-look trial off
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
@@ -659,7 +674,11 @@ func _play_intro() -> void:
 	await get_tree().create_timer(0.8).timeout
 	if not flags.get("intro_done", false):
 		await talk("evey_wake")
-		talk("ibis_intro")
+		await talk("ibis_intro")
+	# The demo: trouble on the wharf, in waves.
+	if wharf_demo and not demo.is_done():
+		await talk("demo_start")
+		demo.start()
 
 
 func _on_interact_requested(target: Interactable) -> void:

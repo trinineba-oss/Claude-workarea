@@ -31,6 +31,8 @@ The folder is still called `pixel-game`, but the game is 2.5D now (it started as
 - After adding assets, run `godot --headless --path projects/pixel-game --import` so the
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
 - The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.
+- The game is an action RPG: keep controls tight (buffered input, cancellable swings, readable
+  enemy tells). The wharf demo (`scripts/wharf_demo.gd`) is the slice everything builds from.
 - Planning lives in `docs/` (one file per area). What the owner writes under "Your input" is
   their direction: read the relevant file before working on that area, and tick its "To do"
   items and update "Decided" when work lands.

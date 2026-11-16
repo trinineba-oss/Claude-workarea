@@ -551,6 +551,34 @@
         "speaker": "",
         "text": "Brownie thumps her tail in the dust when Evey passes. Friends now, more or less."
       }
+    ],
+    "demo_start": [
+      {
+        "speaker": "Ibis",
+        "text": "Hold on. Yuh hear that? Claws on the boards."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "The wharf not safe today, boy. Crab, pothound, corbeau... all of them coming for whatever wash up with you."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Swing that cutlass three times quick for a big finish. And when something lunge at you, ROLL out the way!"
+      }
+    ],
+    "demo_complete": [
+      {
+        "speaker": "Ibis",
+        "text": "Look at that! The whole wharf clear, and the pack leader gone running with he tail between he legs."
+      },
+      {
+        "speaker": "Ibis",
+        "text": "Not bad for a man who wash up half-drowned this morning. Evey, yuh pick a good one."
+      },
+      {
+        "speaker": "",
+        "text": "(That's the end of the demo. Thanks for playing! The road into San Fernando is open.)"
+      }
     ]
   }
 }

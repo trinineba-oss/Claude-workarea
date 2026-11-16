@@ -1,5 +1,25 @@
 # 7. Gameplay
 
+## The demo (wharf)
+
+The game is now an **action RPG**, and the first playable slice is the **wharf demo**: after the
+opening, five waves of crabs, pothounds and corbeaux come at Chad on the wharf, ending with the
+pack leader (a big pothound). Clearing it ends the demo ("demo_done"); if Chad faints, the wave
+starts again. `scripts/wharf_demo.gd` holds the waves.
+
+**Combat** (`scripts/player.gd`, `cutlass.gd`, `juice.gd`):
+
+- **Combo:** three cutlass hits; the third is a wide, heavy finisher. Each swing lunges Chad
+  forward, in eight directions.
+- **Roll:** a quick dodge that can't be hurt for most of its length, and cancels a swing.
+- **Buffered input:** a press slightly early still counts, so combos and dodges never drop.
+- **Feel:** hit-stop and screen shake on every hit, damage numbers, harder knockback on finishers.
+- **Readable enemies:** pothounds crouch and flash before they lunge, then have to recover.
+- **RPG layer:** enemies give XP; levels (shown top left) heal Chad and add cutlass damage.
+
+Keys: arrows/WASD move, **Z** attack, **Space** roll, X item, C talk, V Evey's orders. On a
+phone: joystick, **A** attack, **ROLL**, B item, X talk, DOG.
+
 ## Built
 
 - **Combat.** Cutlass swing, health as **doubles** (hearts), knockback, fainting and respawn.
