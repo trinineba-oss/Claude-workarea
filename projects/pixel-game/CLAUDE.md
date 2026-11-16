@@ -30,7 +30,10 @@ The folder is still called `pixel-game`, but the game is 2.5D now (it started as
   the `_note` saying so.
 - After adding assets, run `godot --headless --path projects/pixel-game --import` so the
   `.import` files are generated, and commit them. Never commit `.godot/` or `build/`.
-- The Android SDK can't be installed in cloud sessions; use the Web export to check builds here.
+- APK: `tools/build_apk.sh` builds `build/chad-gyro-demo.apk` (debug-signed). It needs the
+  Android SDK, which is not preinstalled in cloud sessions: install it with `sdkmanager` into
+  `~/Android/Sdk` (dl.google.com must be allowed) and make a debug keystore first. Use the Web
+  export for quick visual checks. Never commit keystores or `build/`.
 - The game is an action RPG: keep controls tight (buffered input, cancellable swings, readable
   enemy tells). The wharf demo (`scripts/wharf_demo.gd`) is the slice everything builds from.
 - Planning lives in `docs/` (one file per area). What the owner writes under "Your input" is

@@ -351,10 +351,10 @@ binary cache (Godot's own download hosts are blocked in cloud sessions) and
 
 ## Building the Android APK
 
-The Android preset is configured (arm64, package `com.example.pixelgame`) and the
-export templates are installed, but the **Android SDK is not**: its download host
-(`dl.google.com`) is not reachable from cloud sessions, so an APK has not been built
-here. The Web export does work in a cloud session. To build the APK:
+The Android preset is configured (arm64, package `com.example.pixelgame`). With the Android
+SDK installed, `tools/build_apk.sh` builds a debug-signed `build/chad-gyro-demo.apk` (about
+31 MB) that installs on any 64-bit Android phone. Cloud sessions don't come with the SDK; it
+installs with `sdkmanager` when `dl.google.com` is reachable. By hand:
 
 1. On a machine with network access (or after allowing `dl.google.com` in the
    environment's network policy), install JDK 17 and the Android SDK
