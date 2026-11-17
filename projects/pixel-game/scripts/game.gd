@@ -624,7 +624,7 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
 ## puts an item in the bag, `&duel=scraps` opens a dog duel and `&illustrated=0` turns the
 ## illustrated-look trial off and `&intro=0` skips the opening conversation (add `&demo=1` to start
-## the wharf waves at once) and `&look=comic`
+## the wharf waves at once, `&fx=1` to loop the impact effects) and `&look=comic`
 ## shows the comic-book mockup (used to take screenshots and recordings).
 ## Ignored everywhere else.
 func _apply_debug_start() -> void:
@@ -636,6 +636,8 @@ func _apply_debug_start() -> void:
 	if query.contains("intro=0"):
 		play_intro = false
 	_debug_demo = query.contains("demo=1")
+	if query.contains("fx=1"):
+		_show_effects.call_deferred()
 	if query.contains("illustrated=0"):
 		Illustrated.config()["enabled"] = false  # compare with the illustrated-look trial off
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
@@ -668,6 +670,26 @@ func _apply_debug_start() -> void:
 			_player.position = (
 				WorldMap.room_origin(target) + (cell + Vector2(0.5, 0.5)) * WorldMap.TILE
 			)
+
+
+## Web build, `&fx=1`: plays every impact effect around Chad, over and over (to check them).
+func _show_effects() -> void:
+	while is_inside_tree():
+		var at := _player.position
+		var room := current_room()
+		# Slowed down here so a slow browser can photograph them: a spark and a long swing.
+		if View3D.current != null:
+			Vfx3D.shader(
+				View3D.current, "spark", View3D.to_3d(at + Vector2(-150, -40), 0.6), 1.1, 2.4
+			)
+		_player.get_node("Cutlass").swing(_player.aim, 2.4, 0, 210.0, 64.0, 1.9)
+		Effects.burst(room, at - room.position + Vector2(150, -30), "poof")
+		Effects.flourish(
+			room, at - room.position + Vector2(0, 110), "ring_shockwave_white", 1.8, 0.4
+		)
+		Effects.flourish(room, at - room.position + Vector2(-250, 60), "coin_burst_gold", 1.1, 0.5)
+		Effects.flourish(room, at - room.position + Vector2(260, 60), "star_burst_gold", 2.0, 0.9)
+		await get_tree().create_timer(1.2).timeout
 
 
 func _play_intro() -> void:

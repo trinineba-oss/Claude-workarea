@@ -15,6 +15,8 @@ const HIDDEN_LAYER := 1 << 19
 const CAMERA_DISTANCE := 12.5
 const CAMERA_PITCH := deg_to_rad(50.0)
 const CAMERA_FOV := 32.0
+## How many recent blade positions the swing trail spans.
+const TRAIL_LENGTH := 9
 const CAMERA_SMOOTHING := 6.0
 ## How far the camera's aim stays inside the edges of the world (or the room, indoors).
 const VIEW_MARGIN := Vector2(6.0, 2.6)
@@ -39,6 +41,10 @@ var _sky: ProceduralSkyMaterial
 var _rooms: Dictionary = {}  # Room -> RoomView
 var _entities: Dictionary = {}  # Node2D -> EntityView
 var _cutlass: MeshInstance3D
+## The swing's ribbon trail: the blade's last positions, [base, tip] in 3D.
+var _trail: MeshInstance3D
+var _trail_points: Array = []
+var _trail_elapsed := 0.0
 var _aim := Vector3.ZERO
 var _snap := true
 
@@ -74,6 +80,7 @@ func _ready() -> void:
 	_make_camera()
 	_make_post()
 	_make_cutlass()
+	_make_trail()
 	get_tree().node_added.connect(_on_node_added)
 	for node in _game.find_children("*", "", true, false):
 		_on_node_added(node)
@@ -130,8 +137,23 @@ func float_text(world: Vector2, text: String, colour: Color) -> void:
 	tween.chain().tween_callback(label.queue_free)
 
 
-## A one-shot burst of particles at a 2D world point: "hit", "poof" or "sparkle".
+## A one-shot sprite-sheet effect at a 2D world point (Vfx3D.sheet): "ring_shockwave_white",
+## "star_burst_gold", "coin_burst_gold". `size` in tiles.
+func flourish(world: Vector2, sheet_name: String, size: float, height := 0.6) -> void:
+	Vfx3D.sheet(self, sheet_name, to_3d(world, height), size)
+
+
+## A one-shot burst at a 2D world point: "hit" (a spark), "poof" (a smoke puff), "dust" (a
+## small puff at the feet) or "sparkle".
 func burst(world: Vector2, kind: String) -> void:
+	match kind:
+		"hit":
+			Vfx3D.shader(self, "spark", to_3d(world, 0.6), 1.1)
+		"poof":
+			Vfx3D.shader(self, "smoke", to_3d(world, 0.5), 1.4)
+		"dust":
+			Vfx3D.shader(self, "smoke", to_3d(world, 0.15), 0.8, 0.5)
+			return
 	var p := CPUParticles3D.new()
 	p.one_shot = true
 	p.explosiveness = 1.0
@@ -350,6 +372,21 @@ func _update_sky() -> void:
 # --- the cutlass ------------------------------------------------------------------------------
 
 
+func _make_trail() -> void:
+	_trail = MeshInstance3D.new()
+	_trail.name = "CutlassTrail"
+	_trail.mesh = ImmediateMesh.new()
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.vertex_color_use_as_albedo = true
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	_trail.material_override = mat
+	_trail.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(_trail)
+
+
 func _make_cutlass() -> void:
 	_cutlass = MeshInstance3D.new()
 	_cutlass.name = "Cutlass"
@@ -372,6 +409,8 @@ func _update_cutlass() -> void:
 	var cutlass := _game.get_node_or_null("Player/Cutlass") as Cutlass
 	if cutlass == null or not cutlass.visible:
 		_cutlass.visible = false
+		_trail_points.clear()
+		_trail.mesh.clear_surfaces()
 		return
 	var elapsed: float = cutlass.get("_elapsed")
 	var duration: float = cutlass.get("_duration")
@@ -384,6 +423,33 @@ func _update_cutlass() -> void:
 	_cutlass.visible = true
 	_cutlass.position = centre + Vector3(reach.x, 0, reach.y) * 0.6
 	_cutlass.look_at(centre + Vector3(reach.x, 0, reach.y) * 2.0, Vector3.UP)
+	_draw_trail(cutlass, centre, reach)
+
+
+## A swept ribbon behind the blade: from its last few positions, fading towards the oldest.
+func _draw_trail(cutlass: Cutlass, centre: Vector3, reach: Vector2) -> void:
+	var elapsed: float = cutlass.get("_elapsed")
+	if elapsed < _trail_elapsed:
+		_trail_points.clear()
+	_trail_elapsed = elapsed
+	var out := Vector3(reach.x, 0, reach.y)
+	var heavy: float = cutlass.get("_force")
+	_trail_points.append([centre + out * 0.3, centre + out * (1.05 if heavy > 1.5 else 0.95)])
+	if _trail_points.size() > TRAIL_LENGTH:
+		_trail_points.pop_front()
+	var mesh := _trail.mesh as ImmediateMesh
+	mesh.clear_surfaces()
+	if _trail_points.size() < 2:
+		return
+	var colour := Color(1.0, 0.9, 0.55) if heavy > 1.5 else Color(0.85, 0.92, 1.0)
+	mesh.surface_begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
+	for i in _trail_points.size():
+		var fade := float(i + 1) / _trail_points.size()
+		mesh.surface_set_color(Color(colour, 0.0))
+		mesh.surface_add_vertex(_trail_points[i][0])
+		mesh.surface_set_color(Color(colour, fade * 0.85))
+		mesh.surface_add_vertex(_trail_points[i][1])
+	mesh.surface_end()
 
 
 # --- post-processing ----------------------------------------------------------------------------

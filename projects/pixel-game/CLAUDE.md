@@ -34,6 +34,8 @@ The folder is still called `pixel-game`, but the game is 2.5D now (it started as
   Android SDK, which is not preinstalled in cloud sessions: install it with `sdkmanager` into
   `~/Android/Sdk` (dl.google.com must be allowed) and make a debug keystore first. Use the Web
   export for quick visual checks. Never commit keystores or `build/`.
+- Effects from free packs live in `assets/vfx/` and `shaders/vfx/` (CC BY 4.0): keep
+  `assets/vfx/CREDITS.md` and the licence files with them, and credit any new pack there.
 - The game is an action RPG: keep controls tight (buffered input, cancellable swings, readable
   enemy tells). The wharf demo (`scripts/wharf_demo.gd`) is the slice everything builds from.
 - Planning lives in `docs/` (one file per area). What the owner writes under "Your input" is

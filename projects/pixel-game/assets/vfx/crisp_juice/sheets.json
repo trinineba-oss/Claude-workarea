@@ -1,0 +1,23 @@
+{
+  "star_burst_gold": {
+    "frames": 24,
+    "cell": 192,
+    "cols": 8,
+    "rows": 3,
+    "fps": 30
+  },
+  "coin_burst_gold": {
+    "frames": 30,
+    "cell": 256,
+    "cols": 8,
+    "rows": 4,
+    "fps": 30
+  },
+  "ring_shockwave_white": {
+    "frames": 16,
+    "cell": 192,
+    "cols": 8,
+    "rows": 2,
+    "fps": 30
+  }
+}

@@ -223,6 +223,7 @@ func gain_xp(amount: int) -> void:
 		heal(max_health)
 		_squash = Vector2(0.8, 1.3)
 		Effects.burst(get_parent(), position + Vector2(0, -40), "sparkle")
+		Effects.flourish(get_parent(), position, "star_burst_gold", 2.6, 0.9)
 		Effects.float_text(
 			get_parent(), position + Vector2(0, -120), "LEVEL UP!", Color(1, 0.9, 0.4)
 		)
@@ -333,7 +334,7 @@ func _start_dodge() -> void:
 	state = State.DODGE
 	_state_time = DODGE_TIME
 	_lunge = (held.normalized() if held != Vector2.ZERO else aim) * DODGE_SPEED
-	Effects.burst(get_parent(), position + Vector2(0, -8), "poof")
+	Effects.burst(get_parent(), position + Vector2(0, -8), "dust")
 
 
 static func _eight_way(direction: Vector2) -> Vector2:

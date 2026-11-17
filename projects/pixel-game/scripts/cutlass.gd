@@ -57,6 +57,8 @@ func _physics_process(delta: float) -> void:
 					str(_damage),
 					Color(1, 0.95, 0.5) if _force > 1.5 else Color.WHITE
 				)
+				if _force > 1.5:
+					Effects.flourish(room, body.position, "ring_shockwave_white", 1.8, 0.4)
 				Juice.hit_stop(get_tree(), 0.09 if _force > 1.5 else 0.05)
 				Juice.shake(0.2 if _force > 1.5 else 0.09)
 				landed.emit(body, _damage)

@@ -328,6 +328,26 @@ func _run() -> void:
 		view.find_children("*", "Label3D", true, false).size() == before + 1,
 		"floating text appears in 3D"
 	)
+	Effects.burst(game, player.position, "hit")
+	Effects.burst(game, player.position, "poof")
+	Effects.flourish(game, player.position, "ring_shockwave_white")
+	Effects.flourish(game, player.position, "no_such_sheet")
+	var spark := view.get_node_or_null("Vfx_spark") as MeshInstance3D
+	_check(spark != null, "a hit draws a spark (VFX 2D Free, in 3D)")
+	_check(view.get_node_or_null("Vfx_smoke") != null, "a beaten enemy leaves a smoke puff")
+	var ring := view.get_node_or_null("Vfx_ring_shockwave_white") as Sprite3D
+	_check(ring != null and ring.hframes == 8, "a finisher draws the shockwave sheet (Crisp Juice)")
+	_check(view.get_node_or_null("Vfx_no_such_sheet") == null, "an unknown sheet draws nothing")
+	await create_timer(0.6).timeout
+	_check(not is_instance_valid(spark) or spark.is_queued_for_deletion(), "effects clean up")
+	# The cutlass leaves a ribbon trail while it swings.
+	var trail := view.get_node("CutlassTrail") as MeshInstance3D
+	player.get_node("Cutlass").swing(Vector2.RIGHT, 0.3)
+	await _frames(4)
+	_check((trail.mesh as ImmediateMesh).get_surface_count() > 0, "a swing leaves a trail")
+	await create_timer(0.5).timeout
+	await _frames(2)
+	_check((trail.mesh as ImmediateMesh).get_surface_count() == 0, "which goes when it ends")
 	game.free()
 
 	# --- the 2D drawing is still there without the view ---------------------------------------

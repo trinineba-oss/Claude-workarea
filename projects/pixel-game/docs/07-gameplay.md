@@ -14,6 +14,10 @@ starts again. `scripts/wharf_demo.gd` holds the waves.
 - **Roll:** a quick dodge that can't be hurt for most of its length, and cancels a swing.
 - **Buffered input:** a press slightly early still counts, so combos and dodges never drop.
 - **Feel:** hit-stop and screen shake on every hit, damage numbers, harder knockback on finishers.
+- **Impact effects** (`scripts/view/vfx_3d.gd`): a spark on every hit, a glowing trail behind
+  the cutlass (gold on the finisher), a shockwave ring on finishers, a smoke puff when an enemy
+  is beaten, dust when rolling, a star burst on level-up and a coin burst on coins. From two
+  free CC BY 4.0 packs, credited in `assets/vfx/CREDITS.md`. Web builds: `&fx=1` loops them.
 - **Readable enemies:** pothounds crouch and flash before they lunge, then have to recover.
 - **RPG layer:** enemies give XP; levels (shown top left) heal Chad and add cutlass damage.
 

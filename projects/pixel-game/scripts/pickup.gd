@@ -60,4 +60,5 @@ func _collect(player: Player) -> bool:
 		player.heal(HEAL_AMOUNT)
 	else:
 		player.add_money(COIN_VALUE)
+		Effects.flourish(get_parent(), position, "coin_burst_gold", 1.1, 0.5)
 	return true

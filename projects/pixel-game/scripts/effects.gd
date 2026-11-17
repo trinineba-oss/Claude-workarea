@@ -29,6 +29,15 @@ static func float_text(parent: Node, pos: Vector2, text: String, color := Color.
 	tween.chain().tween_callback(label.queue_free)
 
 
+## A sprite-sheet flourish in the 2.5D view (shockwave, star or coin burst); nothing in 2D.
+static func flourish(
+	parent: Node, pos: Vector2, sheet_name: String, size := 1.6, height := 0.6
+) -> void:
+	if parent == null or not parent.is_inside_tree() or View3D.current == null:
+		return
+	View3D.current.flourish(_global(parent, pos), sheet_name, size, height)
+
+
 static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
