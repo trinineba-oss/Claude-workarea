@@ -26,6 +26,7 @@ worked on separately. Each file has the same shape:
 | 14 | [Beach style test](14-beach-style-test.md) | The illustrated look, trialled on the beach: what's in, and the art to make for it |
 | 15 | [Character art prompts](15-character-art-prompts.md) | Prompts for every animation and angle of Chad and Evey, and the rules that keep frames consistent |
 | 16 | [Image prompts](16-image-prompts.md) | Ready-to-paste prompts for every Chad and Evey sprite sheet (volume style) |
+| 17 | [Remaining animation prompts](17-remaining-animation-prompts.md) | Prompts for the sheets still missing after the v5 batch: cutlass combo, front and back walks, runs, idles, Evey's bite and dig |
 
 `../DESIGN.md` keeps the short pitch, the tone pillars and the legal rules. When a decision in
 one of these files changes, update the file. Claude reads these docs too.
