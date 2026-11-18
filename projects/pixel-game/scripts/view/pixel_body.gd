@@ -17,6 +17,11 @@ const CYCLE_PX := {"walk": 150.0, "run": 190.0}
 const DOG_STRIDE := 0.75
 ## A dog moving faster than this (2D px a second) gallops, if its sheet has a "run".
 const RUN_SPEED := 290.0
+## Chad breaks into a run above this speed (his full speed is 256).
+const PERSON_RUN := 200.0
+## Evey left standing (or staying) this long lies down, and this long falls asleep.
+const LIE_AFTER := 8.0
+const SLEEP_AFTER := 16.0
 ## Turning between side-on and up/down needs this much more of one than the other, so moving
 ## along a diagonal doesn't flicker between the two.
 const TURN_MARGIN := 1.25
@@ -42,6 +47,8 @@ var _fliers := false
 ## Seconds left in which the body counts as moving (frames can pass without a physics step).
 var _moving_hold := 0.0
 var _velocity := Vector2.ZERO
+## Seconds Evey has stood still (for lying down and dozing off).
+var _still := 0.0
 ## Painted sheets with a normal map are lit as rounded figures (shaders/character_lit).
 var _lit: ShaderMaterial
 
@@ -101,7 +108,7 @@ func update(source: Node2D, body: Sprite2D, delta: float) -> void:
 		velocity = _velocity
 	_last = pos
 	_time += delta
-	_choose(source, velocity, moving)
+	_choose(source, velocity, moving, delta)
 	_advance(source, velocity, delta)
 	_show_frame(source)
 	var lift := 0.0
@@ -109,12 +116,14 @@ func update(source: Node2D, body: Sprite2D, delta: float) -> void:
 		visible = body.visible
 		modulate = body.modulate * body.self_modulate
 		scale = Vector3(absf(body.scale.x), absf(body.scale.y), 1.0)
+		if anim_name == "roll":
+			scale = Vector3.ONE  # the drawn roll already tumbles; no squash on top
 		if _fliers:
 			lift = -body.position.y * View3D.PX
 	position = Vector3(0, (32.0 - FOOT) * SCALE * scale.y + lift, 0)
 
 
-func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
+func _choose(source: Node2D, velocity: Vector2, moving: bool, delta: float) -> void:
 	if moving and absf(velocity.x) + absf(velocity.y) > 0.0:
 		facing = velocity
 	var next := "walk" if moving else "idle"
@@ -126,21 +135,35 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool) -> void:
 				next = "slash"
 				facing = source.aim
 			Player.State.DODGE:
-				next = "walk"
+				next = "roll" if _has("roll") else "walk"
 				facing = velocity
 			Player.State.HURT:
 				next = "hurt"
+			Player.State.NORMAL:
+				if moving and velocity.length() > PERSON_RUN and _has("run"):
+					next = "run"
+				elif not moving and source.pose_time > 0.0 and _has(source.pose):
+					next = source.pose
 		if source.health <= 0:
-			next = "hurt"
+			next = "faint" if _has("faint") else "hurt"
 	elif source is Companion:
-		if source.mode == Companion.Mode.STAY:
-			next = "sit"
+		_still = 0.0 if moving else _still + delta
+		if bool(source.get("_swimming")) and _has("swim"):
+			next = "swim"
+		elif source.mode == Companion.Mode.STAY:
+			next = "lie" if _still > LIE_AFTER * 1.5 and _has("lie") else "sit"
 		elif not moving and source.mode == Companion.Mode.DIG and _has("dig"):
 			next = "dig"
 		elif float(source.get("_bite_cooldown")) > Companion.BITE_COOLDOWN - 0.3:
 			next = "bite"
 		elif not moving and _sniffing(source):
 			next = "sniff"
+		elif not moving and source.mode == Companion.Mode.SIC and _has("bark"):
+			next = "bark"
+		elif not moving and _still > SLEEP_AFTER and _has("sleep"):
+			next = "sleep"
+		elif not moving and _still > LIE_AFTER and _has("lie"):
+			next = "lie"
 	elif source is Npc or source is TopDog:
 		var player := source.get_tree().get_first_node_in_group("player") as Node2D
 		if player != null and not moving:
@@ -234,6 +257,19 @@ func _show_frame(source: Node2D) -> void:
 			col = int(clampf(1.0 - left / float(source.get("attack_time")), 0.0, 0.999) * frames)
 		"hurt":
 			col = frames - 1 if source.get("health") == 0 else int(_time * 18.0) % frames
+		"roll":
+			var left: float = source.get("_state_time")
+			col = int(clampf(1.0 - left / Player.DODGE_TIME, 0.0, 0.999) * frames)
+		"eat":
+			col = mini(int(_time * 3.5), frames - 1)
+		"fish":
+			# Cast once, then hold the rod, reeling a little.
+			var step := int(_time * 6.0)
+			col = step if step < frames - 2 else frames - 2 + int(_time * 2.0) % 2
+		"swim":
+			col = int(_time * 6.0) % frames
+		"sleep":
+			col = 0 if _time < 1.5 else frames - 1
 		"bite":
 			col = mini(int(_time * 10.0), frames - 1)
 		"sniff", "dig":

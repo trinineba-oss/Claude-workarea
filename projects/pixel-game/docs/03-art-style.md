@@ -13,8 +13,8 @@
   model.
 - **Chad and Evey: painted sheets (in the game now, subject to change).** Clean, outlined
   cartoon characters: Chad (olive jacket, backpack, cargo pants) and Evey (a tricolour beagle,
-  no collar) from the owner's `art_src/painted/sheet_v4.jpg`, with a few poses from
-  `sheet_v3.jpg` (earlier drafts are kept next to them). Animation is being polished on the
+  no collar) from the owner's v5 volume-style sheets (`art_src/painted/v5_*.jpg`), with the
+  cutlass swing and Evey's sniff, dig and bite still from `sheet_v3.jpg` and `sheet_v4.jpg`. Animation is being polished on the
   beach first: see [Character art prompts](15-character-art-prompts.md#status). `tools/painted_sheets.py` cuts it into game sheets
   (`assets/characters/chad_painted.png`, `evey_painted.png`). To go back to the pixel versions,
   set `"player": "chad"` and `"companion": "evey"` in `data/looks.json`.

@@ -75,6 +75,10 @@ var xp: int:
 	get:
 		return int(story_flags.get("chad_xp", 0))
 
+## A pose the 2.5D view shows while Chad stands still: "hold" (raising a find), "eat" or
+## "fish"; it lasts `pose_time` seconds.
+var pose := ""
+var pose_time := 0.0
 var _state_time := 0.0
 var _attack_buffer := 0.0
 var _dodge_buffer := 0.0
@@ -95,6 +99,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	pose_time = maxf(pose_time - delta, 0.0)
 	var walking := state == State.NORMAL and not frozen and velocity.length() > 1.0
 	if state == State.DODGE:
 		# A low, stretched tumble.
@@ -229,6 +234,12 @@ func gain_xp(amount: int) -> void:
 		)
 		leveled_up.emit(now)
 	xp_changed.emit(xp, xp_needed(), level)
+
+
+## Shows a pose (see `pose`) for `seconds`; "" ends it.
+func strike_pose(pose_name: String, seconds: float) -> void:
+	pose = pose_name
+	pose_time = seconds if pose_name != "" else 0.0
 
 
 func heal(amount: int) -> void:

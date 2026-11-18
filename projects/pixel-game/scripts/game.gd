@@ -204,6 +204,7 @@ func use_selected_item() -> bool:
 		return false
 	inventory.remove(id)
 	_player.heal(heal)
+	_player.strike_pose("eat", 1.4)
 	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
 	return true
 
@@ -257,6 +258,7 @@ func fish(bite_seconds := -1.0) -> String:
 		return ""
 	_fishing = true
 	_player.frozen = true
+	_player.strike_pose("fish", INF)
 	var bobber := Sprite2D.new()
 	bobber.texture = preload("res://assets/sprites/bobber.png")
 	bobber.position = spot
@@ -283,6 +285,7 @@ func fish(bite_seconds := -1.0) -> String:
 	bobber.queue_free()
 	_player.frozen = false
 	_fishing = false
+	_player.strike_pose("", 0.0)
 	var name: String = GameData.item(id).get("name", id)
 	if result != "caught":
 		Effects.float_text(self, above, "It got away...", Color(0.8, 0.85, 1))

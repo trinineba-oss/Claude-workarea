@@ -117,7 +117,11 @@ func _run() -> void:
 	Input.action_press(&"move_left")
 	await _physics_frames(6)
 	await _frames(1)
-	_check(body.anim_name == "walk", "walking plays the walk cycle")
+	var running := Looks.anim(body.sheet, "run").is_empty() == false
+	_check(
+		body.anim_name == ("run" if running else "walk"),
+		"moving at full speed plays the run (or the walk, if the sheet has no run)"
+	)
 	_check(Looks.direction_index(body.facing) == 1, "facing left")
 	if bool(Looks.anim(body.sheet, "walk").get("mirror", false)):
 		_check(body.flip_h, "drawn facing right, flipped to walk left")
@@ -128,12 +132,26 @@ func _run() -> void:
 	await _physics_frames(4)
 	await _frames(2)
 	_check(body.anim_name == "idle", "standing still plays the idle")
+	if not Looks.anim(body.sheet, "eat").is_empty():
+		player.strike_pose("eat", 0.5)
+		await _frames(2)
+		_check(body.anim_name == "eat", "a pose (eating) shows while he stands still")
+		player.strike_pose("", 0.0)
+		await _frames(2)
+		_check(body.anim_name == "idle", "and ends when it is cleared")
 	Input.action_press(&"attack")
 	await _physics_frames(2)
 	await _frames(1)
 	Input.action_release(&"attack")
 	_check(body.anim_name == "slash", "a swing plays the slash")
 	await _physics_frames(20)
+	if not Looks.anim(body.sheet, "roll").is_empty():
+		Input.action_press(&"dodge")
+		await _physics_frames(2)
+		await _frames(1)
+		Input.action_release(&"dodge")
+		_check(body.anim_name == "roll", "a dodge plays the roll")
+		await _physics_frames(30)
 	var evey: Companion = get_first_node_in_group("companion")
 	var evey_body: Array = view.entity_view(evey).find_children("*", "PixelBody", true, false)
 	_check(

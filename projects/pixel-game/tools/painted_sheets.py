@@ -28,34 +28,91 @@ MIRROR_DIRS = ["up", "side", "down"]
 
 # Where each group of figures comes from: (sheet in art_src/painted/, x0, x1, y0, y1, strict),
 # the figures in that rectangle read left to right. `strict` uses the tighter backdrop test that
-# keeps dark clothes and strips painted floor shadows. Chad and Evey come from sheet_v4.jpg,
-# with the cutlass swing and Evey's front and back views from sheet_v3.jpg; earlier drafts
-# (chad_poses.jpg, evey_poses.jpg, cycles.jpg, sheet_v2.jpg) are kept for reference only.
+# keeps dark clothes and strips painted floor shadows. Chad and Evey come from the v5 sheets
+# (the volume style), with the cutlass swing (sheet_v3.jpg) and Evey's bite, sniff and dig
+# (sheet_v4.jpg) from older sheets until new ones are drawn; other drafts are kept for reference.
 REGIONS = {
-    # front idle, 3/4 walk x3, back walk x4
-    "chad_a": ("sheet_v4.jpg", 0, 1024, 0, 215, True),
-    # back walk x3, side x3, 3/4 walk, 3/4 standing
-    "chad_b": ("sheet_v4.jpg", 0, 1024, 215, 365, True),
+    # v5 (the volume style, docs/16-image-prompts.md): the current look.
+    # front, 3/4 right, side right, back 3/4, back
+    "chad_model": ("v5_chad_model.jpg", 0, 1376, 0, 768, True),
+    # 3/4 walk to the right: frames 0-3 on top, 4-7 below (6 and 7 are not walk poses)
+    "chad_walk_a": ("v5_chad_walk.jpg", 0, 1376, 0, 384, True),
+    "chad_walk_b": ("v5_chad_walk.jpg", 0, 1376, 384, 768, True),
+    # 8-frame walk away from the viewer
+    "chad_back": ("v5_chad_walk_back.jpg", 0, 1376, 0, 482, True),
+    # dodge roll to the right: run-in, dive, roll, kneel, rise, ready
+    "chad_roll": ("v5_chad_roll.jpg", 0, 1376, 0, 768, True),
+    # front, 3/4 right, side (facing left), back 3/4, back
+    "evey_model": ("v5_evey_model.jpg", 0, 1376, 0, 768, True),
+    # trot to the right: 0-3 on top; below 4-5 trot, 6 sitting, 7 a play bow facing left
+    "evey_trot_a": ("v5_evey_trot.jpg", 0, 1376, 0, 384, True),
+    "evey_trot_b": ("v5_evey_trot.jpg", 0, 1376, 384, 768, True),
+    # 8-frame run to the right
+    "chad_run": ("v5_chad_run.jpg", 0, 1376, 0, 768, True),
+    # hit (hand to head), stagger, sat down dazed, dizzy
+    "chad_hurt": ("v5_chad_hurt.jpg", 0, 1376, 0, 768, True),
+    # holding a gyro, a bite, chewing, satisfied
+    "chad_eat": ("v5_chad_eat.jpg", 0, 1376, 0, 768, True),
+    # holding a find up: front, 3/4, 3/4
+    "chad_hold": ("v5_chad_hold.jpg", 0, 1376, 0, 768, True),
+    # fishing: hold, cast, side, reel, reel (the line joins them, so one box each)
+    "chad_fish_0": ("v5_chad_fish.jpg", 0, 300, 0, 768, True),
+    "chad_fish_1": ("v5_chad_fish.jpg", 300, 600, 0, 768, True),
+    "chad_fish_2": ("v5_chad_fish.jpg", 600, 840, 0, 768, True),
+    "chad_fish_3": ("v5_chad_fish.jpg", 840, 1105, 0, 768, True),
+    "chad_fish_4": ("v5_chad_fish.jpg", 1105, 1376, 0, 768, True),
+    # 5-frame gallop to the right
+    "evey_run": ("v5_evey_run.jpg", 0, 1376, 0, 768, True),
+    # front, side, bark, side
+    "evey_bark": ("v5_evey_bark.jpg", 0, 1376, 0, 768, True),
+    # 4-frame paddle to the right
+    "evey_swim": ("v5_evey_swim.jpg", 0, 1376, 0, 768, True),
+    # 6-frame walk carrying a slipper
+    "evey_carry": ("v5_evey_carry.jpg", 0, 1376, 0, 768, True),
+    # lying down, head down, asleep
+    "evey_rest": ("v5_evey_rest.jpg", 0, 1376, 0, 768, True),
+    # Older sheets still used until the new style has them:
     # cutlass: front, lunge, raised, back
     "chad_swing": ("sheet_v3.jpg", 0, 510, 380, 572, True),
-    # trot x6, gallop x2
-    "evey_run": ("sheet_v4.jpg", 0, 1024, 365, 462, True),
     # sniff, dig x2, sniff, crouch, lunge, bark, happy standing
     "evey_act": ("sheet_v4.jpg", 0, 1024, 462, 572, True),
-    # front, 3/4 right, back 3/4, back
-    "evey_turn": ("sheet_v3.jpg", 510, 1024, 0, 225, True),
 }
+# Rectangles whose figures are cut at its sides (the fishing line joins those figures).
+BOXED = tuple(f"chad_fish_{i}" for i in range(5))
 # The colour of each sheet's painted floor shadows, for telling them from dark clothes.
-SHADOW_TINT = {"sheet_v3.jpg": "neutral", "sheet_v4.jpg": "warm"}
+SHADOW_TINT = {
+    "sheet_v3.jpg": "neutral",
+    "sheet_v4.jpg": "warm",
+    "v5_chad_walk_back.jpg": "neutral",
+}
 # The generator drew each group at its own size; these bring every group to the same character
-# size in the game (Chad about 110 px tall in a 128 px frame, Evey about 60).
+# size in the game (Chad about 110 px tall in a 128 px frame, Evey about 58 tail to paw).
+# Numbers: target height / a standing figure's height in that group.
 SCALES = {
-    "chad_a": 110 / 165,
-    "chad_b": 110 / 134,
+    "chad_model": 110 / 595,
+    "chad_walk_a": 110 / 312,
+    "chad_walk_b": 110 / 312,
+    "chad_back": 110 / 238,
+    "chad_roll": 110 / 556,
     "chad_swing": 110 / 166,
-    "evey_run": 0.72,
+    "chad_run": 110 / 268,
+    "chad_hurt": 110 / 597,
+    "chad_eat": 110 / 600,
+    "chad_hold": 110 / 600,
+    "chad_fish_0": 110 / 597,
+    "chad_fish_1": 110 / 597,
+    "chad_fish_2": 110 / 597,
+    "chad_fish_3": 110 / 597,
+    "chad_fish_4": 110 / 597,
+    "evey_run": 58 / 262,
+    "evey_bark": 58 / 318,
+    "evey_swim": 58 / 262,
+    "evey_carry": 58 / 262,
+    "evey_rest": 58 / 318,
+    "evey_model": 58 / 312,
+    "evey_trot_a": 58 / 276,
+    "evey_trot_b": 58 / 276,
     "evey_act": 0.72,
-    "evey_turn": 0.5,
 }
 # Up-and-down step bob (pixels) for a pose with no drawn walk frames.
 BOB = [0, -2, -4, -2, 0, -2, -4]
@@ -74,42 +131,86 @@ def _frames(group: str, indices) -> list:
 LAYOUTS = {
     "chad": {
         "idle": {
-            "up": _frames("b", [1]),
-            "side": _frames("b", [7]),
-            "down": _frames("a", [0]),
+            "up": _frames("model", [4]),
+            "side": _frames("model", [2]),
+            "down": _frames("model", [0]),
         },
         "walk": {
-            "up": _frames("a", [4, 5, 6, 7]) + _frames("b", [0, 1, 2]),
-            "side": _frames("a", [1, 2, 3]) + _frames("b", [6]),
-            "down": _frames("a", [1, 2, 3]) + _frames("b", [6]),
+            "up": _frames("back", range(8)),
+            "side": _frames("walk_a", range(4)) + _frames("walk_b", [0, 1]),
+            "down": _frames("walk_a", range(4)) + _frames("walk_b", [0, 1]),
         },
         "slash": {
             "up": _frames("swing", [3, 3]),
             "side": _frames("swing", [2, 1]),
             "down": _frames("swing", [0, 1]),
         },
-        "hurt": {"all": _frames("a", [0])},
+        "roll": {
+            "up": _frames("roll", range(6)),
+            "side": _frames("roll", range(6)),
+            "down": _frames("roll", range(6)),
+        },
+        "run": {
+            "up": _frames("back", range(8)),
+            "side": _frames("run", range(8)),
+            "down": _frames("walk_a", range(4)) + _frames("walk_b", [0, 1]),
+        },
+        "hurt": {
+            "up": _frames("hurt", [1]),
+            "side": _frames("hurt", [1]),
+            "down": _frames("hurt", [0]),
+        },
+        "faint": {"all": _frames("hurt", [2])},
+        "dizzy": {"all": _frames("hurt", [3])},
+        "eat": {"all": _frames("eat", range(4))},
+        "hold": {
+            "up": _frames("hold", [0]),
+            "side": _frames("hold", [1]),
+            "down": _frames("hold", [0]),
+        },
+        "fish": {
+            "up": [(f"fish_{i}:0", False) for i in range(5)],
+            "side": [(f"fish_{i}:0", False) for i in range(5)],
+            "down": [(f"fish_{i}:0", False) for i in range(5)],
+        },
     },
     "evey": {
         "idle": {
-            "up": _frames("turn", [3]),
-            "side": _frames("act", [7]),
-            "down": _frames("turn", [0]),
+            "up": _frames("model", [4]),
+            "side": _frames("model", [1]),
+            "down": _frames("model", [0]),
         },
         "walk": {
-            "up": _bob("turn:3", 6),
-            "side": _frames("run", range(6)),
-            "down": _bob("turn:0", 6),
+            "up": _bob("model:4", 6),
+            "side": _frames("trot_a", range(4)) + _frames("trot_b", [0, 1]),
+            "down": _bob("model:0", 6),
         },
         "run": {
-            "up": _bob("turn:3", 4),
-            "side": _frames("run", [4, 5, 6, 7]),
-            "down": _bob("turn:0", 4),
+            "up": _bob("model:4", 5),
+            "side": _frames("run", range(5)),
+            "down": _bob("model:0", 5),
         },
+        "swim": {
+            "up": _frames("swim", range(4)),
+            "side": _frames("swim", range(4)),
+            "down": _frames("swim", range(4)),
+        },
+        "carry": {
+            "up": _bob("model:4", 6),
+            "side": _frames("carry", range(6)),
+            "down": _bob("model:0", 6),
+        },
+        "bark": {
+            "up": _frames("model", [4]),
+            "side": _frames("bark", [2]),
+            "down": _frames("bark", [0]),
+        },
+        "lie": {"all": _frames("rest", [0])},
+        "sleep": {"all": _frames("rest", [1, 2])},
         "sit": {
-            "up": _frames("turn", [3]),
-            "side": _frames("turn", [1]),
-            "down": _frames("turn", [0]),
+            "up": _frames("model", [4]),
+            "side": _frames("trot_b", [2]),
+            "down": _frames("trot_b", [2]),
         },
         "bite": {
             "up": _frames("act", [4, 5, 6]),
@@ -128,6 +229,7 @@ LAYOUTS = {
         },
     },
 }
+
 
 
 def background_mask(rgb: np.ndarray) -> np.ndarray:
@@ -219,14 +321,29 @@ def cut_regions(
     clear_low: tuple = (),
     strict: bool = False,
     shadow_tint: str = "warm",
+    boxed: tuple = (),
 ) -> dict:
     """Figures laid out in named rectangles of one sheet, {name: (x0, x1, y0, y1)}, each read
     left to right: {name: [frames]}. A figure belongs to the rectangle holding its centre.
-    `strict` uses the tighter backdrop test and strips painted floor shadows."""
+    `strict` uses the tighter backdrop test and strips painted floor shadows. Figures in `boxed`
+    rectangles are cut at the rectangle's sides (for figures joined by a fishing line or rod)."""
     rgb = np.asarray(Image.open(path).convert("RGB")).astype(int)
     solid = ~(backdrop_mask(rgb) if strict else background_mask(rgb))
+    if strict and any(name in regions for name in boxed):
+        # A fishing line closes off patches of backdrop that the edge flood can't reach.
+        border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+        close = np.sqrt(((rgb - np.median(border, axis=0)) ** 2).sum(axis=2)) < 9.0
+        pockets, found_pockets = _components(close & solid)
+        for n, size, *_ in found_pockets:
+            if size > 400:
+                solid[pockets == n] = False
     solid = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(3))) > 0
     near = np.asarray(Image.fromarray((solid * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(dilate))) > 0
+    for name in boxed:
+        if name in regions:
+            x0, x1, y0, y1 = regions[name]
+            for x in (x0, x1 - 1):
+                near[y0:y1, max(x - dilate, 0) : x + dilate + 1] = False
     label, found = _components(near)
     groups = {}
     for name, (x0, x1, y0, y1) in regions.items():
@@ -277,6 +394,15 @@ def _figure(
     shadow = np.zeros_like(keep)
     if floor_shadow:
         shadow = _floor_shadows(rgb[top : bottom + 1, left : right + 1], keep, tint)
+        # Loose bits below the feet (the top of a figure in the next row down, touching this
+        # one's shadow) are not part of this figure.
+        body, pieces = _components(keep & ~shadow)
+        if pieces:
+            biggest = max(pieces, key=lambda c: c[1])
+            for m, size, p_top, *_ in pieces:
+                if m != biggest[0] and p_top >= biggest[3] - (biggest[3] - biggest[2]) * 0.08:
+                    keep[body == m] = False
+        keep &= ~(shadow & ~_flood_from_edges(shadow | ~keep)) | shadow
     parts, pieces = _components(keep)
     for m, size, *_ in pieces:
         if size < 300:
@@ -399,7 +525,12 @@ def main() -> None:
                 tint = SHADOW_TINT.get(sheet_file, "warm")
                 groups.update(
                     cut_regions(
-                        SOURCE / sheet_file, regions, dilate=3, strict=strict, shadow_tint=tint
+                        SOURCE / sheet_file,
+                        regions,
+                        dilate=3,
+                        strict=strict,
+                        shadow_tint=tint,
+                        boxed=BOXED,
                     )
                 )
     for name, layout in LAYOUTS.items():

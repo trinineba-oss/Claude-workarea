@@ -6,13 +6,19 @@ into smooth in-game animation.
 
 ## Status
 
-**In the game** (from `art_src/painted/sheet_v4.jpg`, with the cutlass swing and Evey's front and
-back views from `sheet_v3.jpg`):
+**In the game** (the v5 volume-style sheets in `art_src/painted/v5_*.jpg`, made with
+[the image prompts](16-image-prompts.md)):
 
-- Chad: a 7-frame walk away from the camera, a 4-frame three-quarter walk (used for right and
-  down, mirrored for left), front and side standing poses, the cutlass swing.
-- Evey: a 6-frame trot, a 4-frame gallop (when she runs to catch up), sniff and dig loops, a
-  crouch-lunge-bark bite, a happy standing pose.
+- Chad: model sheet (front, 3/4, side, back), an 8-frame walk away from the camera, a 6-frame
+  three-quarter walk (right and down, mirrored for left), an **8-frame side run** (full speed),
+  the 6-frame **dodge roll**, hurt (hand to head, stagger), knocked out (sat down dazed), dizzy,
+  **eating** a gyro (4 frames, when he eats food), **holding up a find** (chests) and
+  **fishing** (cast, then hold and reel).
+- Evey: model sheet, a 6-frame trot, a **5-frame gallop**, sit, a **4-frame swim** (in water),
+  a **bark** (when sicced and standing), **lying down** (left alone 8 s, or a long Stay) and
+  **sleeping** (16 s), and a 6-frame walk **carrying a slipper** (in the sheet, not used yet).
+- Still from the older sheets: Chad's cutlass swing (`sheet_v3.jpg`) and Evey's sniff, dig and
+  bite (`sheet_v4.jpg`).
 
 **How the game plays them** (for smooth motion): every sheet is drawn facing **right**, with
 rows for up, side and down; the game mirrors it for left and remembers the last sideways
@@ -23,11 +29,12 @@ see-through contact shadow.
 
 **Still needed, in order (draw facing right):**
 
-1. A full **8-frame side walk** for Chad (today the side and front-ish walk share 4 frames).
-2. A **walk toward the camera** for Chad (8 frames) and for Evey (6), and **away** for Evey.
-3. **Idle** loops (4 frames) for both, all three directions.
-4. Evey **sit** (2 frames, front and side).
-5. Chad's **swing** in the new sheet's style, front and back (4–6 frames each).
+1. Chad's **cutlass combo** in the v5 style: 3 swings, side, front and back (4–6 frames each).
+2. A **walk toward the camera** for Chad (8 frames; today the 3/4 walk stands in), and Evey's
+   trot **toward** and **away** from the camera (6 each; today a bobbing still).
+3. Evey **sniff, dig and bite** in the v5 style.
+4. **Idle** loops (4 frames: breathing, a glance) for both, all three directions.
+5. Chad **running toward and away** from the camera (8 each).
 
 Tip: ask for **no floor shadow** and **no motion lines** again; the tool can soften them but a
 clean sheet always cuts better.

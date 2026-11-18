@@ -72,6 +72,9 @@ func use(game: Game) -> void:
 	set_highlighted(false)
 	var above := position + Vector2(0, -110)
 	Effects.burst(get_parent(), position + Vector2(0, -40), "sparkle")
+	var finder := game.get_node_or_null("Player") as Player
+	if finder != null:
+		finder.strike_pose("hold", 1.6)
 	if content == "key":
 		game.progress.add_key()
 		Effects.float_text(get_parent(), above, "+1 Small key", Color(1, 0.95, 0.6))
