@@ -55,6 +55,28 @@ clean sheet always cuts better.
 5. Save as `art_src/painted/<character>_<animation>_<direction>.png`, e.g.
    `chad_walk_side.png`, and ask Claude to add them to the game.
 
+## Volume version (current direction)
+
+For characters that read as rounded figures instead of flat cards, use this style block in
+place of the one in the rules below (everything else stays the same: one row, side views face
+right, plain grey background, no floor shadow, no motion lines):
+
+```
+Stylized hand-painted 3D look, like a modern indie action RPG (Hades, Cult of the Lamb,
+Sea of Stars): clear sculpted volume, strong warm key light from the upper left, soft cool
+bounce light on the shadow side, a thin bright rim light along the right edges, painted
+form shadows under the chin, arms, jacket hem and between the legs, ambient occlusion in
+the folds. Clean dark brown outline. Saturated but natural colours.
+Seen from slightly above, about 30 degrees, like a top-down game camera.
+```
+
+Evey's look is settled as **no collar, white tail tip**. Most-needed sheets, in order: 8-frame
+side walk, walk toward and away from the viewer (8 each), 4-frame idle, a 6-frame cutlass
+combo, a 6-frame dodge roll (Chad); 8-frame trot side, toward and away (6 each), sit, a 4-frame
+lunge bite (Evey). If the lighting drifts between frames, add "identical lighting in every
+frame, light always from the upper left"; too flat, add "strong chiaroscuro, deep form
+shadows, sculpted like a 3D figurine"; too plasticky, add "visible painterly brushwork".
+
 ## Comic-book version
 
 With the comic look on (`&look=comic`), Chad and Evey use comic versions of their sheets
