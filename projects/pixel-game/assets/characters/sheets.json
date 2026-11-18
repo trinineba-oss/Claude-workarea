@@ -457,7 +457,8 @@
         "row": 9,
         "frames": 1,
         "rows": 1
-      }
+      },
+      "normals": true
     },
     "evey_painted": {
       "frame": 128,
@@ -503,7 +504,8 @@
         "frames": 2,
         "rows": 3,
         "mirror": true
-      }
+      },
+      "normals": true
     },
     "chad_comic": {
       "frame": 128,
@@ -535,7 +537,8 @@
         "row": 9,
         "frames": 1,
         "rows": 1
-      }
+      },
+      "normals": true
     },
     "evey_comic": {
       "frame": 128,
@@ -581,7 +584,8 @@
         "frames": 2,
         "rows": 3,
         "mirror": true
-      }
+      },
+      "normals": true
     }
   }
 }

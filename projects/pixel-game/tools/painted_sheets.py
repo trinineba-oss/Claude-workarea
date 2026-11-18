@@ -408,6 +408,65 @@ def main() -> None:
     sheets_path.write_text(json.dumps(sheets, indent=2) + "\n")
 
 
+# Normal maps: how rounded a figure's edges are (pixels from the edge to the full "dome"), how
+# much the painting's own light and dark adds surface detail, and how steep the result is.
+ROUND = 13
+DETAIL = 0.35
+STRENGTH = 2.6
+
+
+def _blur(values: np.ndarray, sigma: float) -> np.ndarray:
+    """A Gaussian blur of a float array (separable, edges clamped)."""
+    radius = int(sigma * 3)
+    xs = np.arange(-radius, radius + 1)
+    kernel = np.exp(-(xs**2) / (2 * sigma * sigma))
+    kernel /= kernel.sum()
+    out = values
+    for axis in (0, 1):
+        padded = np.pad(out, [(radius, radius) if a == axis else (0, 0) for a in (0, 1)], mode="edge")
+        out = sum(
+            kernel[i] * np.take(padded, range(i, i + out.shape[axis]), axis=axis)
+            for i in range(len(kernel))
+        )
+    return out
+
+
+def normals(sheet: Image.Image) -> Image.Image:
+    """A normal map for a painted sheet, so the game's lights shade the flat figures as if they
+    were rounded: each figure becomes a soft dome (height from the distance to its edge), with
+    a little relief from the painted shading (folds, the backpack, the face). Encoded the usual
+    way (x right, y up, z out of the picture: flat is (128, 128, 255)). Transparent and
+    see-through pixels (the contact shadow) stay flat."""
+    rgba = np.asarray(sheet).astype(float)
+    solid = rgba[..., 3] > 200
+    # Distance to the edge, up to ROUND, by growing the outside inwards one pixel at a time.
+    dist = np.zeros(solid.shape)
+    inside = solid.copy()
+    for step in range(1, ROUND + 1):
+        dist[inside] = step
+        shrunk = Image.fromarray((inside * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(3))
+        inside = np.asarray(shrunk) > 0
+        if not inside.any():
+            break
+    t = dist / ROUND
+    dome = np.sqrt(np.clip(1.0 - (1.0 - t) ** 2, 0.0, 1.0))
+    lum = (rgba[..., :3] @ np.array([0.299, 0.587, 0.114])) / 255.0
+    lum = np.asarray(Image.fromarray((lum * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))) / 255.0
+    height = _blur(np.where(solid, dome, 0.0), 1.8) + np.where(solid, lum * DETAIL, 0.0)
+    gx = np.zeros_like(height)
+    gy = np.zeros_like(height)
+    gx[:, 1:-1] = (height[:, 2:] - height[:, :-2]) / 2.0
+    gy[1:-1, :] = (height[2:, :] - height[:-2, :]) / 2.0
+    nx = -gx * STRENGTH * ROUND / 4.0
+    ny = gy * STRENGTH * ROUND / 4.0  # image rows go down; normal-map y goes up
+    nz = np.ones_like(height)
+    length = np.sqrt(nx * nx + ny * ny + nz * nz)
+    n = np.dstack([nx, ny, nz]) / length[..., None]
+    n[~solid] = (0.0, 0.0, 1.0)
+    out = np.clip((n * 0.5 + 0.5) * 255.0, 0, 255).astype(np.uint8)
+    return Image.fromarray(out, "RGB")
+
+
 def _pack(name: str, style: str, layout: dict, groups: dict, sheets: dict) -> None:
     """One character's frames as a game sheet, assets/characters/<name>_<style>.png."""
     rows: list[list[Image.Image]] = []
@@ -434,6 +493,8 @@ def _pack(name: str, style: str, layout: dict, groups: dict, sheets: dict) -> No
         for x, cell in enumerate(row):
             sheet.alpha_composite(cell, (x * FRAME, y * FRAME))
     sheet.save(OUT / f"{name}_{style}.png")
+    normals(sheet).save(OUT / f"{name}_{style}_n.png")
+    entry["normals"] = True
     sheets["characters"][f"{name}_{style}"] = entry
     print(f"{name}_{style}.png", sheet.size)
 

@@ -85,6 +85,14 @@ static func frame_size(sheet: String) -> int:
 	return int(_load_sheets().get("characters", {}).get(sheet, {}).get("frame", 64))
 
 
+## The sheet's normal map (<sheet>_n.png), if tools/painted_sheets.py made one; or null.
+static func normal_texture(sheet: String) -> Texture2D:
+	if not bool(_load_sheets().get("characters", {}).get(sheet, {}).get("normals", false)):
+		return null
+	var path := "res://assets/characters/%s_n.png" % sheet
+	return load(path) if ResourceLoader.exists(path) else null
+
+
 ## Painted (not pixel) art, drawn with smooth filtering ("smooth" in sheets.json).
 static func is_smooth(sheet: String) -> bool:
 	return bool(_load_sheets().get("characters", {}).get(sheet, {}).get("smooth", false))

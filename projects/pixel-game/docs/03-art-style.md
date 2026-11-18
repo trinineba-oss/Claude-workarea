@@ -19,6 +19,13 @@
   (`assets/characters/chad_painted.png`, `evey_painted.png`). To go back to the pixel versions,
   set `"player": "chad"` and `"companion": "evey"` in `data/looks.json`.
 
+**Lighting the painted characters.** So Chad and Evey don't read as flat cards,
+`tools/painted_sheets.py` makes a normal map for every sheet (`<sheet>_n.png`: each figure as a
+soft dome, plus relief from the painting's own shading), and `shaders/character_lit.gdshader`
+lets the sun, moon, lamps and torches shade them with it, darkens their edges a little and adds
+a rim light. The real fix for flatness is still volume in the art itself: shaded turnarounds
+with more in-between angles, or real 3D models (see the Meshy note in the roadmap).
+
 ## The big open choice: one style for the whole cast
 
 Right now the townspeople, dogs and enemies are **pixel art** (LPC and hand-made), and the new

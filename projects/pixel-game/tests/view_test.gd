@@ -98,6 +98,13 @@ func _run() -> void:
 		),
 		"painted sheets are smooth, pixel sheets crisp"
 	)
+	if Looks.normal_texture(body.sheet) != null:
+		var lit := body.material_override as ShaderMaterial
+		_check(
+			lit != null and lit.get_shader_parameter("normal_tex") != null,
+			"painted characters are lit as rounded figures (normal map)"
+		)
+	_check(Looks.normal_texture("stray") == null, "pixel sheets have no normal map")
 	_check(
 		is_equal_approx(body.pixel_size, PixelBody.SCALE * 64.0 / Looks.frame_size(body.sheet)),
 		"bigger frames are drawn at the same size in the world"

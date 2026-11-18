@@ -42,6 +42,8 @@ var _fliers := false
 ## Seconds left in which the body counts as moving (frames can pass without a physics step).
 var _moving_hold := 0.0
 var _velocity := Vector2.ZERO
+## Painted sheets with a normal map are lit as rounded figures (shaders/character_lit).
+var _lit: ShaderMaterial
 
 
 func setup(sheet_name: String, source: Node2D) -> void:
@@ -54,6 +56,13 @@ func setup(sheet_name: String, source: Node2D) -> void:
 	# Bigger frames hold finer art at the same size in the world.
 	pixel_size = SCALE * 64.0 / cell
 	billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+	var normals := Looks.normal_texture(sheet)
+	if normals != null:
+		_lit = ShaderMaterial.new()
+		_lit.shader = preload("res://shaders/character_lit.gdshader")
+		_lit.set_shader_parameter("albedo_tex", texture)
+		_lit.set_shader_parameter("normal_tex", normals)
+		material_override = _lit
 	if Looks.is_smooth(sheet):
 		# Painted art: smooth filtering and soft edges.
 		texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
@@ -236,6 +245,8 @@ func _show_frame(source: Node2D) -> void:
 		# Drawn facing right with up, side and down rows; flipped when facing left.
 		row += ["up", "side", "down"].find(_dir)
 		flip_h = _flip
+		if _lit != null:
+			_lit.set_shader_parameter("flip", 1.0 if _flip else 0.0)
 	elif int(layout["rows"]) == 4:
 		row += Looks.direction_index(facing)
 		flip_h = false
