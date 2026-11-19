@@ -18,6 +18,14 @@ starts again. `scripts/wharf_demo.gd` holds the waves.
   the cutlass (gold on the finisher), a shockwave ring on finishers, a smoke puff when an enemy
   is beaten, dust when rolling, a star burst on level-up and a coin burst on coins. From two
   free CC BY 4.0 packs, credited in `assets/vfx/CREDITS.md`. Web builds: `&fx=1` loops them.
+- **Hit reactions:** a hit enemy flashes white, squashes and leans back from Chad, gets a
+  crescent slash mark, and shows a health bar over its head with a pale chunk for the damage
+  just done. Chad's roll leaves fading afterimages.
+- **Finisher beat:** hit 3 adds a gold slash, an ink-on-paper impact frame, a longer freeze, a
+  camera punch and a moment of slow motion.
+- **Enemy health:** enemies take a combo or two: crab 3, corbeau 2, stray 5, bandit 5,
+  soucouyant 3, Big Blue Crab 14, cauldron 16, pack leader 36. The combo does 1 + 1 + 2, more as
+  Chad levels up; the boomerang does 2.
 - **Readable enemies:** pothounds crouch and flash before they lunge, then have to recover.
 - **RPG layer:** enemies give XP; levels (shown top left) heal Chad and add cutlass damage.
 
