@@ -16,7 +16,7 @@ collision_layer = 4
 collision_mask = 1
 motion_mode = 1
 script = ExtResource("1_script")
-max_health = 2
+max_health = 5
 coin_chance = 0.8
 snack_chance = 0.1
 

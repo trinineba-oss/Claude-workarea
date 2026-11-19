@@ -63,14 +63,18 @@ func _run() -> void:
 	var dog: Pothound = _spawn(game, "dog", centre + Vector2(72, 0))
 	dog.coin_chance = 1.0
 	await _physics_frames(2)
-	_check(dog.health == 2, "an idle cutlass does not hurt")
+	var full := dog.max_health
+	_check(dog.health == full, "an idle cutlass does not hurt")
 	await _swing()
-	_check(dog.health == 1, "a swing hits once (health %d)" % dog.health)
+	_check(dog.health == full - 1, "a swing hits once (health %d)" % dog.health)
+	_check(full >= 4, "a stray takes more than one combo's opening hits")
+	# Weaken it to its last hit, then finish it.
+	dog.health = 1
 	player.end_invincibility()
 	player.position = centre
 	dog.position = centre + Vector2(72, 0) - game.current_room().position
 	await _swing()
-	_check(not is_instance_valid(dog) or dog.is_queued_for_deletion(), "two swings kill the dog")
+	_check(not is_instance_valid(dog) or dog.is_queued_for_deletion(), "the last hit kills the dog")
 	await _physics_frames(4)
 	var pickups := game.current_room().get_children().filter(func(n): return n is Pickup)
 	_check(pickups.size() == 1, "the dog dropped a coin")

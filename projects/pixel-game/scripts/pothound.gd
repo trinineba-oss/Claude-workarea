@@ -28,7 +28,7 @@ var _lunge_dir := Vector2.RIGHT
 
 func _ready() -> void:
 	if alpha:
-		max_health = 14
+		max_health = 36
 		contact_damage = 2
 		xp = 10
 		coin_chance = 1.0

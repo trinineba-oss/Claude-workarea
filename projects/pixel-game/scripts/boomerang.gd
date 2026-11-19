@@ -8,7 +8,7 @@ const TEXTURE := preload("res://assets/items/coconut_boomerang.png")
 const SPEED := 760.0
 const RETURN_SPEED := 900.0
 const RANGE := 6.0 * WorldMap.TILE
-const DAMAGE := 1
+const DAMAGE := 2
 const HEIGHT := 36.0
 
 var returning := false

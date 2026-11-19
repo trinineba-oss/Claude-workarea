@@ -14,6 +14,11 @@ const PX := View3D.PX
 ## Sprites of things that stand (characters, props) stand on this layer; floor decals lie on
 ## the ground at this height.
 const DECAL_HEIGHT := 0.012
+## Enemies' health bars: size in world units, gap over the head, and how fast the pale
+## "just lost" chunk drains (fraction of the bar a second).
+const BAR_SIZE := Vector2(0.8, 0.1)
+const BAR_GAP := 0.18
+const BAR_DRAIN := 0.9
 
 var source: Node2D
 
@@ -27,6 +32,9 @@ var _body_source: Sprite2D
 var _model: PropModel
 ## A painted picture drawn instead of the model and sprites (illustrated look), if there is one.
 var _painted: Sprite3D
+## An enemy's health bar (shown once it has been hurt).
+var _bar: MeshInstance3D
+var _bar_trail := 1.0
 
 
 func setup(node: Node2D) -> void:
@@ -60,6 +68,8 @@ func sync() -> void:
 		_model.refresh(source, _delta())
 	if _body != null:
 		_body.update(source, _body_source if is_instance_valid(_body_source) else null, _delta())
+	if source is Enemy:
+		_sync_health_bar()
 	if _bubble != null:
 		var talking: bool = source is Interactable and source.get("_highlighted") == true
 		_bubble.visible = talking
@@ -209,6 +219,47 @@ func _sync_light(from: NightLight, to: OmniLight3D, origin: Vector2) -> void:
 	to.light_energy = from.energy * 2.2
 	to.omni_range = from.texture_scale * 256.0 * PX * 0.75
 	to.visible = from.visible
+
+
+## Shows the enemy's health over its head once it has been hurt, with a pale chunk for the
+## damage just done that drains away. Bigger for bosses.
+func _sync_health_bar() -> void:
+	var top := float(source.max_health)
+	var hp := float(source.health)
+	if top <= 1.0 or hp >= top or hp <= 0.0:
+		if _bar != null:
+			_bar.visible = false
+		_bar_trail = 1.0
+		return
+	if _bar == null:
+		_bar = MeshInstance3D.new()
+		_bar.name = "HealthBar"
+		var quad := QuadMesh.new()
+		quad.size = BAR_SIZE
+		_bar.mesh = quad
+		var mat := ShaderMaterial.new()
+		mat.shader = preload("res://shaders/health_bar.gdshader")
+		_bar.material_override = mat
+		_bar.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		add_child(_bar)
+	var fill := hp / top
+	_bar_trail = maxf(move_toward(_bar_trail, fill, _delta() * BAR_DRAIN), fill)
+	var mat := _bar.material_override as ShaderMaterial
+	mat.set_shader_parameter("fill", fill)
+	mat.set_shader_parameter("trail", _bar_trail)
+	_bar.visible = true
+	# Just over the top of its 2D sprite (that includes a flier's height and a boss's size).
+	var height := 1.0
+	var sprite := source.get_node_or_null("Sprite2D") as Sprite2D
+	if sprite != null:
+		height = -(sprite.transform * sprite.get_rect()).position.y * PX
+	var wide := clampf(top / 12.0, 1.0, 1.8)
+	_bar.scale = Vector3(wide, 1.0, 1.0)
+	_bar.position = Vector3(0, height + BAR_GAP, 0)
+
+
+func health_bar() -> MeshInstance3D:
+	return _bar
 
 
 func _delta() -> float:

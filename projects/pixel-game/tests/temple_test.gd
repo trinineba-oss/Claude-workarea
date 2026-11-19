@@ -273,8 +273,11 @@ func _run() -> void:
 	await _physics_frames(2)
 	game.throw_boomerang()
 	var crab_ref: WeakRef = weakref(crab)
-	var hit := await _wait_until(func(): return crab_ref.get_ref() == null, 60)
-	_check(hit, "it knocks out a crab")
+	var full: int = crab.max_health
+	var hit := await _wait_until(
+		func(): return crab_ref.get_ref() == null or crab_ref.get_ref().health < full, 60
+	)
+	_check(hit, "it hits a crab")
 	await _wait_until(func(): return game.boomerang() == null, 120)
 
 	# Across the water, the crystal switch.

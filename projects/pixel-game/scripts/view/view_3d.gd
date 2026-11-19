@@ -31,6 +31,8 @@ static var comic_look := false
 ## bloom, colour grading and tinted outlines. A mockup, off by default; `&look=digital`.
 static var digital_look := false
 
+## The slash mark texture (made once).
+static var _crescent_texture: Texture2D
 var camera: Camera3D
 var sun: DirectionalLight3D
 var moon: DirectionalLight3D
@@ -287,7 +289,10 @@ func _update_camera(delta: float) -> void:
 		Juice.shake_amount = lerpf(
 			Juice.shake_amount, 0.0, minf(get_process_delta_time() * 14.0, 1.0)
 		)
-	camera.position = _aim + back + jolt
+	# Camera punch (Juice): a quick push in on big hits, easing back out.
+	if Juice.zoom_amount > 0.001:
+		Juice.zoom_amount = lerpf(Juice.zoom_amount, 0.0, minf(get_process_delta_time() * 7.0, 1.0))
+	camera.position = _aim + back * (1.0 - Juice.zoom_amount) + jolt
 	camera.look_at(_aim + Vector3(0, 0.4, 0), Vector3.UP)
 
 
@@ -407,6 +412,8 @@ func _make_cutlass() -> void:
 ## The 2D cutlass is drawn with lines; here it is a blade sweeping round Chad at hip height.
 func _update_cutlass() -> void:
 	var cutlass := _game.get_node_or_null("Player/Cutlass") as Cutlass
+	if cutlass != null and not cutlass.landed.is_connected(_on_cutlass_landed):
+		cutlass.landed.connect(_on_cutlass_landed)
 	if cutlass == null or not cutlass.visible:
 		_cutlass.visible = false
 		_trail_points.clear()
@@ -424,6 +431,64 @@ func _update_cutlass() -> void:
 	_cutlass.position = centre + Vector3(reach.x, 0, reach.y) * 0.6
 	_cutlass.look_at(centre + Vector3(reach.x, 0, reach.y) * 2.0, Vector3.UP)
 	_draw_trail(cutlass, centre, reach)
+
+
+func _on_cutlass_landed(body: Node, _damage: int) -> void:
+	var cutlass := _game.get_node_or_null("Player/Cutlass") as Cutlass
+	if cutlass == null or not body is Node2D:
+		return
+	slash_arc(cutlass.global_position, body.global_position, float(cutlass.get("_force")) > 1.5)
+
+
+## A crescent slash mark over something the cutlass hit, bulging away from Chad: it flares out
+## and fades. The finisher's is bigger and gold.
+func slash_arc(from: Vector2, at: Vector2, heavy: bool) -> MeshInstance3D:
+	var arc := MeshInstance3D.new()
+	arc.name = "SlashArc"
+	var quad := QuadMesh.new()
+	quad.orientation = PlaneMesh.FACE_Y
+	arc.mesh = quad
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.blend_mode = BaseMaterial3D.BLEND_MODE_ADD
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	mat.no_depth_test = true
+	mat.albedo_texture = _crescent()
+	mat.albedo_color = Color(1.0, 0.85, 0.45) if heavy else Color(0.85, 0.93, 1.0)
+	arc.material_override = mat
+	arc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(arc)
+	var away := (at - from).normalized() if at != from else Vector2.RIGHT
+	arc.position = to_3d(at, 0.55)
+	arc.rotation.y = -away.angle()
+	var size := 2.3 if heavy else 1.5
+	arc.scale = Vector3.ONE * size * 0.55
+	var tween := arc.create_tween().set_parallel(true)
+	tween.tween_property(arc, "scale", Vector3.ONE * size, 0.16).set_ease(Tween.EASE_OUT)
+	tween.tween_property(mat, "albedo_color:a", 0.0, 0.2).set_delay(0.04)
+	tween.chain().tween_callback(arc.queue_free)
+	return arc
+
+
+## A soft white crescent (made once): an arc of a ring whose centre sits off the left edge, so
+## it bulges towards +x, thickest in the middle and tapering at the tips.
+static func _crescent() -> Texture2D:
+	if _crescent_texture != null:
+		return _crescent_texture
+	var size := 128
+	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var centre := Vector2(-40.0, size / 2.0)
+	for y in size:
+		for x in size:
+			var offset := Vector2(x, y) - centre
+			var spread := absf(offset.angle()) / 0.62
+			var thick := 16.0 * (1.0 - spread * spread)
+			var edge := absf(offset.length() - 118.0)
+			var a := clampf(1.0 - edge / maxf(thick, 0.01), 0.0, 1.0) if thick > 0.0 else 0.0
+			image.set_pixel(x, y, Color(1, 1, 1, a * a))
+	_crescent_texture = ImageTexture.create_from_image(image)
+	return _crescent_texture
 
 
 ## A swept ribbon behind the blade: from its last few positions, fading towards the oldest.

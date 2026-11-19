@@ -161,6 +161,29 @@ func _run() -> void:
 	evey.set("_sniff_cooldown", Companion.SNIFF_EVERY)
 	await _frames(2)
 	_check(evey_body[0].anim_name == "sniff", "she noses the ground when she catches a scent")
+
+	# --- combat effects ----------------------------------------------------------------------
+	var ghost: Sprite3D = body.spawn_ghost()
+	_check(ghost != null and ghost.frame == body.frame, "a roll leaves an afterimage of the frame")
+	var arc := view.slash_arc(player.position, player.position + Vector2(60, 0), true)
+	_check(arc != null and arc.is_inside_tree(), "a hit leaves a slash mark")
+	var crab: Enemy = Entities.create("crab")
+	crab.position = player.position + Vector2(300, 0) - game.current_room().position
+	game.current_room().add_child(crab)
+	await _frames(2)
+	crab.take_hit(1, player.global_position)
+	await _frames(2)
+	var crab_view := view.entity_view(crab)
+	var crab_body: Array = crab_view.find_children("*", "PixelBody", true, false)
+	_check(
+		not crab_body.is_empty() and crab_body[0].material_override is ShaderMaterial,
+		"a hit enemy flashes white"
+	)
+	_check(
+		crab_view.health_bar() != null and crab_view.health_bar().visible,
+		"a hurt enemy shows its health bar"
+	)
+	crab.queue_free()
 	evey.set("_sniff_cooldown", 0.0)
 	await _frames(2)
 	_check(evey_body[0].anim_name != "sniff", "and looks up again")

@@ -27,6 +27,14 @@ const SLEEP_AFTER := 16.0
 const TURN_MARGIN := 1.25
 ## Moving slower than this (2D pixels per second) counts as standing still.
 const MOVING := 18.0
+## Combat feel: an enemy that is hit flashes white this long, squashes and leans back from
+## the blow; Chad leaves a fading afterimage this often while he rolls.
+const FLASH_TIME := 0.09
+const SQUASH_TIME := 0.22
+const GHOST_EVERY := 0.035
+const GHOST_FADE := 0.24
+const GHOST_TINT := Color(0.55, 0.85, 1.0)
+const FLASH_SHADER := preload("res://shaders/flash_silhouette.gdshader")
 ## How close (2D px) Chad has to be for people and top dogs to turn to him.
 const LOOK_RANGE := 230.0
 
@@ -49,6 +57,14 @@ var _moving_hold := 0.0
 var _velocity := Vector2.ZERO
 ## Seconds Evey has stood still (for lying down and dozing off).
 var _still := 0.0
+var _flash := 0.0
+var _flash_mat: ShaderMaterial
+var _ghost_mat: ShaderMaterial
+var _ghost_clock := 0.0
+## 1 just after a hit, falling to 0: the squash and lean back.
+var _squash := 0.0
+var _last_health := -1
+var _away := Vector3.ZERO
 ## Painted sheets with a normal map are lit as rounded figures (shaders/character_lit).
 var _lit: ShaderMaterial
 
@@ -111,6 +127,7 @@ func update(source: Node2D, body: Sprite2D, delta: float) -> void:
 	_choose(source, velocity, moving, delta)
 	_advance(source, velocity, delta)
 	_show_frame(source)
+	_react_to_hits(source, delta)
 	var lift := 0.0
 	if body != null:
 		visible = body.visible
@@ -120,7 +137,83 @@ func update(source: Node2D, body: Sprite2D, delta: float) -> void:
 			scale = Vector3.ONE  # the drawn roll already tumbles; no squash on top
 		if _fliers:
 			lift = -body.position.y * View3D.PX
-	position = Vector3(0, (32.0 - FOOT) * SCALE * scale.y + lift, 0)
+	var lean := Vector3.ZERO
+	if _squash > 0.0:
+		var s := _squash * _squash
+		scale *= Vector3(1.0 + 0.3 * s, 1.0 - 0.26 * s, 1.0)
+		lean = _away * 0.12 * s
+	position = Vector3(0, (32.0 - FOOT) * SCALE * scale.y + lift, 0) + lean
+	if anim_name == "roll":
+		_ghost_clock -= delta
+		if _ghost_clock <= 0.0:
+			_ghost_clock = GHOST_EVERY
+			spawn_ghost()
+	else:
+		_ghost_clock = 0.0
+
+
+## Starts the white hit flash.
+func flash(seconds := FLASH_TIME) -> void:
+	_flash = maxf(_flash, seconds)
+
+
+## Enemies: a blow (health going down) flashes them white, squashes them and leans them back,
+## away from Chad.
+func _react_to_hits(source: Node2D, delta: float) -> void:
+	_squash = maxf(_squash - delta / SQUASH_TIME, 0.0)
+	if source is Enemy:
+		var health: int = source.health
+		if _last_health >= 0 and health < _last_health:
+			flash()
+			_squash = 1.0
+			var hero := source.get_tree().get_first_node_in_group("player") as Node2D
+			var away := Vector2.ZERO
+			if hero != null:
+				away = (source.global_position - hero.global_position).normalized()
+			_away = Vector3(away.x, 0.0, away.y)
+		_last_health = health
+	_flash = maxf(_flash - delta, 0.0)
+	if _flash > 0.0:
+		if _flash_mat == null:
+			_flash_mat = ShaderMaterial.new()
+			_flash_mat.shader = FLASH_SHADER
+			_flash_mat.set_shader_parameter("tint", Color.WHITE)
+			_flash_mat.set_shader_parameter("amount", 1.0)
+		_flash_mat.set_shader_parameter("albedo_tex", texture)
+		material_override = _flash_mat
+	elif material_override != _lit:
+		material_override = _lit
+
+
+## A fading, tinted copy of the current frame left where the body is now (Chad's roll).
+func spawn_ghost() -> Sprite3D:
+	var world := View3D.current
+	if world == null or not is_inside_tree():
+		return null
+	if _ghost_mat == null:
+		_ghost_mat = ShaderMaterial.new()
+		_ghost_mat.shader = FLASH_SHADER
+		_ghost_mat.set_shader_parameter("tint", GHOST_TINT)
+		_ghost_mat.set_shader_parameter("amount", 0.55)
+	_ghost_mat.set_shader_parameter("albedo_tex", texture)
+	var ghost := Sprite3D.new()
+	ghost.name = "Afterimage"
+	ghost.texture = texture
+	ghost.hframes = hframes
+	ghost.vframes = vframes
+	ghost.frame = frame
+	ghost.flip_h = flip_h
+	ghost.pixel_size = pixel_size
+	ghost.texture_filter = texture_filter
+	ghost.material_override = _ghost_mat
+	ghost.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	ghost.modulate = Color(1, 1, 1, 0.5)
+	world.add_child(ghost)
+	ghost.global_transform = global_transform
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, GHOST_FADE)
+	tween.tween_callback(ghost.queue_free)
+	return ghost
 
 
 func _choose(source: Node2D, velocity: Vector2, moving: bool, delta: float) -> void:
