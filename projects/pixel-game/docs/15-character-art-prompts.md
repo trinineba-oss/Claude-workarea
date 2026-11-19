@@ -17,8 +17,11 @@ into smooth in-game animation.
 - Evey: model sheet, a 6-frame trot, a **5-frame gallop**, sit, a **4-frame swim** (in water),
   a **bark** (when sicced and standing), **lying down** (left alone 8 s, or a long Stay) and
   **sleeping** (16 s), and a 6-frame walk **carrying a slipper** (in the sheet, not used yet).
-- Still from the older sheets: Chad's cutlass swing (`sheet_v3.jpg`) and Evey's sniff, dig and
-  bite (`sheet_v4.jpg`).
+- Batch 3: Chad's **cutlass combo seen from behind** (each of the three hits has its own
+  frames when he attacks upward), **idle loops** for both (breathing, Chad blinks, Evey pants),
+  and Evey's **trot away** from the camera.
+- Still from the older sheets: Chad's cutlass swing to the side and toward the camera
+  (`sheet_v3.jpg`) and Evey's sniff, dig and bite (`sheet_v4.jpg`).
 
 **How the game plays them** (for smooth motion): every sheet is drawn facing **right**, with
 rows for up, side and down; the game mirrors it for left and remembers the last sideways

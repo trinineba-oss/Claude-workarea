@@ -61,6 +61,24 @@ REGIONS = {
     "chad_fish_2": ("v5_chad_fish.jpg", 600, 840, 0, 768, True),
     "chad_fish_3": ("v5_chad_fish.jpg", 840, 1105, 0, 768, True),
     "chad_fish_4": ("v5_chad_fish.jpg", 1105, 1376, 0, 768, True),
+    # cutlass combo seen from behind: ready, wind-up, slash, wind-up, backhand, raised,
+    # finisher, recover (blades touch the next figure, so one box each)
+    "chad_combo_up_0": ("v5_chad_combo_up.jpg", 0, 192, 0, 768, True),
+    "chad_combo_up_1": ("v5_chad_combo_up.jpg", 192, 360, 0, 768, True),
+    "chad_combo_up_2": ("v5_chad_combo_up.jpg", 360, 573, 0, 768, True),
+    "chad_combo_up_3": ("v5_chad_combo_up.jpg", 573, 720, 0, 768, True),
+    "chad_combo_up_4": ("v5_chad_combo_up.jpg", 720, 902, 0, 768, True),
+    "chad_combo_up_5": ("v5_chad_combo_up.jpg", 902, 1031, 0, 768, True),
+    "chad_combo_up_6": ("v5_chad_combo_up.jpg", 1031, 1205, 0, 768, True),
+    "chad_combo_up_7": ("v5_chad_combo_up.jpg", 1205, 1376, 0, 768, True),
+    # back idle: back, back, side, back 3/4, back
+    "chad_back_idle": ("v5_chad_back_idle.jpg", 0, 1376, 0, 768, True),
+    # a second model sheet: front, 3/4, side with the eyes closed (a blink), back 3/4, back
+    "chad_model_b": ("v5_chad_model_b.jpg", 0, 1376, 0, 768, True),
+    # idle: front, 3/4, side facing left, 3/4 panting
+    "evey_idle": ("v5_evey_idle.jpg", 0, 1376, 0, 768, True),
+    # 6-frame trot away from the viewer
+    "evey_trot_up": ("v5_evey_trot_up.jpg", 0, 1376, 0, 768, True),
     # 5-frame gallop to the right
     "evey_run": ("v5_evey_run.jpg", 0, 1376, 0, 768, True),
     # front, side, bark, side
@@ -78,7 +96,7 @@ REGIONS = {
     "evey_act": ("sheet_v4.jpg", 0, 1024, 462, 572, True),
 }
 # Rectangles whose figures are cut at its sides (the fishing line joins those figures).
-BOXED = tuple(f"chad_fish_{i}" for i in range(5))
+BOXED = tuple(f"chad_fish_{i}" for i in range(5)) + tuple(f"chad_combo_up_{i}" for i in range(8))
 # The colour of each sheet's painted floor shadows, for telling them from dark clothes.
 SHADOW_TINT = {
     "sheet_v3.jpg": "neutral",
@@ -104,6 +122,18 @@ SCALES = {
     "chad_fish_2": 110 / 597,
     "chad_fish_3": 110 / 597,
     "chad_fish_4": 110 / 597,
+    "chad_combo_up_0": 110 / 259,
+    "chad_combo_up_1": 110 / 259,
+    "chad_combo_up_2": 110 / 259,
+    "chad_combo_up_3": 110 / 259,
+    "chad_combo_up_4": 110 / 259,
+    "chad_combo_up_5": 110 / 259,
+    "chad_combo_up_6": 110 / 259,
+    "chad_combo_up_7": 110 / 259,
+    "chad_back_idle": 110 / 593,
+    "chad_model_b": 110 / 598,
+    "evey_idle": 58 / 318,
+    "evey_trot_up": 58 / 315,
     "evey_run": 58 / 262,
     "evey_bark": 58 / 318,
     "evey_swim": 58 / 262,
@@ -126,22 +156,39 @@ def _frames(group: str, indices) -> list:
     return [(f"{group}:{i}", False) for i in indices]
 
 
+def _combo(indices) -> list:
+    """Frames of the combo seen from behind, cut one box per figure."""
+    return [(f"combo_up_{i}:0", False) for i in indices]
+
+
 # For each animation: rows of frames, (figure, mirrored[, dy]). Rows are keyed up/side/down
 # (drawn facing right, flipped by the game for left) or up/left/down/right, or "all".
 LAYOUTS = {
     "chad": {
+        # Standing still: breathing variations with one blink (played at 2.5 frames a second).
         "idle": {
-            "up": _frames("model", [4]),
-            "side": _frames("model", [2]),
-            "down": _frames("model", [0]),
+            "up": _frames("back_idle", [0, 1, 4, 1, 0, 4]),
+            "side": _frames("model", [2, 2, 2]) + _frames("model_b", [2]) + _frames("model", [2, 2]),
+            "down": _frames("model", [0, 0, 0]) + _frames("model_b", [0]) + _frames("model", [0, 0]),
         },
         "walk": {
             "up": _frames("back", range(8)),
             "side": _frames("walk_a", range(4)) + _frames("walk_b", [0, 1]),
             "down": _frames("walk_a", range(4)) + _frames("walk_b", [0, 1]),
         },
+        # The three hits of the combo (side and front still share the older swing).
         "slash": {
-            "up": _frames("swing", [3, 3]),
+            "up": _combo([1, 2]),
+            "side": _frames("swing", [2, 1]),
+            "down": _frames("swing", [0, 1]),
+        },
+        "slash2": {
+            "up": _combo([3, 4]),
+            "side": _frames("swing", [2, 1]),
+            "down": _frames("swing", [0, 1]),
+        },
+        "slash3": {
+            "up": _combo([5, 6, 7]),
             "side": _frames("swing", [2, 1]),
             "down": _frames("swing", [0, 1]),
         },
@@ -177,16 +224,16 @@ LAYOUTS = {
     "evey": {
         "idle": {
             "up": _frames("model", [4]),
-            "side": _frames("model", [1]),
-            "down": _frames("model", [0]),
+            "side": _frames("model", [1, 1]) + _frames("idle", [3, 3]),
+            "down": _frames("model", [0, 0, 0]) + _frames("idle", [0]),
         },
         "walk": {
-            "up": _bob("model:4", 6),
+            "up": _frames("trot_up", range(6)),
             "side": _frames("trot_a", range(4)) + _frames("trot_b", [0, 1]),
             "down": _bob("model:0", 6),
         },
         "run": {
-            "up": _bob("model:4", 5),
+            "up": _frames("trot_up", range(6)),
             "side": _frames("run", range(5)),
             "down": _bob("model:0", 5),
         },

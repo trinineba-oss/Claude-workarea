@@ -432,7 +432,7 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 1,
+        "frames": 6,
         "rows": 3,
         "mirror": true
       },
@@ -453,14 +453,31 @@
         "rows": 3,
         "mirror": true
       },
-      "roll": {
+      "slash2": {
         "row": 9,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      },
+      "slash3": {
+        "row": 12,
+        "frames": 3,
+        "rows": 3,
+        "mirror": true,
+        "counts": [
+          3,
+          2,
+          2
+        ]
+      },
+      "roll": {
+        "row": 15,
         "frames": 6,
         "rows": 3,
         "mirror": true
       },
       "run": {
-        "row": 12,
+        "row": 18,
         "frames": 8,
         "rows": 3,
         "mirror": true,
@@ -471,34 +488,34 @@
         ]
       },
       "hurt": {
-        "row": 15,
-        "frames": 1,
-        "rows": 3,
-        "mirror": true
-      },
-      "faint": {
-        "row": 18,
-        "frames": 1,
-        "rows": 1
-      },
-      "dizzy": {
-        "row": 19,
-        "frames": 1,
-        "rows": 1
-      },
-      "eat": {
-        "row": 20,
-        "frames": 4,
-        "rows": 1
-      },
-      "hold": {
         "row": 21,
         "frames": 1,
         "rows": 3,
         "mirror": true
       },
-      "fish": {
+      "faint": {
         "row": 24,
+        "frames": 1,
+        "rows": 1
+      },
+      "dizzy": {
+        "row": 25,
+        "frames": 1,
+        "rows": 1
+      },
+      "eat": {
+        "row": 26,
+        "frames": 4,
+        "rows": 1
+      },
+      "hold": {
+        "row": 27,
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
+      },
+      "fish": {
+        "row": 30,
         "frames": 5,
         "rows": 3,
         "mirror": true
@@ -510,9 +527,14 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 1,
+        "frames": 4,
         "rows": 3,
-        "mirror": true
+        "mirror": true,
+        "counts": [
+          1,
+          4,
+          4
+        ]
       },
       "walk": {
         "row": 3,
@@ -522,9 +544,14 @@
       },
       "run": {
         "row": 6,
-        "frames": 5,
+        "frames": 6,
         "rows": 3,
-        "mirror": true
+        "mirror": true,
+        "counts": [
+          6,
+          5,
+          5
+        ]
       },
       "swim": {
         "row": 9,
@@ -585,7 +612,7 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 1,
+        "frames": 6,
         "rows": 3,
         "mirror": true
       },
@@ -606,14 +633,31 @@
         "rows": 3,
         "mirror": true
       },
-      "roll": {
+      "slash2": {
         "row": 9,
+        "frames": 2,
+        "rows": 3,
+        "mirror": true
+      },
+      "slash3": {
+        "row": 12,
+        "frames": 3,
+        "rows": 3,
+        "mirror": true,
+        "counts": [
+          3,
+          2,
+          2
+        ]
+      },
+      "roll": {
+        "row": 15,
         "frames": 6,
         "rows": 3,
         "mirror": true
       },
       "run": {
-        "row": 12,
+        "row": 18,
         "frames": 8,
         "rows": 3,
         "mirror": true,
@@ -624,34 +668,34 @@
         ]
       },
       "hurt": {
-        "row": 15,
-        "frames": 1,
-        "rows": 3,
-        "mirror": true
-      },
-      "faint": {
-        "row": 18,
-        "frames": 1,
-        "rows": 1
-      },
-      "dizzy": {
-        "row": 19,
-        "frames": 1,
-        "rows": 1
-      },
-      "eat": {
-        "row": 20,
-        "frames": 4,
-        "rows": 1
-      },
-      "hold": {
         "row": 21,
         "frames": 1,
         "rows": 3,
         "mirror": true
       },
-      "fish": {
+      "faint": {
         "row": 24,
+        "frames": 1,
+        "rows": 1
+      },
+      "dizzy": {
+        "row": 25,
+        "frames": 1,
+        "rows": 1
+      },
+      "eat": {
+        "row": 26,
+        "frames": 4,
+        "rows": 1
+      },
+      "hold": {
+        "row": 27,
+        "frames": 1,
+        "rows": 3,
+        "mirror": true
+      },
+      "fish": {
+        "row": 30,
         "frames": 5,
         "rows": 3,
         "mirror": true
@@ -663,9 +707,14 @@
       "smooth": true,
       "idle": {
         "row": 0,
-        "frames": 1,
+        "frames": 4,
         "rows": 3,
-        "mirror": true
+        "mirror": true,
+        "counts": [
+          1,
+          4,
+          4
+        ]
       },
       "walk": {
         "row": 3,
@@ -675,9 +724,14 @@
       },
       "run": {
         "row": 6,
-        "frames": 5,
+        "frames": 6,
         "rows": 3,
-        "mirror": true
+        "mirror": true,
+        "counts": [
+          6,
+          5,
+          5
+        ]
       },
       "swim": {
         "row": 9,

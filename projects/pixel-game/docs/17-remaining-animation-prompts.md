@@ -22,6 +22,12 @@ The new prompts already ask for these; if a result still has one, regenerate rat
 - **Painted floor shadows**: the tool can soften them, but a clean sheet cuts better.
 - **Dust, swooshes, dirt**: the game draws its own effects, so leave them out.
 
+## Done so far
+
+- Chad: cutlass combo away from the viewer (§3), idle back (§9). A second model sheet with a
+  blink gives him front and side idles for now.
+- Evey: trot away from the viewer (§2), idle side and front (§5, §6).
+
 ## Most needed first
 
 1. Chad's **cutlass combo**, side, then toward and away. The swing is the last old-style art you

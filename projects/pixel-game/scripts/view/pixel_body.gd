@@ -132,7 +132,10 @@ func _choose(source: Node2D, velocity: Vector2, moving: bool, delta: float) -> v
 		facing = velocity if moving else source.facing
 		match source.state:
 			Player.State.ATTACK:
-				next = "slash"
+				# Each hit of the combo has its own frames where the sheet has them.
+				next = ["slash", "slash2", "slash3"][clampi(source.combo_step, 0, 2)]
+				if not _has(next):
+					next = "slash"
 				facing = source.aim
 			Player.State.DODGE:
 				next = "roll" if _has("roll") else "walk"
@@ -252,7 +255,7 @@ func _show_frame(source: Node2D) -> void:
 				col = int(_phase) % frames
 		"idle":
 			col = int(_time * IDLE_FPS) % frames
-		"slash":
+		"slash", "slash2", "slash3":
 			var left: float = source.get("_state_time")
 			col = int(clampf(1.0 - left / float(source.get("attack_time")), 0.0, 0.999) * frames)
 		"hurt":
