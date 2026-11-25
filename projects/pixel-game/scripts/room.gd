@@ -58,6 +58,8 @@ var coords := Vector2i.ZERO
 var key_prefix := ""
 ## True for the plain sea/grass rooms that fill gaps at the edges of the world.
 var filler := false
+## The room's chemistry grid (fire, water; see RoomChemistry). Null in filler rooms.
+var chemistry: RoomChemistry
 ## The room's map rows, and the same with a one-tile border from its neighbours (the 3D view
 ## builds its ground and scenery from these).
 var map_lines := PackedStringArray()
@@ -83,6 +85,9 @@ func build(
 	if filler:
 		return
 	add_child(_make_collision(lines))
+	chemistry = RoomChemistry.new()
+	chemistry.setup(self)
+	add_child(chemistry)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash(coords)
 	for y in lines.size():

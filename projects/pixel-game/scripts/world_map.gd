@@ -54,6 +54,24 @@ func rows(coords: Vector2i) -> PackedStringArray:
 	return rooms[coords]
 
 
+## The global tile of a room's top-left corner.
+static func room_origin_cell(coords: Vector2i) -> Vector2i:
+	return Vector2i(coords.x * COLS, coords.y * ROWS)
+
+
+## Changes one map tile (a bush that burned away becomes bare ground). Kept for the session;
+## rooms built later read the new tile.
+func set_tile(cell: Vector2i, ch: String) -> void:
+	var coords := Vector2i(floori(float(cell.x) / COLS), floori(float(cell.y) / ROWS))
+	if not rooms.has(coords):
+		return
+	var lines: PackedStringArray = rooms[coords]
+	var y := posmod(cell.y, ROWS)
+	var x := posmod(cell.x, COLS)
+	lines[y] = lines[y].substr(0, x) + ch + lines[y].substr(x + 1)
+	rooms[coords] = lines
+
+
 ## The room that contains a world position.
 static func room_at(pos: Vector2) -> Vector2i:
 	var size := room_size()

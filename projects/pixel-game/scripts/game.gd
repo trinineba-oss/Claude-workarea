@@ -30,6 +30,8 @@ const CAMERA_SMOOTHING := 7.0
 ## Pause between fainting and getting back up at the room entrance.
 const FAINT_SECONDS := 1.2
 const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
+## Tools in the bag that do something when used (not eaten).
+const TOOLS := ["fishing_rod", "coconut_boomerang", "flambeau"]
 
 ## Play the ibis's welcome the first time a game starts (tests turn this off).
 @export var play_intro := true
@@ -184,11 +186,8 @@ func use_selected_item() -> bool:
 	var id := _hotbar.selected_id()
 	if id == "":
 		return false
-	if id == "fishing_rod":
-		fish()
-		return true
-	if id == "coconut_boomerang":
-		return throw_boomerang()
+	if id in TOOLS:
+		return _use_tool(id)
 	var heal := int(GameData.item(id).get("heal", 0))
 	var above := _player.position + Vector2(0, -90)
 	if heal <= 0:
@@ -204,6 +203,33 @@ func use_selected_item() -> bool:
 		_companion.remark("eat")
 	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
 	return true
+
+
+func _use_tool(id: String) -> bool:
+	match id:
+		"fishing_rod":
+			fish()
+			return true
+		"coconut_boomerang":
+			return throw_boomerang()
+		_:
+			return light_fire()
+
+
+## Chad's flambeau (a bottle torch): sets the tile in front of him alight, if it can burn.
+## The chemistry does the rest.
+func light_fire() -> bool:
+	var room := current_room()
+	if room == null or room.chemistry == null:
+		return false
+	var spot := _player.position + _player.facing * 70.0 + Vector2(0, -8) - room.position
+	var cell := RoomChemistry.cell_of(spot)
+	Effects.burst(room, spot, "sparkle")
+	if room.chemistry.ignite(cell):
+		return true
+	var above := _player.position + Vector2(0, -90)
+	Effects.float_text(self, above, "Won't catch", Color(1, 0.8, 0.6))
+	return false
 
 
 ## Throws the coconut boomerang the way Chad faces (one at a time).
@@ -627,10 +653,9 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
-## puts an item in the bag and `&intro=0` skips the opening conversation (add `&demo=1` to
-## start the wharf waves at once, `&fx=1` to loop the impact effects); used to take
-## screenshots and recordings.
-## Ignored everywhere else.
+## puts an item in the bag, `&burn=5_3` lights a tile, and `&intro=0` skips the opening
+## conversation (add `&demo=1` to start the wharf waves at once, `&fx=1` to loop the impact
+## effects); used to take screenshots and recordings. Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
@@ -643,6 +668,9 @@ func _apply_debug_start() -> void:
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
 		if GameData.has_item(gift.get_string(1)):
 			inventory.add(gift.get_string(1))
+	var burn := RegEx.create_from_string("burn=(\\d+)_(\\d+)").search(query)
+	if burn != null:
+		_debug_burn.call_deferred(Vector2i(int(burn.get_string(1)), int(burn.get_string(2))))
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
@@ -668,6 +696,14 @@ func _apply_debug_start() -> void:
 			)
 
 
+## Web build, `&burn=5_3`: sets that tile of the current room alight (to check the fire).
+func _debug_burn(cell: Vector2i) -> void:
+	await get_tree().create_timer(1.0).timeout
+	var room := current_room()
+	if room != null and room.chemistry != null:
+		room.chemistry.ignite(cell)
+
+
 ## Web build, `&fx=1`: plays every impact effect around Chad, over and over (to check them).
 func _show_effects() -> void:
 	while is_inside_tree():
@@ -690,6 +726,10 @@ func _play_intro() -> void:
 	if not flags.get("intro_done", false):
 		await talk("evey_wake")
 		await talk("ibis_intro")
+	# Chad's flambeau, for lighting fires (the chemistry grid), once per game.
+	if not flags.get("got_flambeau", false):
+		flags["got_flambeau"] = true
+		inventory.add("flambeau")
 	# The demo: trouble on the wharf, in waves.
 	if wharf_demo and not demo.is_done():
 		await talk("demo_start")

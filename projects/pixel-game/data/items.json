@@ -149,5 +149,13 @@
     "heal": 0,
     "tool": true,
     "seasoning": true
+  },
+  "flambeau": {
+    "name": "Flambeau",
+    "icon": "flambeau",
+    "price": 0,
+    "heal": 0,
+    "tool": true,
+    "description": "A bottle torch. Lights grass, bushes and old crates in front of Chad. Fire spreads on its own."
   }
 }

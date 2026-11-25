@@ -1,0 +1,44 @@
+{
+  "_note": "The chemistry grid (scripts/room_chemistry.gd): what each map tile is made of and how materials react. Rules, not special cases: anything flammable catches from a burning neighbour (chance per second = spread), burns for burn_time seconds and ends as ash; `clears` means the thing standing there (bush, crate, fence) burns away and the tile can be walked through. Wet tiles don't catch; `douses` (water) wets its neighbours and stops fire spreading into them. `conductive` is for electricity (not used yet). Tiles not listed are inert (sand, stone, road, rock, walls, the wharf planks: old wet timber).",
+  "materials": {
+    "grass": {
+      "flammable": true,
+      "spread": 0.55,
+      "burn_time": 2.5
+    },
+    "foliage": {
+      "flammable": true,
+      "spread": 0.45,
+      "burn_time": 3.0,
+      "clears": true
+    },
+    "wood": {
+      "flammable": true,
+      "spread": 0.25,
+      "burn_time": 5.0,
+      "clears": true
+    },
+    "tree": {
+      "flammable": true,
+      "spread": 0.1,
+      "burn_time": 7.0
+    },
+    "water": {
+      "douses": true,
+      "conductive": true
+    },
+    "metal": {
+      "conductive": true
+    }
+  },
+  "tiles": {
+    ".": "grass",
+    ",": "grass",
+    "b": "foliage",
+    "c": "wood",
+    "F": "wood",
+    "T": "tree",
+    "~": "water",
+    "o": "metal"
+  }
+}
