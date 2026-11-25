@@ -1,0 +1,89 @@
+{
+  "_note": "Evey's grumbles: what she mutters when something happens. She is a peaceful dog: she never fights, she just has opinions. One line is picked at random per event (never the same twice in a row); she won't speak more than every few seconds, or repeat an event for a while. Every line is a DRAFT until someone from Trinidad reviews it (tone, dialect, how a grumpy old beagle would sound). Events: enemy_near (trouble shows up near Chad), enemy_beaten (Chad cleared it), chad_hurt, chad_faint, idle (Chad stands still a long time), night, swim, eat (Chad eats in front of her), level_up, stay, come, fetch, fetch_nothing, fetched, dig, dig_nothing, dug, sniff (she smells something buried), top_dog (meeting a top dog).",
+  "enemy_near": [
+    "*grunt* Your problem, not mine.",
+    "*huff* I'll be over here. Supervising.",
+    "Hrmph. Wake me when it's over.",
+    "*backs away* Nope. All yours, chief."
+  ],
+  "enemy_beaten": [
+    "*grunt* Took you long enough.",
+    "Hrmph. Lucky swing.",
+    "*yawn* Finished? Good."
+  ],
+  "chad_hurt": [
+    "*snort* Graceful.",
+    "*sigh* You call that dodging?",
+    "Mm-hm. Walk it off.",
+    "*winces* ...That looked like it hurt. Good."
+  ],
+  "chad_faint": [
+    "*long sigh* ...Get up, nah.",
+    "*nudge* I'm not carrying you.",
+    "*sits on you* Comfortable. Take your time."
+  ],
+  "idle": [
+    "*yawn* Riveting.",
+    "*flops down* Wake me when we're going somewhere.",
+    "*grumble* Standing here is a choice, you know.",
+    "*sigh* The gyro won't find itself."
+  ],
+  "night": [
+    "*grumble* Dark already. Great.",
+    "*sniff* Night air. Smells like trouble and fried fish."
+  ],
+  "swim": [
+    "*sputter* I'm a beagle, not a boat.",
+    "*paddle paddle* You owe me a towel."
+  ],
+  "eat": [
+    "*stares* And mine?",
+    "*licks lips* Sharing is caring, you know.",
+    "*huff* Not even a crumb. Unbelievable."
+  ],
+  "level_up": [
+    "*yawn* Congratulations, I guess.",
+    "Hrmph. Don't let it go to your head."
+  ],
+  "stay": [
+    "*sits* Fine. FINE.",
+    "*plop* Don't take long.",
+    "*grunt* Staying. Not because you said so."
+  ],
+  "come": [
+    "*grunt* Coming. Slowly.",
+    "*sigh* The things I do for you."
+  ],
+  "fetch": [
+    "*huff* Since you asked so nicely.",
+    "*grumble* Fetch, he says. Like a puppy."
+  ],
+  "fetch_nothing": [
+    "*sniff* Nothing to fetch. Like your plan.",
+    "*stares* Fetch what, exactly?"
+  ],
+  "fetched": [
+    "*drops it* You're welcome.",
+    "*grunt* There. Happy?"
+  ],
+  "dig": [
+    "*snort* Stand back, amateur.",
+    "*grumble* My paws, my rules."
+  ],
+  "dig_nothing": [
+    "*sniff* ...Dirt. Just dirt.",
+    "*huff* Nothing buried here but your hopes."
+  ],
+  "dug": [
+    "*grunt* Found it. Obviously.",
+    "*shakes off dirt* You're welcome. Again."
+  ],
+  "sniff": [
+    "*sniff sniff* ...Something down there.",
+    "*nose down* Hm. Interesting."
+  ],
+  "top_dog": [
+    "*grunt* Oh, it's this one.",
+    "*sigh* Let me handle this. Quietly."
+  ]
+}

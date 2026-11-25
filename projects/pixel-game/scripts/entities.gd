@@ -14,7 +14,7 @@ extends RefCounted
 ## `bossdoor <x> <y>` (takes the Pepper Key), `seasoning <x> <y> <item>@<trigger>` and
 ## `warp <x> <y> <map>:<room>:<tile>`.
 ## `dig <x> <y> <reward>` buries something for her to dig up, and `topdog <x> <y> <dog>` is a
-## dog that challenges her to a duel (data/dogs.json).
+## dog that Evey befriends (data/dogs.json).
 
 const PICKUP := preload("res://scenes/pickup.tscn")
 const SCENES := {

@@ -1,6 +1,6 @@
 extends "res://tests/test_base.gd"
 ## Evey: found hungry on the road, won over with food, follows Chad everywhere (temples
-## too), bites enemies near him, makes bandits drop their loot, and is remembered in the save.
+## too), never fights (she grumbles at trouble instead), and is remembered in the save.
 
 const GAME := preload("res://scenes/game.tscn")
 const SAVE_PATH := "user://test_save_companion.json"
@@ -78,29 +78,28 @@ func _run() -> void:
 	await _physics_frames(3)
 	_check(evey.position.distance_to(player.position) < 200.0, "she catches up from far away")
 
-	# --- biting -------------------------------------------------------------------------------
+	# --- peaceful, and grumpy about it ---------------------------------------------------------
 	player.position = _at(road, 10, 7)
 	await _physics_frames(30)
+	# Nothing said lately, so she is free to speak up.
+	evey.set("_quip_gap", 0.0)
+	evey.set("_said", {})
+	evey.set("_chad_still", 0.0)
 	var dog: Pothound = _spawn(game, "dog", player.position + Vector2(160, -40))
+	dog.set_physics_process(false)
 	dog.coin_chance = 0.0
 	dog.snack_chance = 0.0
-	var start := dog.health
-	var dog_ref: WeakRef = weakref(dog)
-	var bitten := await _wait_until(
-		func(): return dog_ref.get_ref() == null or dog_ref.get_ref().health < start, 180
-	)
-	_check(bitten, "she bites an enemy near Chad")
-	if dog_ref.get_ref() != null:
-		dog.free()
-	player.money = 0
-	var bandit: Bandit = _spawn(game, "bandit", player.position + Vector2(-150, 0))
-	bandit.loot_money = 6
-	bandit.state = Bandit.State.FLEE
-	bandit.set("_timer", 6.0)
-	var dropped := await _wait_until(func(): return player.money == 6, 180)
-	_check(dropped, "a bitten bandit drops what he stole")
-	for enemy in get_nodes_in_group("enemies"):
-		enemy.free()
+	await _physics_frames(120)
+	_check(dog.health == dog.max_health, "she never bites an enemy")
+	_check(evey.last_remark != "", "but she has something to say about it")
+	var quips: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(Companion.QUIPS_PATH))
+	_check(evey.last_remark in quips["enemy_near"], "a remark about the trouble")
+	var said := evey.remark("enemy_near")
+	_check(said == "", "she doesn't repeat herself straight away")
+	var forced := evey.remark("chad_hurt", true)
+	_check(forced in quips["chad_hurt"], "but some things can't wait")
+	_check(quips.has("_note") and str(quips["_note"]).contains("DRAFT"), "her lines are drafts")
+	dog.free()
 
 	# --- temples and saving -------------------------------------------------------------------
 	var entrance := Vector2i(1, 2)
@@ -138,8 +137,8 @@ func _run() -> void:
 	file.close()
 	game = _new_game()
 	await _physics_frames(2)
-	_check(int(game.flags.get("evey_level", 0)) == 3, "Brownie's old level carries over to Evey")
-	_check(int(game.flags.get("evey_xp", 0)) == 4, "and so does her experience")
+	_check(not game.flags.has("brownie_level"), "old duel levels are dropped")
+	_check(not game.flags.has("evey_level"), "Evey has no fighting level")
 	_check(not game.flags.has("brownie_joined"), "the old flag is cleared")
 	game.free()
 	DirAccess.remove_absolute(SAVE_PATH)

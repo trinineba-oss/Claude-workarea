@@ -113,9 +113,6 @@ func _ready() -> void:
 	_dog_menu = DogMenu.new()
 	_dog_menu.name = "DogMenu"
 	$HUD.add_child(_dog_menu)
-	var duel := DuelScreen.new()
-	duel.name = "DuelScreen"
-	$HUD.add_child(duel)
 	_minigame = FishingMinigame.new()
 	_minigame.name = "FishingMinigame"
 	$HUD.add_child(_minigame)
@@ -203,6 +200,8 @@ func use_selected_item() -> bool:
 	inventory.remove(id)
 	_player.heal(heal)
 	_player.strike_pose("eat", 1.4)
+	if _companion != null:
+		_companion.remark("eat")
 	Effects.float_text(self, above, "Yum!", Color(0.7, 1, 0.6))
 	return true
 
@@ -493,12 +492,9 @@ func _restore(data: Dictionary) -> bool:
 	var saved_flags: Variant = data.get("flags", {})
 	if saved_flags is Dictionary:
 		flags.merge(saved_flags, true)
-	# Older saves: the companion's duel level was kept under Brownie's name.
-	for old in ["brownie_level", "brownie_xp"]:
-		if flags.has(old):
-			flags[old.replace("brownie", "evey")] = flags[old]
-			flags.erase(old)
-	flags.erase("brownie_joined")
+	# Older saves: flags from Evey's fighting days (duel levels, Brownie as the companion).
+	for old in ["brownie_level", "brownie_xp", "evey_level", "evey_xp", "brownie_joined"]:
+		flags.erase(old)
 	return true
 
 
@@ -599,8 +595,6 @@ func _command_evey() -> void:
 	await _let_input_go_stale()
 	get_tree().paused = false
 	match choice.get("order", ""):
-		"sic":
-			_companion.sic(choice["target"])
 		"stay":
 			_companion.stay()
 		"come":
@@ -633,10 +627,9 @@ func _clamp_to_room(pos: Vector2, room_coords: Vector2i, margin: float) -> Vecto
 
 ## Developer aid for the Web build: `index.html?room=0_0` starts in that room, `&at=19_7` on
 ## that tile, `&time=21` at that hour, `&map=temple1` on another map, `&give=fishing_rod`
-## puts an item in the bag, `&duel=scraps` opens a dog duel and `&illustrated=0` turns the
-## illustrated-look trial off and `&intro=0` skips the opening conversation (add `&demo=1` to start
-## the wharf waves at once, `&fx=1` to loop the impact effects) and `&look=comic`
-## shows the comic-book mockup (used to take screenshots and recordings).
+## puts an item in the bag and `&intro=0` skips the opening conversation (add `&demo=1` to
+## start the wharf waves at once, `&fx=1` to loop the impact effects); used to take
+## screenshots and recordings.
 ## Ignored everywhere else.
 func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
@@ -653,10 +646,6 @@ func _apply_debug_start() -> void:
 	var time := RegEx.create_from_string("time=(\\d+(\\.\\d+)?)").search(query)
 	if time != null:
 		day_night.set_hour(float(time.get_string(1)))
-	var duel := RegEx.create_from_string("duel=([a-z_]+)").search(query)
-	if duel != null and GameData.has_dog(duel.get_string(1)):
-		var screen: DuelScreen = $HUD/DuelScreen
-		screen.fight.call_deferred(self, duel.get_string(1))
 	var on_map := RegEx.create_from_string("map=([a-z0-9_]+)").search(query)
 	if on_map != null and MAPS.has(on_map.get_string(1)):
 		map_id = on_map.get_string(1)

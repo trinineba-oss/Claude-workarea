@@ -1,8 +1,8 @@
 class_name TopDog
 extends Interactable
-## A dog that rules its patch (`topdog <x> <y> <id>`, stats and lines in data/dogs.json). Talk
-## to it with Evey at your side and it challenges her to a turn-based duel (DuelScreen).
-## Beaten, it is friendly from then on (flag "beat_<id>").
+## A dog that rules its patch (`topdog <x> <y> <id>`, lines in data/dogs.json). Talk to it
+## with Evey at your side and the two size each other up; Evey, unbothered as ever, wins it
+## over without a fight, and it is friendly from then on (flag "friend_<id>").
 
 var dog_id := ""
 
@@ -39,21 +39,22 @@ func on_talk(hero: Node2D) -> void:
 	_sprite.flip_h = hero.global_position.x < global_position.x
 
 
-func is_beaten(game: Game) -> bool:
-	return game.flags.get("beat_" + dog_id, false)
+## Friends with Evey (older saves called it "beat_<id>").
+func is_friend(game: Game) -> bool:
+	return game.flags.get("friend_" + dog_id, false) or game.flags.get("beat_" + dog_id, false)
 
 
-## Talking to it: a challenge if Evey is here, a shrug if not, a friendly look once beaten.
+## Talking to it: a meeting if Evey is here, a shrug if not, a friendly look once friends.
 func use(game: Game) -> void:
 	var data := GameData.dog(dog_id)
-	if is_beaten(game):
+	if is_friend(game):
 		game.talk(data.get("after", ""), self)
 		return
 	var evey := get_tree().get_first_node_in_group("companion") as Companion
 	if evey == null or not evey.joined:
 		game.talk("topdog_no_dog", self)
 		return
+	evey.remark("top_dog", true)
 	await game.talk(data.get("intro", ""), self)
-	var screen: DuelScreen = game.get_node("HUD/DuelScreen")
-	var won: bool = await screen.fight(game, dog_id)
-	game.talk(data.get("win" if won else "lose", ""), self)
+	game.flags["friend_" + dog_id] = true
+	game.talk(data.get("friends", ""), self)

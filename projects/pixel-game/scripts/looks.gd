@@ -1,9 +1,9 @@
 class_name Looks
 extends RefCounted
 ## Pixel-art sprite sheets for characters (PixelSprite): which sheet draws what
-## (data/looks.json) and how each sheet is laid out (assets/characters/sheets.json, written by tools/lpc_build.py and
-## tools/pixel_animals.py). Frames are 64x64; directional animations have four rows: up, left,
-## down, right.
+## (data/looks.json) and how each sheet is laid out (assets/characters/sheets.json, written by
+## tools/lpc_build.py and tools/pixel_animals.py). Frames are 64x64; directional animations
+## have four rows: up, left, down, right.
 
 const LOOKS_PATH := "res://data/looks.json"
 const SHEETS_PATH := "res://assets/characters/sheets.json"
@@ -29,24 +29,6 @@ static func size_for(node: Node) -> float:
 static func sheet_by_key(key: String) -> String:
 	var look: Variant = _load_looks().get(key, "")
 	return look.get("sheet", "") if look is Dictionary else str(look)
-
-
-## The first frame of an animation, facing that way, as a texture for the 2D screens (the dog
-## duel); null if the sheet has no such animation.
-static func frame(sheet: String, anim_name: String, facing: Vector2) -> Texture2D:
-	var layout := anim(sheet, anim_name)
-	if layout.is_empty():
-		return null
-	var row: int = layout["row"]
-	if bool(layout.get("mirror", false)):
-		row += 1  # the side row, drawn facing right
-	elif int(layout["rows"]) == 4:
-		row += direction_index(facing)
-	var atlas := AtlasTexture.new()
-	atlas.atlas = texture(sheet)
-	var cell := frame_size(sheet)
-	atlas.region = Rect2(0, row * cell, cell, cell)
-	return atlas
 
 
 static func _look(node: Node) -> Variant:

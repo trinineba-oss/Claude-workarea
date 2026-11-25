@@ -3,51 +3,50 @@ extends Interactable
 ## Evey, Chad's beagle. She washed up on the wharf with him and is at his side from the
 ## first step, temples included.
 ##
-## Left to herself she runs at enemies near Chad and bites them (a bitten bandit drops what he
-## stole, and she runs down any bandit making off with Chad's things), sits when Chad stands
-## still, sniffs at buried things nearby, and catches up if she falls far behind. She never
+## She is a peaceful dog: she never fights. Left to herself she follows Chad, sits when he
+## stands still, sniffs at buried things nearby, catches up if she falls far behind, and
+## grumbles sarcastic remarks about whatever is going on (data/evey_quips.json). She never
 ## gets hurt. Chad can also give her orders from the dog menu (DogMenu):
-##   sic(target)  chase that one enemy down
 ##   stay()       wait right here (heavy enough to hold down a pressure plate); come() ends it
 ##   fetch()      bring back the nearest coin or snack, swimming if she has to
 ##   dig()        sniff out the nearest buried thing (DigSpot) and dig it up
 
-enum Mode { FOLLOW, STAY, SIC, FETCH, DIG }
+enum Mode { FOLLOW, STAY, FETCH, DIG }
 
 const TEXTURE := preload("res://assets/sprites/evey.png")
 const FOLLOW_DISTANCE := 84.0
 const WALK_SPEED := 250.0
 const RUN_SPEED := 330.0
-## Enemies this close to Chad get chased.
-const GUARD_RANGE := 260.0
-## A bandit carrying Chad's things gets chased this far, and faster.
-const THIEF_RANGE := 700.0
-const THIEF_SPEED := 400.0
-const BITE_RANGE := 60.0
-const BITE_COOLDOWN := 0.9
-const BITE_DAMAGE := 1
+## Trouble this close to Chad gets a remark.
+const TROUBLE_RANGE := 300.0
 ## Farther than this from Chad (or in another room) and she just catches up.
 const CATCH_UP_DISTANCE := 560.0
 ## How far from Chad she looks for things to fetch or dig up.
 const SEARCH_RANGE := 8.0 * WorldMap.TILE
-## A sic'd enemy farther than this from Chad is let go.
-const SIC_RANGE := 900.0
 const DIG_TIME := 1.2
 ## She sniffs at a buried thing this close, now and then.
 const SNIFF_RANGE := 2.5 * WorldMap.TILE
 const SNIFF_EVERY := 6.0
+const QUIPS_PATH := "res://data/evey_quips.json"
+## She speaks at most this often, and repeats one kind of remark at most this often.
+const QUIP_GAP := 5.0
+const QUIP_REPEAT := 25.0
+## Chad standing still this long gets a remark.
+const IDLE_REMARK := 14.0
+const BUBBLE_SECONDS := 2.6
+
+static var _quips: Dictionary
 
 var joined := false
 var mode := Mode.FOLLOW
-## The enemy she is after, if any.
-var quarry: Node2D
 ## The coin or snack she is fetching or carrying.
 var carrying: Pickup
 ## The buried thing she is digging up.
 var dig_target: DigSpot
 var stay_spot := Vector2.ZERO
 
-var _bite_cooldown := 0.0
+## The last thing she said (for tests and the speech bubble).
+var last_remark := ""
 var _dig_time := 0.0
 var _sniff_cooldown := 0.0
 var _fetch_target: Pickup
@@ -57,6 +56,18 @@ var _swimming := false
 var _sprite: Sprite2D
 var _carried_sprite: Sprite2D
 var _shape: CollisionShape2D
+var _remark_label: Label
+var _remark_time := 0.0
+var _quip_gap := 0.0
+var _said: Dictionary = {}  # event -> seconds left before she says it again
+var _last_line: Dictionary = {}  # event -> last line used
+# What she was watching last frame, to notice changes.
+var _seen_health := -1
+var _seen_level := -1
+var _seen_trouble := false
+var _seen_night := false
+var _seen_swimming := false
+var _chad_still := 0.0
 
 
 func _ready() -> void:
@@ -102,17 +113,6 @@ func catch_up(player: Player) -> void:
 # --- orders --------------------------------------------------------------------------------
 
 
-## Chase that enemy until it is beaten (or gets away).
-func sic(target: Node2D) -> bool:
-	if target == null or not is_instance_valid(target):
-		return false
-	_reset_orders()
-	mode = Mode.SIC
-	quarry = target
-	_say("Grrr!")
-	return true
-
-
 ## Wait right here.
 func stay() -> void:
 	_reset_orders()
@@ -123,13 +123,13 @@ func stay() -> void:
 		if plate.global_position.distance_to(position) < 56.0:
 			stay_spot = plate.global_position
 			position = stay_spot
-	_say("*sits*")
+	remark("stay")
 
 
 ## Stop staying and follow again.
 func come() -> void:
 	_reset_orders()
-	_say("Woof!")
+	remark("come")
 
 
 ## Fetch the nearest coin or snack. Returns false (and says so) if there is nothing.
@@ -146,11 +146,12 @@ func fetch() -> bool:
 			best = pickup
 			best_distance = distance
 	if best == null:
-		_say("Nothing to fetch")
+		remark("fetch_nothing")
 		return false
 	_reset_orders()
 	mode = Mode.FETCH
 	_fetch_target = best
+	remark("fetch")
 	return true
 
 
@@ -168,43 +169,20 @@ func dig() -> bool:
 			best = spot
 			best_distance = distance
 	if best == null:
-		_say("Sniff... nothing here")
+		remark("dig_nothing")
 		return false
 	_reset_orders()
 	mode = Mode.DIG
 	dig_target = best
 	_dig_time = 0.0
+	remark("dig")
 	return true
-
-
-## Enemies she could be sent after, nearest to Chad first.
-func targets() -> Array:
-	var player := _player()
-	if player == null:
-		return []
-	var found := get_tree().get_nodes_in_group("enemies").filter(
-		func(e):
-			return (
-				e.health > 0
-				and not e.is_queued_for_deletion()
-				and e.global_position.distance_to(player.global_position) < SIC_RANGE * 0.7
-			)
-	)
-	found.sort_custom(
-		func(a, b):
-			return (
-				a.global_position.distance_to(player.global_position)
-				< b.global_position.distance_to(player.global_position)
-			)
-	)
-	return found
 
 
 # --- behaviour ------------------------------------------------------------------------------
 
 
 func _physics_process(delta: float) -> void:
-	_bite_cooldown = maxf(_bite_cooldown - delta, 0.0)
 	_sniff_cooldown = maxf(_sniff_cooldown - delta, 0.0)
 	var game := get_tree().get_first_node_in_group("game") as Game
 	var player := _player()
@@ -220,9 +198,7 @@ func _physics_process(delta: float) -> void:
 		return
 	match mode:
 		Mode.STAY:
-			_guard_spot(delta)
-		Mode.SIC:
-			_do_sic(player, delta)
+			position = stay_spot
 		Mode.FETCH:
 			_do_fetch(player, delta)
 		Mode.DIG:
@@ -230,11 +206,16 @@ func _physics_process(delta: float) -> void:
 		_:
 			_do_follow(player, delta)
 	_swimming = _on_water(game)
+	_watch(game, player, delta)
 
 
 func _process(delta: float) -> void:
 	super(delta)
 	_age += delta
+	if _remark_label != null and _remark_label.visible:
+		_remark_time -= delta
+		_remark_label.modulate.a = clampf(_remark_time / 0.4, 0.0, 1.0)
+		_remark_label.visible = _remark_time > 0.0
 	_sprite.rotation = 0.0
 	if mode == Mode.DIG and dig_target != null and _dig_time > 0.0:
 		_sprite.position = Vector2(sin(_age * 40.0) * 3.0, 4.0)
@@ -256,31 +237,10 @@ func _process(delta: float) -> void:
 
 
 func _do_follow(player: Player, delta: float) -> void:
-	quarry = _pick_quarry(player)
-	if quarry != null:
-		var thief: bool = quarry is Bandit and quarry.has_loot()
-		_run_toward(quarry.global_position, THIEF_SPEED if thief else RUN_SPEED, delta)
-		if global_position.distance_to(quarry.global_position) < BITE_RANGE:
-			_bite(quarry)
-		return
 	_sniff_nearby()
 	if position.distance_to(player.position) > FOLLOW_DISTANCE * 1.3:
 		var far := position.distance_to(player.position) > FOLLOW_DISTANCE * 3.0
 		_run_toward(_spot_behind(player), RUN_SPEED if far else WALK_SPEED, delta)
-
-
-func _do_sic(player: Player, delta: float) -> void:
-	if quarry == null or not is_instance_valid(quarry):
-		_reset_orders()
-		return
-	var target := quarry as Enemy
-	var gone := target == null or target.health <= 0
-	if gone or target.global_position.distance_to(player.global_position) > SIC_RANGE:
-		_reset_orders()
-		return
-	_run_toward(target.global_position, THIEF_SPEED, delta, true)
-	if global_position.distance_to(target.global_position) < BITE_RANGE:
-		_bite(target)
 
 
 func _do_fetch(player: Player, delta: float) -> void:
@@ -311,16 +271,7 @@ func _do_dig(delta: float) -> void:
 		var game := get_tree().get_first_node_in_group("game") as Game
 		dig_target.dig_up(game)
 		_reset_orders()
-
-
-## Staying: she does not move, but still snaps at anything that comes right up to her.
-func _guard_spot(_delta: float) -> void:
-	position = stay_spot
-	for node in get_tree().get_nodes_in_group("enemies"):
-		var enemy := node as Enemy
-		if enemy != null and enemy.health > 0:
-			if enemy.global_position.distance_to(global_position) < BITE_RANGE:
-				_bite(enemy)
+		remark("dug")
 
 
 func _pick_up(pickup: Pickup) -> void:
@@ -337,8 +288,8 @@ func _deliver(player: Player) -> void:
 	var room := player.get_parent()
 	if pickup.collect(player):
 		Effects.burst(room, player.position + Vector2(0, -40), "sparkle")
-		Effects.float_text(room, position + Vector2(0, -80), "Good girl!", Color(1, 0.95, 0.7))
 		pickup.free()
+		remark("fetched")
 	else:
 		# Not needed right now (a snack at full health): she drops it at Chad's feet.
 		var game := get_tree().get_first_node_in_group("game") as Game
@@ -356,7 +307,6 @@ func _reset_orders() -> void:
 		carrying.free()
 		carrying = null
 	mode = Mode.FOLLOW
-	quarry = null
 	_fetch_target = null
 	dig_target = null
 	_dig_time = 0.0
@@ -384,37 +334,12 @@ func _sniff_nearby() -> void:
 		if spot != null and not spot.dug:
 			if spot.global_position.distance_to(global_position) < SNIFF_RANGE:
 				_sniff_cooldown = SNIFF_EVERY
-				_say("Sniff sniff?")
+				remark("sniff")
 				return
 
 
-func _pick_quarry(player: Player) -> Node2D:
-	var best: Node2D = null
-	var best_distance := GUARD_RANGE
-	for node in get_tree().get_nodes_in_group("enemies"):
-		var enemy := node as Enemy
-		if enemy == null or enemy.health <= 0 or enemy.is_queued_for_deletion():
-			continue
-		var distance := enemy.global_position.distance_to(player.global_position)
-		if enemy is Bandit and enemy.has_loot() and distance < THIEF_RANGE:
-			return enemy
-		if distance < best_distance:
-			best = enemy
-			best_distance = distance
-	return best
-
-
-func _bite(enemy: Node2D) -> void:
-	if _bite_cooldown > 0.0 or not enemy.has_method("take_hit"):
-		return
-	_bite_cooldown = BITE_COOLDOWN
-	enemy.take_hit(BITE_DAMAGE, global_position)
-	Effects.burst(enemy.get_parent(), enemy.position + Vector2(0, -30), "hit")
-	_say("Woof!")
-
-
 ## Moves toward `target`, sliding along walls. When `swim` is set she also crosses water
-## (fetching, digging, chasing).
+## (fetching, digging).
 func _run_toward(target: Vector2, speed: float, delta: float, swim := false) -> void:
 	var to := target - global_position
 	if to.length() < 4.0:
@@ -454,9 +379,95 @@ func _spot_behind(player: Player) -> Vector2:
 	return player.position
 
 
+# --- grumbling -----------------------------------------------------------------------------
+
+
+## Says something about `event` (a key of data/evey_quips.json), unless she spoke very
+## recently or said that kind of thing a little while ago (`force` skips both). Returns the
+## line, or "".
+func remark(event: String, force := false) -> String:
+	var lines: Array = _load_quips().get(event, [])
+	if lines.is_empty():
+		return ""
+	if not force and (_quip_gap > 0.0 or _said.get(event, 0.0) > 0.0):
+		return ""
+	var options := lines.filter(func(l): return l != _last_line.get(event, ""))
+	var line: String = (options if not options.is_empty() else lines).pick_random()
+	_last_line[event] = line
+	_said[event] = QUIP_REPEAT
+	_quip_gap = QUIP_GAP
+	_say(line)
+	return line
+
+
+static func _load_quips() -> Dictionary:
+	if _quips.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(QUIPS_PATH))
+		_quips = parsed if parsed is Dictionary else {}
+		_quips.erase("_note")
+	return _quips
+
+
+## Notices what is going on around Chad and grumbles about it.
+func _watch(game: Game, player: Player, delta: float) -> void:
+	_quip_gap = maxf(_quip_gap - delta, 0.0)
+	for event in _said.keys():
+		_said[event] = maxf(_said[event] - delta, 0.0)
+	if _seen_health >= 0 and player.health < _seen_health:
+		remark("chad_faint" if player.health <= 0 else "chad_hurt", player.health <= 0)
+	_seen_health = player.health
+	if _seen_level >= 0 and player.level > _seen_level:
+		remark("level_up")
+	_seen_level = player.level
+	var trouble := _trouble_near(player)
+	if trouble and not _seen_trouble:
+		remark("enemy_near")
+	elif _seen_trouble and not trouble:
+		remark("enemy_beaten")
+	_seen_trouble = trouble
+	var night := game.day_night.is_night()
+	if night and not _seen_night:
+		remark("night")
+	_seen_night = night
+	if _swimming and not _seen_swimming:
+		remark("swim")
+	_seen_swimming = _swimming
+	_chad_still = _chad_still + delta if player.velocity.length() < 1.0 else 0.0
+	if _chad_still > IDLE_REMARK:
+		_chad_still = 0.0
+		remark("idle")
+
+
+func _trouble_near(player: Player) -> bool:
+	for node in get_tree().get_nodes_in_group("enemies"):
+		var enemy := node as Enemy
+		if enemy != null and enemy.health > 0 and not enemy.is_queued_for_deletion():
+			if enemy.global_position.distance_to(player.global_position) < TROUBLE_RANGE:
+				return true
+	return false
+
+
+## A speech line over her head for a couple of seconds.
 func _say(text: String) -> void:
-	if is_inside_tree():
-		Effects.float_text(get_parent(), position + Vector2(0, -80), text, Color(1, 0.9, 0.7))
+	if not is_inside_tree():
+		return
+	last_remark = text
+	if _remark_label == null:
+		_remark_label = Label.new()
+		_remark_label.name = "Remark"
+		_remark_label.z_index = 25
+		_remark_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_remark_label.add_theme_font_size_override("font_size", 22)
+		_remark_label.add_theme_color_override("font_color", Color(1, 0.93, 0.78))
+		_remark_label.add_theme_color_override("font_outline_color", Color(0.12, 0.07, 0.1))
+		_remark_label.add_theme_constant_override("outline_size", 8)
+		_remark_label.size = Vector2(420, 32)
+		add_child(_remark_label)
+	_remark_label.text = text
+	_remark_label.position = Vector2(-210, -bubble_height - 24)
+	_remark_label.modulate.a = 1.0
+	_remark_label.visible = true
+	_remark_time = BUBBLE_SECONDS
 
 
 func _player() -> Player:
