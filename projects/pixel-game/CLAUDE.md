@@ -18,7 +18,7 @@ work branch). The plan for open-world systems is `docs/18-open-world-systems.md`
   it on the pixel grid.
 - Systems are rules on data, not special cases: the chemistry grid (`RoomChemistry`,
   `data/materials.json`) lives per room. Evey is peaceful (no fighting); her remarks are in
-  `data/evey_quips.json` (drafts).
+  `data/evey_quips.json` (drafts). She speaks plain English, never Trinidad dialect.
 - Placeholder art comes from `tools/gen_art.py` (Pillow + numpy, run with
   `uv run --with pillow --with numpy python -I tools/gen_art.py`). Real art replaces the PNGs
   at the same size and anchor.

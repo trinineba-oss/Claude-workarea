@@ -15,7 +15,8 @@ get our own Trini-flavoured names (see the table below), never Nintendo's.
   (`PixelSprite`), drawn on a 2x pixel grid (64 px tiles = 32 art pixels); the ground shader
   and `tools/pixelate.py` put the rest of the art on the same grid with one palette.
 - **Evey is peaceful.** She never fights; she grumbles sarcastic remarks instead
-  (`data/evey_quips.json`), and top dogs are won over, not beaten.
+  (`data/evey_quips.json`), in plain English, never Trinidad dialect. Top dogs are won over,
+  not beaten.
 - **Rooms are the chunks.** The blueprint's 32x32 chunks map onto our 20x11 rooms: only the
   rooms around Chad are loaded (`Game._loaded`), each with its own simulation, and changes
   are kept as deltas (the world map remembers a burnt-away bush; temple progress is saved).
