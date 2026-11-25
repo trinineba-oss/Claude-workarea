@@ -72,7 +72,37 @@ get our own Trini-flavoured names (see the table below), never Nintendo's.
    flee from fire, fetch a weapon), weather and temperature zones.
 5. **Mobile polish.** Ability wheel on touch, haptics, keeping 60 fps on mid-range phones.
 
-## Your input
+## Ideas queue (owner requests and suggestions)
+
+- **Belly rubs for Evey** (owner request): an interaction when Chad stands next to her and
+  presses Talk; she rolls over (new pixel frames), grumbles something not quite grateful, and
+  it gives a small bonus (a heart, or her finding things faster for a while).
+- **Movement:** stamina wheel; climb any wall or cliff tile (slower and slipping in rain);
+  glide with the Easter kite; shield surfing down slopes on a pot cover.
+- **World:** a lookout to climb that reveals the map; weather (rain puts out fire and makes
+  climbing slip, lightning seeks metal weapons); hot sun and cool nights; rafts and wind;
+  boulders that roll; hidden collectibles in every corner.
+- **Survival and RPG:** cooking at a pot (the gyro quest), with meals giving effects
+  (stamina, heat or cold resistance, attack up); outfits with bonuses; enemies that pick up
+  weapons and camp in groups; stealth and sneak strikes; a "jumbie night" that brings beaten
+  enemies back.
+- **Fluid motion:** see the next section.
+
+## Making movement and combat look fluid
+
+1. **Movement with weight:** acceleration and friction instead of instant speed; a skid and
+   dust puff when turning or stopping; footstep dust; the camera leading slightly ahead.
+2. **Frame timing per move:** anticipation, active and recovery phases, each with its own
+   frame hold (a beat on the wind-up, a hold on the impact frame), instead of spreading
+   frames evenly over the swing.
+3. **Smears and secondary motion:** a smear frame on fast swings, motion trails, the
+   backpack and Evey's ears lagging a frame behind.
+4. **Hit reactions for enemies:** flinch, knock-back, knock-down and get-up frames (today
+   most enemies only have a walk).
+5. **More frames from better art:** 8 to 12 frame cycles drawn in Aseprite (or generated and
+   cleaned up), with turn and stop transitions; LPC gives a good base but few in-betweens.
+
+
 
 1. Which phase 2 piece matters most to you first: climbing, the kite, or stamina and sprint?
 2. Are the ability names right (lodestone glove, limin' charm, snow-cone maker, bamboo
