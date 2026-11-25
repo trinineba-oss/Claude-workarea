@@ -33,6 +33,7 @@ SKIN = {
     "dark": [(30, 18, 14), (66, 40, 30), (98, 62, 44), (128, 84, 60), (156, 108, 80)],
     "tan": [(70, 44, 30), (132, 88, 60), (178, 126, 88), (212, 160, 120), (232, 192, 156)],
     "light": [(92, 60, 48), (164, 112, 88), (214, 160, 128), (238, 196, 164), (250, 220, 196)],
+    "deep": [(40, 24, 18), (84, 52, 36), (122, 80, 56), (152, 104, 74), (180, 132, 98)],
 }
 
 
@@ -58,10 +59,12 @@ def solid(r, g, b, spread=0.45):
 
 # name -> body type, skin, [(item key, ramp or None, alpha)]
 CAST = {
-    "chad": ("male", "brown", [
-        ("feet_shoes_basic", SHOE), ("legs_pants", JEANS), ("torso_clothes_tshirt", GREY),
-        ("neck_necklace_chain", GOLD), ("heads_human_male", None), ("beards_5oclock_shadow", STUBBLE, 0.55),
-        ("hair_buzzcut", BLACK_HAIR),
+    # Chad as in the v5 model sheets: olive jacket over a black tee, black cargo trousers,
+    # black boots, a brown canvas backpack, short buzz cut.
+    "chad": ("male", "deep", [
+        ("feet_boots_basic", solid(34, 32, 32)), ("legs_pants", solid(40, 40, 42)), ("torso_clothes_tshirt", solid(28, 28, 30)),
+        ("torso_clothes_longsleeve2_cardigan", solid(84, 104, 56)), ("backpack", solid(110, 84, 56)),
+        ("backpack_straps", solid(90, 68, 46)), ("heads_human_male", None), ("hair_buzzcut", BLACK_HAIR),
     ]),
     "gyro_vendor": ("male", "tan", [
         ("feet_shoes_basic", SHOE), ("legs_pants", solid(60, 60, 80)), ("torso_clothes_tshirt", WHITE),
@@ -251,7 +254,14 @@ def credit_lines(credits_js, keys):
 
 def main():
     layers_js, credits_js = metadata()
-    sheets = {"frame": FRAME, "anims": {}, "characters": {}}
+    # Other tools (pixel_animals.py) write their sheets here too: keep their entries.
+    try:
+        sheets = json.load(open(f"{OUT}/sheets.json"))
+    except (OSError, ValueError):
+        sheets = {}
+    sheets.setdefault("frame", FRAME)
+    sheets.setdefault("anims", {})
+    sheets.setdefault("characters", {})
     used = {}
     for name, (body, skin, parts) in CAST.items():
         layout, keys = build(name, body, skin, parts, layers_js)

@@ -51,6 +51,7 @@ func _physics_process(delta: float) -> void:
 					continue
 				var room := body.get_parent()
 				Effects.burst(room, body.position + Vector2(0, -30), "hit")
+				Effects.slash_arc(room, body.position, room.to_local(global_position), _force > 1.5)
 				Effects.float_text(
 					room,
 					body.position + Vector2(randf_range(-14, 14), -70),

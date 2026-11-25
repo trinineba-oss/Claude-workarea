@@ -11,9 +11,9 @@ const SLOW_SCALE := 0.35
 const SLOW_SECONDS := 0.22
 const IMPACT_SECONDS := 0.06
 
-## Current shake strength, in tiles; View3D adds it to the camera and lets it die away.
+## Current shake strength, in tiles; Game adds it to the camera and lets it die away.
 static var shake_amount := 0.0
-## Current camera punch, a fraction of the camera distance; View3D eases it back to 0.
+## Current camera punch (extra zoom); Game eases it back to 0.
 static var zoom_amount := 0.0
 
 static var _stopping := false

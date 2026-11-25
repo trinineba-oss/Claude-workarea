@@ -1,17 +1,21 @@
 class_name Effects
 extends RefCounted
-## One-shot particle bursts: "hit" sparks, a "poof" when an enemy is beaten, a "sparkle"
-## when something is collected.
+## One-shot effects: particle bursts ("hit" sparks, a "poof" when an enemy is beaten, a
+## "sparkle" when something is collected, "dust"), sprite-sheet flourishes (assets/vfx), the
+## cutlass's slash marks and floating text.
 
 const SPARK := preload("res://assets/sprites/spark.png")
+const VFX_SHEETS := "res://assets/vfx/crisp_juice/sheets.json"
+const VFX_TEXTURE := "res://assets/vfx/crisp_juice/%s.png"
+
+static var _vfx: Dictionary
+static var _crescent: Texture2D
 
 
 ## A short message that floats up from a point in the world and fades ("+2 Mango").
 static func float_text(parent: Node, pos: Vector2, text: String, color := Color.WHITE) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
-	if View3D.current != null:
-		View3D.current.float_text(_global(parent, pos), text, color)
 	var label := Label.new()
 	label.text = text
 	label.z_index = 20
@@ -29,20 +33,85 @@ static func float_text(parent: Node, pos: Vector2, text: String, color := Color.
 	tween.chain().tween_callback(label.queue_free)
 
 
-## A sprite-sheet flourish in the 2.5D view (shockwave, star or coin burst); nothing in 2D.
+## A sprite-sheet flourish played once at a point: "ring_shockwave_white",
+## "star_burst_gold" or "coin_burst_gold". `size` in tiles; `height` in tiles above `pos`.
 static func flourish(
 	parent: Node, pos: Vector2, sheet_name: String, size := 1.6, height := 0.6
-) -> void:
-	if parent == null or not parent.is_inside_tree() or View3D.current == null:
-		return
-	View3D.current.flourish(_global(parent, pos), sheet_name, size, height)
+) -> Sprite2D:
+	if parent == null or not parent.is_inside_tree():
+		return null
+	if _vfx.is_empty():
+		var parsed: Variant = JSON.parse_string(FileAccess.get_file_as_string(VFX_SHEETS))
+		_vfx = parsed if parsed is Dictionary else {}
+	var info: Dictionary = _vfx.get(sheet_name, {})
+	if info.is_empty():
+		return null
+	var sprite := Sprite2D.new()
+	sprite.name = "Vfx_" + sheet_name
+	sprite.texture = load(VFX_TEXTURE % sheet_name)
+	sprite.hframes = int(info["cols"])
+	sprite.vframes = int(info["rows"])
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.scale = Vector2.ONE * size * WorldMap.TILE / float(info["cell"])
+	sprite.position = pos - Vector2(0, height * WorldMap.TILE)
+	sprite.z_index = 20
+	parent.add_child(sprite)
+	var frames := int(info["frames"])
+	var tween := sprite.create_tween()
+	tween.tween_property(sprite, "frame", frames - 1, frames / float(info["fps"])).from(0)
+	tween.tween_callback(sprite.queue_free)
+	return sprite
+
+
+## A crescent slash mark over something the cutlass hit, bulging away from the swing's origin
+## `from`: it flares out and fades. The finisher's (`heavy`) is bigger and gold.
+static func slash_arc(parent: Node, at: Vector2, from: Vector2, heavy: bool) -> Sprite2D:
+	if parent == null or not parent.is_inside_tree():
+		return null
+	var arc := Sprite2D.new()
+	arc.name = "SlashArc"
+	arc.texture = _crescent_texture()
+	arc.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	arc.modulate = Color(1.0, 0.85, 0.4) if heavy else Color(0.9, 0.96, 1.0)
+	arc.z_index = 20
+	var away := (at - from).normalized() if at != from else Vector2.RIGHT
+	arc.rotation = away.angle()
+	arc.position = at + Vector2(0, -30)
+	var size := 2.4 if heavy else 1.6
+	arc.scale = Vector2.ONE * size
+	parent.add_child(arc)
+	var mat := CanvasItemMaterial.new()
+	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	arc.material = mat
+	var tween := arc.create_tween().set_parallel(true)
+	tween.tween_property(arc, "scale", Vector2.ONE * size * 1.5, 0.16).set_ease(Tween.EASE_OUT)
+	tween.tween_property(arc, "modulate:a", 0.0, 0.2).set_delay(0.04)
+	tween.chain().tween_callback(arc.queue_free)
+	return arc
+
+
+## A small pixel-art crescent (made once): an arc of a ring whose centre sits off the left
+## edge, so it bulges towards +x, thickest in the middle and tapering at the tips.
+static func _crescent_texture() -> Texture2D:
+	if _crescent != null:
+		return _crescent
+	var size := 32
+	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
+	var centre := Vector2(-10.0, size / 2.0)
+	for y in size:
+		for x in size:
+			var offset := Vector2(x + 0.5, y + 0.5) - centre
+			var spread := absf(offset.angle()) / 0.62
+			var thick := 4.5 * (1.0 - spread * spread)
+			var edge := absf(offset.length() - 29.0)
+			var a := 1.0 if thick > 0.0 and edge < thick else 0.0
+			image.set_pixel(x, y, Color(1, 1, 1, a))
+	_crescent = ImageTexture.create_from_image(image)
+	return _crescent
 
 
 static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	if parent == null or not parent.is_inside_tree():
-		return
-	if View3D.current != null:
-		View3D.current.burst(_global(parent, pos), kind)
 		return
 	var p := CPUParticles2D.new()
 	p.texture = SPARK
@@ -74,6 +143,17 @@ static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 			p.scale_amount_max = 1.8
 			ramp.set_color(0, Color(0.92, 0.9, 0.96, 0.9))
 			ramp.set_color(1, Color(0.8, 0.78, 0.86, 0))
+		"dust":
+			p.amount = 8
+			p.lifetime = 0.4
+			p.initial_velocity_min = 40.0
+			p.initial_velocity_max = 110.0
+			p.damping_min = 120.0
+			p.damping_max = 200.0
+			p.scale_amount_min = 0.5
+			p.scale_amount_max = 0.9
+			ramp.set_color(0, Color(0.85, 0.8, 0.7, 0.8))
+			ramp.set_color(1, Color(0.75, 0.7, 0.62, 0))
 		_:
 			p.amount = 8
 			p.lifetime = 0.45
@@ -88,8 +168,3 @@ static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	p.finished.connect(p.queue_free)
 	p.emitting = true
 	parent.add_child(p)
-
-
-## A position given in `parent`'s coordinates, in world coordinates.
-static func _global(parent: Node, pos: Vector2) -> Vector2:
-	return (parent as Node2D).to_global(pos) if parent is Node2D else pos

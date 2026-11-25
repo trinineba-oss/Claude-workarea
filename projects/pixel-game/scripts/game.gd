@@ -35,8 +35,6 @@ const NIGHT_COLOR := Color(0.75, 0.8, 1.0)
 @export var play_intro := true
 ## The demo's waves of enemies on the wharf start after the opening (WharfDemo).
 @export var wharf_demo := true
-## Draw the world in 2.5D (View3D); off, the plain 2D drawing shows instead.
-@export var use_3d := true
 
 var save := SaveGame.new()
 ## The map Chad is on (a key of MAPS).
@@ -62,7 +60,8 @@ var _fishing := false
 var _was_night := false
 var _boomerang: Boomerang
 var _companion: Companion
-var _view: View3D
+## Gives characters their animated pixel sprites.
+var _cast: PixelCast
 ## Web build, `&demo=1`: start the wharf demo's waves straight away (with `&intro=0`).
 var _debug_demo := false
 var _dog_menu: DogMenu
@@ -133,10 +132,8 @@ func _ready() -> void:
 	_update_keys()
 	_entry_position = _player.position
 	_add_companion()
-	if use_3d:
-		_view = View3D.new()
-		_view.setup(self)
-		add_child(_view)
+	_cast = PixelCast.new()
+	add_child(_cast)
 	_was_night = day_night.is_night()
 	_setup_camera()
 	_refresh_rooms()
@@ -168,8 +165,9 @@ func _physics_process(_delta: float) -> void:
 		_player.position = _clamp_to_room(_player.position, coords, 4.0)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	_camera.position = _player.position
+	_update_juice(delta)
 	var night := day_night.is_night()
 	if night and not _was_night and not is_indoors():
 		Effects.float_text(
@@ -318,8 +316,6 @@ func go_to(room_coords: Vector2i, pos: Vector2) -> void:
 	_refresh_rooms()
 	_setup_camera()
 	_snap_camera()
-	if _view != null:
-		_view.snap_camera()
 	_on_room_entered()
 	save_game()
 
@@ -536,6 +532,18 @@ func _setup_camera() -> void:
 	_camera.position_smoothing_speed = CAMERA_SMOOTHING
 
 
+## Screen shake and the camera punch (Juice): a jitter and a quick zoom in, dying away.
+func _update_juice(delta: float) -> void:
+	var jolt := Vector2.ZERO
+	if Juice.shake_amount > 0.001:
+		jolt = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * Juice.shake_amount * WorldMap.TILE
+		Juice.shake_amount = lerpf(Juice.shake_amount, 0.0, minf(delta * 14.0, 1.0))
+	_camera.offset = jolt.round()
+	if Juice.zoom_amount > 0.001:
+		Juice.zoom_amount = lerpf(Juice.zoom_amount, 0.0, minf(delta * 7.0, 1.0))
+	_camera.zoom = Vector2.ONE * (1.0 + Juice.zoom_amount)
+
+
 func _snap_camera() -> void:
 	_camera.position = _player.position
 	_camera.reset_smoothing()
@@ -634,15 +642,11 @@ func _apply_debug_start() -> void:
 	if not OS.has_feature("web"):
 		return
 	var query := str(JavaScriptBridge.eval("window.location.search", true))
-	View3D.comic_look = query.contains("look=comic")
-	View3D.digital_look = query.contains("look=digital")
 	if query.contains("intro=0"):
 		play_intro = false
 	_debug_demo = query.contains("demo=1")
 	if query.contains("fx=1"):
 		_show_effects.call_deferred()
-	if query.contains("illustrated=0"):
-		Illustrated.config()["enabled"] = false  # compare with the illustrated-look trial off
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
 		if GameData.has_item(gift.get_string(1)):
 			inventory.add(gift.get_string(1))
@@ -681,10 +685,7 @@ func _show_effects() -> void:
 		var at := _player.position
 		var room := current_room()
 		# Slowed down here so a slow browser can photograph them: a spark and a long swing.
-		if View3D.current != null:
-			Vfx3D.shader(
-				View3D.current, "spark", View3D.to_3d(at + Vector2(-150, -40), 0.6), 1.1, 2.4
-			)
+		Effects.burst(room, at - room.position + Vector2(-150, -40), "hit")
 		_player.get_node("Cutlass").swing(_player.aim, 2.4, 0, 210.0, 64.0, 1.9)
 		Effects.burst(room, at - room.position + Vector2(150, -30), "poof")
 		Effects.flourish(

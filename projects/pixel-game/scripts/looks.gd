@@ -1,7 +1,7 @@
 class_name Looks
 extends RefCounted
-## Pixel-art sprite sheets for the 2.5D view: which sheet draws what (data/looks.json) and how
-## each sheet is laid out (assets/characters/sheets.json, written by tools/lpc_build.py and
+## Pixel-art sprite sheets for characters (PixelSprite): which sheet draws what
+## (data/looks.json) and how each sheet is laid out (assets/characters/sheets.json, written by tools/lpc_build.py and
 ## tools/pixel_animals.py). Frames are 64x64; directional animations have four rows: up, left,
 ## down, right.
 
@@ -16,16 +16,7 @@ static var _sheets: Dictionary
 ## The sheet name for a 2D node, or "".
 static func sheet_for(node: Node) -> String:
 	var look: Variant = _look(node)
-	return styled(look.get("sheet", "") if look is Dictionary else str(look))
-
-
-## With the comic look on (View3D.comic_look), a painted sheet's comic version, if it has one.
-static func styled(sheet: String) -> String:
-	if View3D.comic_look and sheet.ends_with("_painted"):
-		var comic := sheet.trim_suffix("_painted") + "_comic"
-		if not anim(comic, "idle").is_empty():
-			return comic
-	return sheet
+	return look.get("sheet", "") if look is Dictionary else str(look)
 
 
 ## How much bigger than usual its sheet is drawn (1 unless looks.json gives a size).
@@ -83,19 +74,6 @@ static func anim(sheet: String, name: String) -> Dictionary:
 ## Pixels per (square) frame: 64 unless sheets.json says otherwise ("frame").
 static func frame_size(sheet: String) -> int:
 	return int(_load_sheets().get("characters", {}).get(sheet, {}).get("frame", 64))
-
-
-## The sheet's normal map (<sheet>_n.png), if tools/painted_sheets.py made one; or null.
-static func normal_texture(sheet: String) -> Texture2D:
-	if not bool(_load_sheets().get("characters", {}).get(sheet, {}).get("normals", false)):
-		return null
-	var path := "res://assets/characters/%s_n.png" % sheet
-	return load(path) if ResourceLoader.exists(path) else null
-
-
-## Painted (not pixel) art, drawn with smooth filtering ("smooth" in sheets.json).
-static func is_smooth(sheet: String) -> bool:
-	return bool(_load_sheets().get("characters", {}).get(sheet, {}).get("smooth", false))
 
 
 static func texture(sheet: String) -> Texture2D:

@@ -4,15 +4,17 @@
 // Man-made materials (stone, planks, road) get no noise, so their edges stay straight. The weights are wobbled with noise, sharpened
 // and renormalised, so neighbouring materials meet along soft, organic edges without any
 // third material bleeding in between. Water drifts, darkens with depth, and foams at the shore.
+// Pixel art: everything is worked out once per art pixel (`pixel` screen pixels), textures
+// are sampled crisply, and colours are banded a little.
 shader_type canvas_item;
 
-uniform sampler2D grass_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D sand_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D dirt_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D stone_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D water_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D wood_tex : source_color, repeat_enable, filter_linear_mipmap;
-uniform sampler2D road_tex : source_color, repeat_enable, filter_linear_mipmap;
+uniform sampler2D grass_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D sand_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D dirt_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D stone_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D water_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D wood_tex : source_color, repeat_enable, filter_nearest;
+uniform sampler2D road_tex : source_color, repeat_enable, filter_nearest;
 uniform sampler2D noise_tex : repeat_enable, filter_linear;
 uniform sampler2D weights2 : filter_linear;
 uniform vec2 room_origin = vec2(0.0);
@@ -21,16 +23,21 @@ uniform vec2 grid_size = vec2(22.0, 13.0);
 uniform float tile_size = 64.0;
 uniform float texture_world_size = 256.0;
 // Higher = crisper borders between materials.
-uniform float sharpness = 10.0;
+uniform float sharpness = 14.0;
+// Screen pixels per art pixel, and colour levels per channel.
+uniform float pixel = 2.0;
+uniform float levels = 28.0;
 
 float noise_at(vec2 world, float scale, float offset) {
 	return texture(noise_tex, world / scale + offset).r - 0.5;
 }
 
 void fragment() {
-	vec4 w = texture(TEXTURE, UV);
-	vec4 w2 = texture(weights2, UV);
 	vec2 world = room_origin + (UV * grid_size - 1.0) * tile_size;
+	world = (floor(world / pixel) + 0.5) * pixel;
+	vec2 uv = ((world - room_origin) / tile_size + 1.0) / grid_size;
+	vec4 w = texture(TEXTURE, uv);
+	vec4 w2 = texture(weights2, uv);
 	vec2 tuv = world / texture_world_size;
 
 	// Weights for grass, sand, dirt, water, stone; each nudged by its own noise.
@@ -58,7 +65,8 @@ void fragment() {
 		+ texture(road_tex, tuv).rgb * m2.y;
 
 	// Water: two layers drifting in different directions, deeper further from shore.
-	vec2 drift = vec2(TIME * 0.025, TIME * 0.015);
+	vec2 drift = floor(vec2(TIME * 0.025, TIME * 0.015) * texture_world_size / pixel)
+			* pixel / texture_world_size;
 	vec3 wc = mix(texture(water_tex, tuv * 0.7 + drift).rgb,
 			texture(water_tex, tuv * 1.2 - drift * 1.5).rgb, 0.5);
 	wc = mix(wc * 1.12, wc * 0.78, smoothstep(0.6, 1.0, w.b + big * 0.3));
@@ -70,7 +78,8 @@ void fragment() {
 	float water_line = w.b + big * 0.35 + small * 0.12;
 	float shore = clamp(1.0 - abs(water_line - 0.5) / 0.11, 0.0, 1.0);
 	float pulse = 0.55 + 0.45 * sin(TIME * 2.2 + (world.x + world.y) * 0.02 + big * 12.0);
-	col = mix(col, vec3(0.94, 0.97, 1.0), shore * pulse * 0.75);
+	col = mix(col, vec3(0.94, 0.97, 1.0), step(0.45, shore * pulse) * 0.85);
+	col = floor(col * levels + 0.5) / levels;
 
 	COLOR = vec4(col, 1.0);
 }
