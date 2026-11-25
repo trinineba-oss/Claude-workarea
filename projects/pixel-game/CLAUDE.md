@@ -2,21 +2,23 @@
 
 The hero is Chad.
 
-The folder is still called `pixel-game`, but the game is 2.5D now (it started as pixel art, then HD 2D).
+The folder is still called `pixel-game`. **On the `pixel-2d` branch the game is pure pixel-art 2D**
+(the 2.5D view, painted sheets and illustrated look were removed there; they live on the main
+work branch). The plan for open-world systems is `docs/18-open-world-systems.md`.
 
-- HD 2D: 1280x704 base resolution, `canvas_items` stretch, linear filtering. One tile is
+- 1280x704 base resolution, `canvas_items` stretch. One tile is
   64 px and rooms are 20x11 tiles; distances and speeds in code are in these pixels.
 - Node origins are at the character's feet (or the base of a tree/wall): depth sorting uses
   them, so sprites are offset upward. Keep that convention for new art and scenes.
-- The game plays in 2D and is drawn in 2.5D by `scripts/view/` (see README "Look"). Keep game
-  logic in 2D; the view only reads it. New characters get a sheet in `data/looks.json`, new props
-  a model in `prop_model.gd`, or they show as an upright copy of their 2D sprite.
-- The illustrated look is on trial in the rooms listed in `data/illustrated.json` (the beach):
-  `scripts/view/illustrated.gd` swaps in painted ground/props from `assets/illustrated/` and adds
-  toon shading and ink outlines. See `docs/14-beach-style-test.md`.
-- Chad and Evey use painted sheets for now (an option under review): `tools/painted_sheets.py`
-  cuts the pose sheets in `art_src/painted/` (Godot ignores `art_src/`). Pixel sheets come from `tools/lpc_build.py` (LPC parts, CC-BY-SA: keep
-  `assets/characters/CREDITS.md` up to date by re-running it) and `tools/pixel_animals.py`.
+- Pixel art on a 2x grid (a 64 px tile is 32 art pixels), nearest filtering, pixel snap.
+  Characters with a sheet in `data/looks.json` get an animated `PixelSprite` (added by
+  `PixelCast`) under their plain 2D sprite. Pixel sheets come from `tools/lpc_build.py` (LPC
+  parts, CC-BY-SA: keep `assets/characters/CREDITS.md` up to date by re-running it) and
+  `tools/pixel_animals.py`. After regenerating placeholder art, run `tools/pixelate.py` to put
+  it on the pixel grid.
+- Systems are rules on data, not special cases: the chemistry grid (`RoomChemistry`,
+  `data/materials.json`) lives per room. Evey is peaceful (no fighting); her remarks are in
+  `data/evey_quips.json` (drafts).
 - Placeholder art comes from `tools/gen_art.py` (Pillow + numpy, run with
   `uv run --with pillow --with numpy python -I tools/gen_art.py`). Real art replaces the PNGs
   at the same size and anchor.
