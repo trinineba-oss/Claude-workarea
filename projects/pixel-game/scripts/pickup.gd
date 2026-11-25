@@ -1,6 +1,7 @@
 class_name Pickup
 extends Area2D
-## A collectable: "snack" (a double) heals one heart, "coin" adds money.
+## A collectable: "snack" (a double) heals one heart, "coin" adds money, "weapon" is a weapon
+## lying on the ground (`weapon_id`, with `wear` hits left) that goes into Chad's pouch.
 
 const DROP_LIFETIME := 8.0
 const TEXTURES := {
@@ -11,6 +12,9 @@ const HEAL_AMOUNT := 2
 const COIN_VALUE := 1
 
 @export var kind := "coin"
+var weapon_id := ""
+## Hits left in a dropped weapon (-1 = new).
+var wear := -1
 ## Seconds until it disappears (blinking at the end); 0 keeps it forever.
 var lifetime := 0.0
 
@@ -21,7 +25,7 @@ var _age := 0.0
 
 func _ready() -> void:
 	add_to_group("pickups")
-	_sprite.texture = TEXTURES[kind]
+	_sprite.texture = texture()
 	_age = randf() * TAU
 
 
@@ -45,6 +49,8 @@ func _physics_process(delta: float) -> void:
 
 
 func texture() -> Texture2D:
+	if kind == "weapon":
+		return Weapons.icon(weapon_id)
 	return TEXTURES[kind]
 
 
@@ -54,6 +60,13 @@ func collect(player: Player) -> bool:
 
 
 func _collect(player: Player) -> bool:
+	if kind == "weapon":
+		if not player.add_weapon(weapon_id, wear):
+			return false
+		Effects.float_text(
+			get_parent(), position + Vector2(0, -70), Weapons.display_name(weapon_id), Color.WHITE
+		)
+		return true
 	if kind == "snack":
 		if player.is_full_health():
 			return false

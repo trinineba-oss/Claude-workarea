@@ -23,6 +23,18 @@ get our own Trini-flavoured names (see the table below), never Nintendo's.
 - **GDScript, not C#.** The grids are small (220 tiles a room, ticking 10 times a second), so
   GDScript is plenty; move a hot loop to C++ (GDExtension) only if a profile says so.
 
+- **Breakable world.** Bushes, crates and fences break under the right kind of hit (blades
+  cut, blunt things smash; fences need blunt), shatter into pieces and may drop coins, snacks,
+  a branch or a plank. Trees shake loose branches. Rock waits for explosions. Nothing on a
+  room's outer edge breaks (it is the edge of the world). Rules live in `data/materials.json`.
+- **Open-world combat.** Weapons from `data/weapons.json`, each with its own combo, reach and
+  weight: cutlass, branch, old plank, cricket bat, fishing spear, and bare fists (a boxing
+  combo: jab, jab, cross, hook, uppercut, on Chad's LPC thrust and halfslash animations,
+  with a guard stance when trouble is near). Weapons wear out and break; Chad carries five
+  (Q / WPN swaps) and can throw the one in hand (R / TOSS) for big damage, then pick it up.
+  Holding attack charges a spin (fists: a haymaker). A last-moment dodge freezes enemies for a
+  burst of quick hits ("Perfect dodge!").
+
 ## How the blueprint maps onto this game
 
 | Blueprint | Here | Status |
@@ -73,6 +85,10 @@ get our own Trini-flavoured names (see the table below), never Nintendo's.
 - [x] Pixel 2D look on the branch (characters, ground, sprites)
 - [x] Peaceful Evey with grumbles
 - [x] Chemistry grid: fire, water, ash, firebreaks, burning away bushes
+- [x] Breakable bushes, crates and fences; trees shake; drops
+- [x] Weapons with durability, swapping, throwing; boxing; charged spin; perfect-dodge burst
+- [ ] A shield (a pot cover?) with a parry
+- [ ] Bows or slingshots (ranged)
 - [ ] Rain and wet ground; enemies flee fire
 - [ ] Stamina, sprint, climbing, ledges
 - [ ] Easter kite and updrafts

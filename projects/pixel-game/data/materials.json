@@ -1,5 +1,5 @@
 {
-  "_note": "The chemistry grid (scripts/room_chemistry.gd): what each map tile is made of and how materials react. Rules, not special cases: anything flammable catches from a burning neighbour (chance per second = spread), burns for burn_time seconds and ends as ash; `clears` means the thing standing there (bush, crate, fence) burns away and the tile can be walked through. Wet tiles don't catch; `douses` (water) wets its neighbours and stops fire spreading into them. `conductive` is for electricity (not used yet). Tiles not listed are inert (sand, stone, road, rock, walls, the wharf planks: old wet timber).",
+  "_note": "The world grid (scripts/room_chemistry.gd): what each map tile is made of, how it reacts, and how it breaks. Rules, not special cases. FIRE: anything flammable catches from a burning neighbour (chance per second = spread), burns for burn_time seconds and ends as ash; `clears` means the thing standing there burns away and the tile can be walked through. Wet tiles don't catch; `douses` (water) wets its neighbours. `conductive` is for electricity (not used yet). BREAKING: `toughness` = hits to break it, `broken_by` = which kinds of hit can (slash: blades and spears; blunt: fists, bats, planks, branches; blast: explosions, not in the game yet); `shakes` = hitting it shakes things loose instead (trees). `drops`: what may fall out, each with a chance: a pickup (coin, snack) or a weapon. Things on a room's outer edge never break (they are the edge of the world). Tiles not listed are inert (sand, stone, road, walls, the wharf planks).",
   "materials": {
     "grass": {
       "flammable": true,
@@ -10,18 +10,42 @@
       "flammable": true,
       "spread": 0.45,
       "burn_time": 3.0,
-      "clears": true
-    },
-    "wood": {
-      "flammable": true,
-      "spread": 0.25,
-      "burn_time": 5.0,
-      "clears": true
+      "clears": true,
+      "toughness": 1,
+      "broken_by": [
+        "slash",
+        "blunt"
+      ],
+      "drops": [
+        {
+          "pickup": "coin",
+          "chance": 0.12
+        },
+        {
+          "weapon": "branch",
+          "chance": 0.15
+        },
+        {
+          "pickup": "snack",
+          "chance": 0.05
+        }
+      ]
     },
     "tree": {
       "flammable": true,
       "spread": 0.1,
-      "burn_time": 7.0
+      "burn_time": 7.0,
+      "shakes": true,
+      "drops": [
+        {
+          "weapon": "branch",
+          "chance": 0.3
+        },
+        {
+          "pickup": "coin",
+          "chance": 0.05
+        }
+      ]
     },
     "water": {
       "douses": true,
@@ -29,16 +53,64 @@
     },
     "metal": {
       "conductive": true
+    },
+    "crate": {
+      "flammable": true,
+      "spread": 0.25,
+      "burn_time": 5.0,
+      "clears": true,
+      "toughness": 2,
+      "broken_by": [
+        "slash",
+        "blunt"
+      ],
+      "drops": [
+        {
+          "pickup": "snack",
+          "chance": 0.25
+        },
+        {
+          "pickup": "coin",
+          "chance": 0.3
+        },
+        {
+          "weapon": "plank",
+          "chance": 0.2
+        }
+      ]
+    },
+    "fence": {
+      "flammable": true,
+      "spread": 0.25,
+      "burn_time": 5.0,
+      "clears": true,
+      "toughness": 3,
+      "broken_by": [
+        "blunt"
+      ],
+      "drops": [
+        {
+          "weapon": "plank",
+          "chance": 0.1
+        }
+      ]
+    },
+    "rock": {
+      "toughness": 4,
+      "broken_by": [
+        "blast"
+      ]
     }
   },
   "tiles": {
     ".": "grass",
     ",": "grass",
     "b": "foliage",
-    "c": "wood",
-    "F": "wood",
+    "c": "crate",
+    "F": "fence",
     "T": "tree",
     "~": "water",
-    "o": "metal"
+    "o": "metal",
+    "#": "rock"
   }
 }

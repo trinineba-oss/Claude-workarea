@@ -117,6 +117,42 @@ script = ExtResource("3_button")
 action = &"dog"
 label = "DOG"
 
+[node name="SwapButton" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -104.0
+offset_top = -424.0
+offset_right = -24.0
+offset_bottom = -344.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("3_button")
+action = &"swap_weapon"
+label = "WPN"
+
+[node name="ThrowButton" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -424.0
+offset_right = -120.0
+offset_bottom = -344.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("3_button")
+action = &"throw_weapon"
+label = "TOSS"
+
 [node name="PauseButton" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 1

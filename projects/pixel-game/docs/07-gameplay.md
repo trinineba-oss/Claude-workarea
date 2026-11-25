@@ -7,7 +7,9 @@ opening, five waves of crabs, pothounds and corbeaux come at Chad on the wharf, 
 pack leader (a big pothound). Clearing it ends the demo ("demo_done"); if Chad faints, the wave
 starts again. `scripts/wharf_demo.gd` holds the waves.
 
-**Combat** (`scripts/player.gd`, `cutlass.gd`, `juice.gd`):
+**Combat** (`scripts/player.gd`, `cutlass.gd`, `juice.gd`). On the `pixel-2d` branch combat is
+open-world style instead (weapons with durability, boxing, throwing, spin, perfect dodge,
+breakable world): see [Open-world systems](18-open-world-systems.md).
 
 - **Combo:** three cutlass hits; the third is a wide, heavy finisher. Each swing lunges Chad
   forward, in eight directions.

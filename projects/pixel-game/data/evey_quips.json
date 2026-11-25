@@ -1,5 +1,5 @@
 {
-  "_note": "Evey's grumbles: what she mutters when something happens. She is a peaceful dog: she never fights, she just has opinions. One line is picked at random per event (never the same twice in a row); she won't speak more than every few seconds, or repeat an event for a while. She speaks plain English, never Trinidad dialect. Every line is a DRAFT until reviewed (tone, how a grumpy old beagle would sound). Events: enemy_near (trouble shows up near Chad), enemy_beaten (Chad cleared it), chad_hurt, chad_faint, idle (Chad stands still a long time), night, swim, eat (Chad eats in front of her), level_up, stay, come, fetch, fetch_nothing, fetched, dig, dig_nothing, dug, sniff (she smells something buried), top_dog (meeting a top dog), fire (Chad stands in fire).",
+  "_note": "Evey's grumbles: what she mutters when something happens. She is a peaceful dog: she never fights, she just has opinions. One line is picked at random per event (never the same twice in a row); she won't speak more than every few seconds, or repeat an event for a while. She speaks plain English, never Trinidad dialect. Every line is a DRAFT until reviewed (tone, how a grumpy old beagle would sound). Events: enemy_near (trouble shows up near Chad), enemy_beaten (Chad cleared it), chad_hurt, chad_faint, idle (Chad stands still a long time), night, swim, eat (Chad eats in front of her), level_up, stay, come, fetch, fetch_nothing, fetched, dig, dig_nothing, dug, sniff (she smells something buried), top_dog (meeting a top dog), fire (Chad stands in fire), weapon_broke (Chad's weapon breaks).",
   "enemy_near": [
     "*grunt* Your problem, not mine.",
     "*huff* I'll be over here. Supervising.",
@@ -90,5 +90,10 @@
     "*backs off* Nope. Hot. Bad idea, chief.",
     "*sniff* Something's burning. It's you.",
     "*grumble* Who taught you fire? Not me."
+  ],
+  "weapon_broke": [
+    "*snort* Built to last, that.",
+    "*grunt* And there goes another one.",
+    "*sigh* Maybe try hitting things less."
   ]
 }

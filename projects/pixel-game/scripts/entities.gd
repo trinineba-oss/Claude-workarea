@@ -44,6 +44,7 @@ const WITH_ARGUMENT := [
 	"seasoning",
 	"dig",
 	"topdog",
+	"weapon",
 ]
 const DUNGEON := [
 	"locked", "gate", "shutter", "chest", "block", "plate", "switch", "warp", "bossdoor"
@@ -72,6 +73,8 @@ static func argument_problem(kind: String, arg: String) -> String:
 		return "" if arg == "" else "%s takes no argument" % kind
 	if arg == "":
 		return "%s needs an id" % kind
+	if kind == "weapon":
+		return "" if Weapons.has(arg) and arg != Weapons.FISTS else "unknown weapon '%s'" % arg
 	match kind:
 		"npc":
 			return "" if GameData.has_character(arg) else "unknown character '%s'" % arg
@@ -105,6 +108,11 @@ static func argument_problem(kind: String, arg: String) -> String:
 
 
 static func create(kind: String, arg: String = "") -> Node2D:
+	if kind == "weapon":
+		var weapon: Pickup = PICKUP.instantiate()
+		weapon.kind = "weapon"
+		weapon.weapon_id = arg if Weapons.has(arg) else "branch"
+		return weapon
 	if kind in PICKUPS:
 		var pickup: Pickup = PICKUP.instantiate()
 		pickup.kind = kind

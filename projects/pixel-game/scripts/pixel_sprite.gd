@@ -134,9 +134,13 @@ func _choose(velocity: Vector2, moving: bool, delta: float) -> void:
 		facing = velocity if moving else source.facing
 		match source.state:
 			Player.State.ATTACK:
-				next = ["slash", "slash2", "slash3"][clampi(source.combo_step, 0, 2)]
+				# The move's own animation (a jab is a thrust, a hook a halfslash...).
+				next = str(source.current_move.get("anim", "slash"))
 				if not _has(next):
 					next = "slash"
+				facing = source.aim
+			Player.State.CHARGE:
+				next = "charge"
 				facing = source.aim
 			Player.State.DODGE:
 				next = "roll" if _has("roll") else "walk"
@@ -148,6 +152,8 @@ func _choose(velocity: Vector2, moving: bool, delta: float) -> void:
 					next = "run"
 				elif not moving and source.pose_time > 0.0 and _has(source.pose):
 					next = source.pose
+				elif not moving and source.weapon_id() == Weapons.FISTS and _trouble_near():
+					next = "combat_idle"  # fists up
 		if source.health <= 0:
 			next = "faint" if _has("faint") else "hurt"
 	elif source is Companion:
@@ -172,7 +178,9 @@ func _choose(velocity: Vector2, moving: bool, delta: float) -> void:
 		next = "walk"
 	if next == "walk" and velocity.length() > RUN_SPEED and _has("run"):
 		next = "run"
-	if Looks.anim(sheet, next).is_empty():
+	if next == "charge" and _has("backslash"):
+		pass  # the wind-up frame of the backslash, held (see _show_frame)
+	elif Looks.anim(sheet, next).is_empty():
 		next = "walk" if moving else "idle"
 	if next != anim_name:
 		var striding := next in ["walk", "run"] and anim_name in ["walk", "run"]
@@ -181,6 +189,14 @@ func _choose(velocity: Vector2, moving: bool, delta: float) -> void:
 		if not striding:
 			_phase = 0.0
 	_turn(facing)
+
+
+func _trouble_near() -> bool:
+	for node in source.get_tree().get_nodes_in_group("enemies"):
+		var enemy := node as Node2D
+		if enemy != null and enemy.global_position.distance_to(source.global_position) < 360.0:
+			return true
+	return false
 
 
 func _has(anim: String) -> bool:
@@ -224,7 +240,7 @@ func _row_frames(layout: Dictionary) -> int:
 
 
 func _show_frame() -> void:
-	var layout := Looks.anim(sheet, anim_name)
+	var layout := Looks.anim(sheet, "backslash" if anim_name == "charge" else anim_name)
 	if layout.is_empty():
 		layout = Looks.anim(sheet, "walk")
 		if layout.is_empty():
@@ -239,9 +255,13 @@ func _show_frame() -> void:
 				col = int(_phase) % frames
 		"idle":
 			col = int(_time * IDLE_FPS) % frames
-		"slash", "slash2", "slash3":
+		"slash", "thrust", "halfslash", "backslash":
 			var left: float = source.get("_state_time")
 			col = int(clampf(1.0 - left / float(source.get("attack_time")), 0.0, 0.999) * frames)
+		"charge":
+			col = 2 + int(_time * 12.0) % 2  # wound up, trembling
+		"combat_idle":
+			col = int(_time * 3.0) % frames
 		"roll":
 			var left: float = source.get("_state_time")
 			col = int(clampf(1.0 - left / Player.DODGE_TIME, 0.0, 0.999) * frames)

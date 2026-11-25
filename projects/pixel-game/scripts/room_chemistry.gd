@@ -6,7 +6,11 @@ extends Node2D
 ## - fire spreads from a burning tile to flammable neighbours, faster through grass than
 ##   wood, burns out to ash, and burns away bushes, crates and fences (opening the way);
 ## - water douses: tiles next to it are wet and won't catch, and wet tiles dry slowly;
-## - anyone standing in fire gets hurt (Chad, enemies; Evey is too sensible to stand in it).
+## - anyone standing in fire gets hurt (Chad, enemies; Evey is too sensible to stand in it);
+## - things break: a hit of the right kind (slash, blunt) wears down a bush, crate or fence
+##   until it shatters into pieces and drops what was inside (coins, snacks, a branch, a
+##   plank); trees shake loose branches instead. Nothing on a room's outer edge breaks or
+##   burns away (that is the edge of the world).
 ## Ash grows back after a while. The grid ticks a few times a second; it lives and dies with
 ## its room.
 
@@ -34,6 +38,10 @@ var _material: Array[String] = []
 var _state: Array[int] = []
 var _timer: Array[float] = []
 var _wet: Array[float] = []
+## Hits left before a breakable tile breaks.
+var _toughness: Array[int] = []
+## Seconds before a tree can be shaken again.
+var _shake_wait: Dictionary = {}
 var _clock := 0.0
 var _hit_clock := 0.0
 var _fire_layer: Node2D
@@ -54,6 +62,7 @@ func setup(owner_room: Room) -> void:
 			_state.append(State.NORMAL)
 			_timer.append(0.0)
 			_wet.append(0.0)
+			_toughness.append(int(props(_material[_i(x, y)]).get("toughness", 0)))
 	# Water wets its neighbours from the start: shores don't burn.
 	for y in rows:
 		for x in cols:
@@ -128,6 +137,97 @@ func douse(cell: Vector2i) -> void:
 		queue_redraw()
 
 
+## A hit on a tile from a weapon or fist (`kind`: "slash", "blunt" or "blast"). Breakables
+## of the right kind lose `damage` toughness and break at zero; trees shake things loose.
+## Returns true if the hit struck something (for weapon wear and feedback).
+func strike(cell: Vector2i, damage: int, kind: String) -> bool:
+	if not _inside(cell):
+		return false
+	var i := _i(cell.x, cell.y)
+	var p := props(_material[i])
+	if bool(p.get("shakes", false)):
+		_shake(cell, p)
+		return true
+	if _toughness[i] <= 0 or not kind in p.get("broken_by", []):
+		return false
+	_wobble(cell)
+	if _on_edge(cell):
+		Effects.burst(room, _centre(cell) + Vector2(0, -20), "dust")
+		return true
+	_toughness[i] -= maxi(damage, 1)
+	Effects.burst(room, _centre(cell) + Vector2(0, -24), "dust")
+	if _toughness[i] <= 0:
+		break_tile(cell)
+	return true
+
+
+## Breaks a breakable tile at once: its thing shatters, the way opens, something may drop.
+func break_tile(cell: Vector2i) -> void:
+	var i := _i(cell.x, cell.y)
+	var p := props(_material[i])
+	for child in room.get_children():
+		if child is Node2D and child.name.ends_with("_%d_%d" % [cell.x, cell.y]):
+			# The scenery's picture (not its shadow, which sits lower).
+			var sprite: Sprite2D = null
+			for sub in child.get_children():
+				if sub is Sprite2D and sub.texture != null and sub.z_index > -4:
+					sprite = sub
+			if sprite != null:
+				Effects.shatter(room, sprite)
+	_drop(cell, p.get("drops", []))
+	_toughness[i] = 0
+	_clear(cell)
+	Juice.shake(0.06)
+
+
+func _drop(cell: Vector2i, drops: Array) -> void:
+	for entry: Dictionary in drops:
+		if _rng.randf() >= float(entry.get("chance", 0.0)):
+			continue
+		var node: Node2D = null
+		if entry.has("weapon"):
+			node = Entities.create("weapon", str(entry["weapon"]))
+		else:
+			node = Entities.create(str(entry.get("pickup", "coin")))
+			if node is Pickup:
+				node.lifetime = Pickup.DROP_LIFETIME * 2.0
+		node.position = _centre(cell) + Vector2(_rng.randf_range(-12, 12), 6)
+		room.add_child.call_deferred(node)
+		return
+
+
+## Trees: a hit shakes them, and now and then something falls out.
+func _shake(cell: Vector2i, p: Dictionary) -> void:
+	_wobble(cell)
+	var key := cell.x * 1000 + cell.y
+	var now := Time.get_ticks_msec() / 1000.0
+	if float(_shake_wait.get(key, 0.0)) > now:
+		return
+	_shake_wait[key] = now + 6.0
+	var below := cell + Vector2i.DOWN
+	_drop(below if _inside(below) else cell, p.get("drops", []))
+
+
+## A quick jiggle of the thing standing on a tile.
+func _wobble(cell: Vector2i) -> void:
+	for child in room.get_children():
+		if child is Node2D and child.name.ends_with("_%d_%d" % [cell.x, cell.y]):
+			var node := child as Node2D
+			var base := node.position
+			var tween := node.create_tween()
+			tween.tween_property(node, "position:x", base.x + 4.0, 0.04)
+			tween.tween_property(node, "position:x", base.x - 3.0, 0.05)
+			tween.tween_property(node, "position:x", base.x, 0.05)
+
+
+func _on_edge(cell: Vector2i) -> bool:
+	return cell.x == 0 or cell.y == 0 or cell.x == cols - 1 or cell.y == rows - 1
+
+
+static func _centre(cell: Vector2i) -> Vector2:
+	return (Vector2(cell) + Vector2(0.5, 0.5)) * WorldMap.TILE
+
+
 ## The room tile under a point given in room coordinates.
 static func cell_of(local: Vector2) -> Vector2i:
 	return Vector2i((local / WorldMap.TILE).floor())
@@ -185,6 +285,8 @@ func _burn_out(cell: Vector2i) -> void:
 ## The thing on a tile (bush, crate, fence) burns away: its scenery goes, the tile is no
 ## longer solid, and the world map remembers it as bare ground.
 func _clear(cell: Vector2i) -> void:
+	if _on_edge(cell):
+		return
 	for child in room.get_children():
 		if child.name.ends_with("_%d_%d" % [cell.x, cell.y]) and not child is RoomChemistry:
 			child.queue_free()

@@ -28,6 +28,22 @@ func _test_room() -> Room:
 	return room
 
 
+func _breakable_room() -> Room:
+	var lines := PackedStringArray()
+	for y in WorldMap.ROWS:
+		var row := ""
+		for x in WorldMap.COLS:
+			var ch := "."
+			if y == 4:
+				ch = {0: "b", 4: "b", 6: "c", 8: "F", 10: "T", 12: "#"}.get(x, ".")
+			row += ch
+		lines.append(row)
+	var room := Room.new()
+	room.build(Vector2i(41, 41), lines)
+	root.add_child(room)
+	return room
+
+
 func _run() -> void:
 	DirAccess.remove_absolute(SAVE_PATH)
 	var room := _test_room()
@@ -68,6 +84,29 @@ func _run() -> void:
 	_check(room.map_lines[3][3] == "p", "and the map shows bare ground there")
 	_check(chem.burning_count() == 0, "the fire burns itself out")
 	_check(not chem.ignite(Vector2i(6, 6)), "ash won't burn again")
+
+	# Breaking things: a fresh room with a bush, a crate, a fence and a tree inside.
+	var yard := _breakable_room()
+	await _frames(1)
+	var grid := yard.chemistry
+	_check(not grid.strike(Vector2i(5, 5), 1, "slash"), "plain grass isn't something to break")
+	_check(grid.strike(Vector2i(4, 4), 1, "slash"), "a blade cuts a bush")
+	_check(grid.material_at(Vector2i(4, 4)) == "", "one cut and it's gone")
+	var walls := yard.get_node("Collision") as TileMapLayer
+	_check(walls.get_cell_source_id(Vector2i(4, 4)) == -1, "and the way is open")
+	_check(grid.strike(Vector2i(6, 4), 1, "blunt"), "a crate takes a knock")
+	_check(grid.material_at(Vector2i(6, 4)) == "crate", "but holds")
+	grid.strike(Vector2i(6, 4), 1, "blunt")
+	_check(grid.material_at(Vector2i(6, 4)) == "", "a second knock smashes it")
+	_check(not grid.strike(Vector2i(8, 4), 3, "slash"), "a blade can't chop through a fence")
+	_check(grid.strike(Vector2i(8, 4), 3, "blunt"), "a bat can")
+	_check(grid.material_at(Vector2i(8, 4)) == "", "fence down")
+	_check(grid.strike(Vector2i(10, 4), 1, "slash"), "hitting a tree shakes it")
+	_check(grid.material_at(Vector2i(10, 4)) == "tree", "trees don't break")
+	_check(grid.strike(Vector2i(0, 4), 9, "blunt"), "a bush on the room's edge takes a hit")
+	_check(grid.material_at(Vector2i(0, 4)) == "foliage", "but never breaks: it's the world's edge")
+	_check(not grid.strike(Vector2i(12, 4), 9, "blunt"), "rock needs a blast")
+	yard.free()
 
 	# Fire hurts: a crab standing in it.
 	var fresh := _test_room()

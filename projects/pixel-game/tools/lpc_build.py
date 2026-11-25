@@ -26,6 +26,17 @@ OUT = "assets/characters"
 FRAME = 64
 # Animation -> (frames, directional). Directional sheets have 4 rows: up, left, down, right.
 ANIMS = {"walk": (9, True), "idle": (2, True), "slash": (6, True), "hurt": (6, False)}
+# Extra animations for some characters: Chad's run, boxing (thrust = jab/cross, halfslash =
+# hook, combat_idle = guard stance) and weapon swings (backslash).
+EXTRA_ANIMS = {
+    "chad": {
+        "thrust": (8, True),
+        "run": (8, True),
+        "combat_idle": (2, True),
+        "halfslash": (6, True),
+        "backslash": (13, True),
+    },
+}
 
 # Colour ramps, dark to light: parts are recoloured by brightness onto these.
 SKIN = {
@@ -206,7 +217,7 @@ def build(name, body, skin, parts, layers_js):
     rows = []
     layout = {}
     row = 0
-    for anim, (frames, directional) in ANIMS.items():
+    for anim, (frames, directional) in {**ANIMS, **EXTRA_ANIMS.get(name, {})}.items():
         canvas = None
         for _z, key, path, stops, alpha in pieces:
             img = sheet_for(path, anim)

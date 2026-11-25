@@ -90,6 +90,46 @@ static func slash_arc(parent: Node, at: Vector2, from: Vector2, heavy: bool) -> 
 	return arc
 
 
+## Breaks a sprite into pieces that burst outward, tumble, drop and fade (a smashed crate, a
+## cut bush). The sprite itself is left alone; whoever breaks the thing removes it.
+static func shatter(parent: Node, sprite: Sprite2D, pieces := 4) -> void:
+	if parent == null or not parent.is_inside_tree() or sprite == null or sprite.texture == null:
+		return
+	var size := sprite.texture.get_size()
+	var cell := (size / pieces).floor()
+	var origin := (
+		(parent as Node2D).to_local(sprite.global_position) if parent is Node2D else Vector2()
+	)
+	var top_left := sprite.offset - (size / 2.0 if sprite.centered else Vector2.ZERO)
+	for y in pieces:
+		for x in pieces:
+			var piece := Sprite2D.new()
+			piece.texture = sprite.texture
+			piece.region_enabled = true
+			piece.region_rect = Rect2(Vector2(x, y) * cell, cell)
+			piece.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+			piece.flip_h = sprite.flip_h
+			piece.z_index = 6
+			var local := top_left + (Vector2(x, y) + Vector2(0.5, 0.5)) * cell
+			if sprite.flip_h:
+				local.x = -local.x
+			piece.position = origin + local * sprite.global_scale
+			piece.scale = sprite.global_scale
+			parent.add_child(piece)
+			var away := (local - top_left - size / 2.0).normalized()
+			if away == Vector2.ZERO:
+				away = Vector2.UP
+			var fly := away * randf_range(40.0, 110.0) + Vector2(0, randf_range(10.0, 40.0))
+			var seconds := randf_range(0.45, 0.7)
+			var tween := piece.create_tween().set_parallel(true)
+			tween.tween_property(piece, "position", piece.position + fly, seconds).set_ease(
+				Tween.EASE_OUT
+			)
+			tween.tween_property(piece, "rotation", randf_range(-3.0, 3.0), seconds)
+			tween.tween_property(piece, "modulate:a", 0.0, seconds * 0.6).set_delay(seconds * 0.4)
+			tween.chain().tween_callback(piece.queue_free)
+
+
 ## A small pixel-art crescent (made once): an arc of a ring whose centre sits off the left
 ## edge, so it bulges towards +x, thickest in the middle and tapering at the tips.
 static func _crescent_texture() -> Texture2D:

@@ -47,6 +47,31 @@
         "row": 12,
         "frames": 6,
         "rows": 1
+      },
+      "thrust": {
+        "row": 13,
+        "frames": 8,
+        "rows": 4
+      },
+      "run": {
+        "row": 17,
+        "frames": 8,
+        "rows": 4
+      },
+      "combat_idle": {
+        "row": 21,
+        "frames": 2,
+        "rows": 4
+      },
+      "halfslash": {
+        "row": 25,
+        "frames": 6,
+        "rows": 4
+      },
+      "backslash": {
+        "row": 29,
+        "frames": 13,
+        "rows": 4
       }
     },
     "gyro_vendor": {

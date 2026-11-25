@@ -64,6 +64,7 @@ var _boomerang: Boomerang
 var _companion: Companion
 ## Gives characters their animated pixel sprites.
 var _cast: PixelCast
+var _weapon_hud: WeaponHud
 ## Web build, `&demo=1`: start the wharf demo's waves straight away (with `&intro=0`).
 var _debug_demo := false
 var _dog_menu: DogMenu
@@ -123,6 +124,13 @@ func _ready() -> void:
 	if not _restore(save.read()):
 		coords = world.start_room()
 		_player.position = world.start_position()
+	_player.give_starting_weapons()
+	_weapon_hud = WeaponHud.new()
+	$HUD.add_child(_weapon_hud)
+	_player.weapon_changed.connect(_weapon_hud.show_weapon)
+	_weapon_hud.show_weapon(
+		_player.weapon_id(), _player.weapon_wear(), Weapons.durability(_player.weapon_id())
+	)
 	_apply_debug_start()
 	_status.set_time(day_night.hour)
 	_status.set_day(day_night.day)
@@ -668,6 +676,8 @@ func _apply_debug_start() -> void:
 	for gift in RegEx.create_from_string("give=([a-z_]+)").search_all(query):
 		if GameData.has_item(gift.get_string(1)):
 			inventory.add(gift.get_string(1))
+		elif Weapons.has(gift.get_string(1)):
+			_player.add_weapon(gift.get_string(1))
 	var burn := RegEx.create_from_string("burn=(\\d+)_(\\d+)").search(query)
 	if burn != null:
 		_debug_burn.call_deferred(Vector2i(int(burn.get_string(1)), int(burn.get_string(2))))

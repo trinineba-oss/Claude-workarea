@@ -1,0 +1,82 @@
+{
+  "_note": "Chad's weapons. Every weapon but his fists wears out: `durability` hits (on enemies or on the world) and it breaks. `kind` decides what it can break in the world (slash cuts bushes and shakes trees, blunt smashes crates and fences; see data/materials.json `broken_by`). `look` is how the swing is drawn. `combo`: the moves in order, each with time (seconds), damage, sweep (degrees, negative = the other way; 360 = spin), reach (px), lunge (px/s), force (knockback; over 1.5 counts as a heavy finisher) and anim (Chad's sheet animation). `throw` = damage when thrown. `charge` = the spin attack you get by holding attack. Names are drafts.",
+  "fists": {
+    "name": "Fists",
+    "kind": "blunt",
+    "look": "fist",
+    "durability": 0,
+    "throw": 0,
+    "combo": [
+      {"name": "Jab", "time": 0.15, "damage": 1, "sweep": 20.0, "reach": 40.0, "lunge": 150.0, "force": 0.5, "anim": "thrust"},
+      {"name": "Jab", "time": 0.15, "damage": 1, "sweep": -20.0, "reach": 40.0, "lunge": 150.0, "force": 0.5, "anim": "thrust"},
+      {"name": "Cross", "time": 0.2, "damage": 1, "sweep": 24.0, "reach": 48.0, "lunge": 230.0, "force": 0.9, "anim": "thrust"},
+      {"name": "Hook", "time": 0.22, "damage": 1, "sweep": -110.0, "reach": 44.0, "lunge": 180.0, "force": 1.1, "anim": "halfslash"},
+      {"name": "Uppercut", "time": 0.3, "damage": 2, "sweep": 70.0, "reach": 48.0, "lunge": 280.0, "force": 1.9, "anim": "slash"}
+    ],
+    "charge": {"name": "Haymaker", "time": 0.34, "damage": 3, "sweep": 120.0, "reach": 56.0, "lunge": 360.0, "force": 2.2, "anim": "halfslash"}
+  },
+  "cutlass": {
+    "name": "Cutlass",
+    "kind": "slash",
+    "look": "blade",
+    "durability": 30,
+    "throw": 3,
+    "combo": [
+      {"time": 0.22, "damage": 1, "sweep": 120.0, "reach": 52.0, "lunge": 260.0, "force": 1.0, "anim": "slash"},
+      {"time": 0.22, "damage": 1, "sweep": -120.0, "reach": 52.0, "lunge": 260.0, "force": 1.0, "anim": "backslash"},
+      {"time": 0.36, "damage": 2, "sweep": 210.0, "reach": 64.0, "lunge": 420.0, "force": 1.9, "anim": "slash"}
+    ],
+    "charge": {"time": 0.4, "damage": 3, "sweep": 360.0, "reach": 72.0, "lunge": 0.0, "force": 2.0, "anim": "backslash"}
+  },
+  "branch": {
+    "name": "Branch",
+    "kind": "blunt",
+    "look": "branch",
+    "durability": 6,
+    "throw": 2,
+    "combo": [
+      {"time": 0.22, "damage": 1, "sweep": 110.0, "reach": 50.0, "lunge": 220.0, "force": 0.9, "anim": "slash"},
+      {"time": 0.26, "damage": 1, "sweep": -130.0, "reach": 50.0, "lunge": 260.0, "force": 1.6, "anim": "backslash"}
+    ],
+    "charge": {"time": 0.4, "damage": 2, "sweep": 360.0, "reach": 64.0, "lunge": 0.0, "force": 1.8, "anim": "backslash"}
+  },
+  "plank": {
+    "name": "Old plank",
+    "kind": "blunt",
+    "look": "plank",
+    "durability": 10,
+    "throw": 3,
+    "combo": [
+      {"time": 0.32, "damage": 2, "sweep": 140.0, "reach": 60.0, "lunge": 200.0, "force": 1.4, "anim": "slash"},
+      {"time": 0.42, "damage": 3, "sweep": -170.0, "reach": 64.0, "lunge": 300.0, "force": 2.2, "anim": "backslash"}
+    ],
+    "charge": {"time": 0.5, "damage": 4, "sweep": 360.0, "reach": 76.0, "lunge": 0.0, "force": 2.4, "anim": "backslash"}
+  },
+  "cricket_bat": {
+    "name": "Cricket bat",
+    "kind": "blunt",
+    "look": "bat",
+    "durability": 24,
+    "throw": 4,
+    "combo": [
+      {"time": 0.3, "damage": 3, "sweep": 150.0, "reach": 62.0, "lunge": 220.0, "force": 1.6, "anim": "slash"},
+      {"time": 0.3, "damage": 3, "sweep": -150.0, "reach": 62.0, "lunge": 220.0, "force": 1.6, "anim": "backslash"},
+      {"time": 0.46, "damage": 5, "sweep": 200.0, "reach": 70.0, "lunge": 360.0, "force": 2.6, "anim": "slash"}
+    ],
+    "charge": {"time": 0.5, "damage": 5, "sweep": 360.0, "reach": 80.0, "lunge": 0.0, "force": 2.6, "anim": "backslash"}
+  },
+  "fishing_spear": {
+    "name": "Fishing spear",
+    "kind": "slash",
+    "look": "spear",
+    "durability": 18,
+    "throw": 4,
+    "combo": [
+      {"time": 0.16, "damage": 1, "sweep": 10.0, "reach": 84.0, "lunge": 180.0, "force": 0.7, "anim": "thrust"},
+      {"time": 0.16, "damage": 1, "sweep": -10.0, "reach": 84.0, "lunge": 180.0, "force": 0.7, "anim": "thrust"},
+      {"time": 0.16, "damage": 1, "sweep": 10.0, "reach": 88.0, "lunge": 200.0, "force": 0.8, "anim": "thrust"},
+      {"time": 0.28, "damage": 2, "sweep": 0.0, "reach": 96.0, "lunge": 380.0, "force": 1.8, "anim": "thrust"}
+    ],
+    "charge": {"time": 0.4, "damage": 3, "sweep": 360.0, "reach": 90.0, "lunge": 0.0, "force": 2.0, "anim": "backslash"}
+  }
+}
