@@ -110,18 +110,82 @@ get our own Trini-flavoured names (see the table below), never Nintendo's.
 3. Cooking: should it be central (the gyro quest) or a side system?
 4. How harsh should fire be? Right now it spreads fast and burns Chad if he stands in it.
 
+## Asset sources for these plans
+
+Use placeholders until real art exists; swap them in at the same size and anchor. Check each
+licence page before importing, and credit CC-BY / CC-BY-SA work in the matching CREDITS.md.
+
+| Need | Source | Licence |
+| --- | --- | --- |
+| Top-down pixel kit: characters, monsters, tiles, weapons, effects, UI, fonts, sound effects, music (ships a Godot 4 project) | [Ninja Adventure, pixel-boy](https://pixel-boy.itch.io/ninja-adventure-asset-pack) | CC0 |
+| Chad's extra animations: climb, jump, run, sit, emote | [Universal LPC generator](https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/) (via `tools/lpc_build.py`) | CC-BY-SA 3.0 / GPL 3 |
+| Cliffs, water, waterfalls, climbable faces, seasons | [LPC revised 4 season terrain](https://opengameart.org/content/lpc-revised-4-season-terrain), [LPC mountains](https://opengameart.org/content/lpc-mountains), [LPC animated water](https://lpc.opengameart.org/node/25071) | Mostly CC-BY-SA; check each |
+| Weapon icons | [16x16 weapon RPG icons](https://opengameart.org/content/16x16-weapon-rpg-icons), [Swords and staffs](https://opengameart.org/content/swords-and-staffs) | CC0 |
+| Importing hand-drawn animations with per-frame timing | [Aseprite Wizard](https://github.com/viniciusgerevini/godot-aseprite-wizard) (Godot addon) | MIT |
+| Particles, UI, input prompts, sound effects | Kenney packs (kenney.nl) | CC0 |
+| Camera look-ahead, shake, zones | Phantom Camera (Godot addon) | MIT |
+| Enemy AI (patrol, alert, flee fire, fetch weapon) | LimboAI (Godot addon) | MIT |
+
 ## To do
+
+Built so far:
 
 - [x] Pixel 2D look on the branch (characters, ground, sprites)
 - [x] Peaceful Evey with grumbles
 - [x] Chemistry grid: fire, water, ash, firebreaks, burning away bushes
 - [x] Breakable bushes, crates and fences; trees shake; drops
 - [x] Weapons with durability, swapping, throwing; boxing; charged spin; perfect-dodge burst
-- [ ] A shield (a pot cover?) with a parry
-- [ ] Bows or slingshots (ranged)
+
+Evey:
+
+- [ ] Belly rubs: Talk next to her, she rolls over (new frames), grumbles, gives a small bonus
+- [ ] Wet Evey shakes off water and douses fires near her
+
+Movement and height:
+
+- [ ] Stamina wheel (sprint, climb, glide, swim drain it)
+- [ ] Sprint with the run animation
+- [ ] Climb any wall or cliff tile (LPC climb animation); slip in rain
+- [ ] Ledges and height levels; falls hurt
+- [ ] Easter kite: glide off ledges, ride fire updrafts
+- [ ] Shield (a pot cover) with a parry and shield surfing
+
+Combat:
+
+- [ ] Ranged weapon (a slingshot or bow)
+- [ ] Bamboo bursts (bombs): blast rock, set fires
+- [ ] Lodestone glove, limin' charm, snow-cone maker
+- [ ] Elemental weapons (a pepper-sauce blade that sets things alight)
+- [ ] Stealth and sneak strikes
+- [ ] Enemies pick up weapons, camp in groups, flee fire
+- [ ] Jumbie night: beaten enemies come back
+
+World:
+
 - [ ] Rain and wet ground; enemies flee fire
-- [ ] Stamina, sprint, climbing, ledges
-- [ ] Easter kite and updrafts
-- [ ] The four abilities
-- [ ] Delta saves of changed tiles
+- [ ] Lightning seeks metal weapons (the `conductive` rule)
+- [ ] Temperature: hot sun, cool nights
+- [ ] Lookouts that reveal the map
+- [ ] Physics objects: rolling boulders, rafts and wind
+- [ ] Hidden collectibles in every corner
+- [ ] Bigger open map; delta saves of changed tiles
+
+Survival and RPG:
+
+- [ ] Cooking at a pot, with meal effects (the gyro quest)
+- [ ] Outfits with bonuses
+
+Fluid motion:
+
+- [ ] Movement with acceleration and friction; skid and dust when turning or stopping
+- [ ] Footstep dust; camera leading ahead of Chad
+- [ ] Per-move frame timing: wind-up, hit and recovery, with a held impact frame
+- [ ] Smear frames on fast swings; backpack and Evey's ears lagging behind
+- [ ] Enemy flinch, knock-back, knock-down and get-up frames
+- [ ] Hand-drawn 8 to 12 frame cycles with turn and stop frames (placeholders until then)
+
+Art and polish:
+
 - [ ] Real pixel art to replace the pixelated placeholders
+- [ ] Pixel font for the HUD and dialogue
+- [ ] Sound effects and music
