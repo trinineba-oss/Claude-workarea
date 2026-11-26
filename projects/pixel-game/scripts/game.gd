@@ -65,6 +65,7 @@ var _companion: Companion
 ## Gives characters their animated pixel sprites.
 var _cast: PixelCast
 var _weapon_hud: WeaponHud
+var _music: Music
 ## Web build, `&demo=1`: start the wharf demo's waves straight away (with `&intro=0`).
 var _debug_demo := false
 var _dog_menu: DogMenu
@@ -141,6 +142,8 @@ func _ready() -> void:
 	_add_companion()
 	_cast = PixelCast.new()
 	add_child(_cast)
+	_music = Music.new()
+	add_child(_music)
 	_was_night = day_night.is_night()
 	_setup_camera()
 	_refresh_rooms()
@@ -175,6 +178,7 @@ func _physics_process(_delta: float) -> void:
 func _process(delta: float) -> void:
 	_camera.position = _player.position
 	_update_juice(delta)
+	_music.play(_music_for_now())
 	var night := day_night.is_night()
 	if night and not _was_night and not is_indoors():
 		Effects.float_text(
@@ -234,6 +238,7 @@ func light_fire() -> bool:
 	var cell := RoomChemistry.cell_of(spot)
 	Effects.burst(room, spot, "sparkle")
 	if room.chemistry.ignite(cell):
+		Sfx.play("fire")
 		return true
 	var above := _player.position + Vector2(0, -90)
 	Effects.float_text(self, above, "Won't catch", Color(1, 0.8, 0.6))
@@ -560,6 +565,16 @@ func _setup_camera() -> void:
 	_camera.limit_bottom = int(rect.end.y * size.y)
 	_camera.position_smoothing_enabled = true
 	_camera.position_smoothing_speed = CAMERA_SMOOTHING
+
+
+## The music that fits: the fight theme while the wharf waves are on, the boat theme on the
+## wharf, the village theme everywhere else.
+func _music_for_now() -> String:
+	if demo != null and demo.running:
+		return "fight"
+	if map_id == OVERWORLD and coords == WharfDemo.ROOM:
+		return "wharf"
+	return "village"
 
 
 ## Screen shake and the camera punch (Juice): a jitter and a quick zoom in, dying away.

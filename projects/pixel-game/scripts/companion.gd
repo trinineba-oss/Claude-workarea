@@ -430,6 +430,7 @@ func _watch(game: Game, player: Player, delta: float) -> void:
 		remark("night")
 	_seen_night = night
 	if _swimming and not _seen_swimming:
+		Sfx.play("splash")
 		remark("swim")
 	_seen_swimming = _swimming
 	_chad_still = _chad_still + delta if player.velocity.length() < 1.0 else 0.0
@@ -452,6 +453,7 @@ func _say(text: String) -> void:
 	if not is_inside_tree():
 		return
 	last_remark = text
+	Sfx.play("dog", 0.12)
 	if _remark_label == null:
 		_remark_label = Label.new()
 		_remark_label.name = "Remark"

@@ -26,7 +26,8 @@ const DRY_RATE := 0.05
 const MATERIALS_PATH := "res://data/materials.json"
 const ASH := Color(0.16, 0.12, 0.11)
 const EMBER := Color(1.0, 0.55, 0.15)
-const FLAME := [Color(1.0, 0.86, 0.3), Color(1.0, 0.55, 0.15), Color(0.86, 0.22, 0.1)]
+const FLAME_SHEET := preload("res://assets/ninja/fx/flame.png")
+const FLAME_FRAMES := 12
 
 static var _data: Dictionary
 
@@ -156,6 +157,9 @@ func strike(cell: Vector2i, damage: int, kind: String) -> bool:
 		return true
 	_toughness[i] -= maxi(damage, 1)
 	Effects.burst(room, _centre(cell) + Vector2(0, -24), "dust")
+	Effects.debris(room, _centre(cell) + Vector2(0, -24), _debris_kind(_material[i]), 3)
+	if _toughness[i] > 0:
+		Sfx.play("bush" if _material[i] == "foliage" else "hit")
 	if _toughness[i] <= 0:
 		break_tile(cell)
 	return true
@@ -175,6 +179,8 @@ func break_tile(cell: Vector2i) -> void:
 			if sprite != null:
 				Effects.shatter(room, sprite)
 	_drop(cell, p.get("drops", []))
+	Effects.debris(room, _centre(cell) + Vector2(0, -24), _debris_kind(_material[i]), 9)
+	Sfx.play("bush" if _material[i] == "foliage" else "smash")
 	_toughness[i] = 0
 	_clear(cell)
 	Juice.shake(0.06)
@@ -196,9 +202,16 @@ func _drop(cell: Vector2i, drops: Array) -> void:
 		return
 
 
+## What flies off a material when it is hit: leaves, grass or wood splinters.
+static func _debris_kind(material: String) -> String:
+	return {"foliage": "leaf", "tree": "leaf", "grass": "grass"}.get(material, "wood")
+
+
 ## Trees: a hit shakes them, and now and then something falls out.
 func _shake(cell: Vector2i, p: Dictionary) -> void:
 	_wobble(cell)
+	Effects.debris(room, _centre(cell) + Vector2(0, -60), "leaf", 4)
+	Sfx.play("bush")
 	var key := cell.x * 1000 + cell.y
 	var now := Time.get_ticks_msec() / 1000.0
 	if float(_shake_wait.get(key, 0.0)) > now:
@@ -366,27 +379,28 @@ func _draw() -> void:
 				)
 
 
-## Flames: little pixel tongues of fire flickering on burning tiles, and embers.
+## Flames: three pixel flames per burning tile (assets/ninja/fx/flame.png, CC0), each running
+## through the sheet's flicker frames out of step with the others, plus embers.
 func _draw_flames() -> void:
 	var tile := float(WorldMap.TILE)
 	var t := Time.get_ticks_msec() / 1000.0
+	var frame_w := FLAME_SHEET.get_width() / FLAME_FRAMES
+	var frame_h := FLAME_SHEET.get_height()
+	var size := Vector2(frame_w, frame_h) * 2.0
 	for y in rows:
 		for x in cols:
 			if _state[_i(x, y)] != State.BURNING:
 				continue
 			var base := (Vector2(x, y) + Vector2(0.5, 0.9)) * tile
 			for k in 3:
-				var phase := t * 9.0 + float(k * 2 + x * 3 + y)
-				var height := 18.0 + 10.0 * absf(sin(phase))
-				var at := base + Vector2((k - 1) * 14.0, 0)
-				for row in range(0, int(height), 4):
-					var f := float(row) / height
-					var width := roundf((1.0 - f) * 5.0) * 2.0 + 2.0
-					var col: Color = FLAME[mini(int(f * 3.0), 2)]
-					_fire_layer.draw_rect(
-						Rect2((at + Vector2(-width / 2.0, -row - 4)).round(), Vector2(width, 4)),
-						col
-					)
+				# Frames 1-6 are the full flame; loop through them at 10 fps.
+				var f := 1 + (int(t * 10.0) + k * 2 + x + y * 3) % 6
+				var at := base + Vector2((k - 1) * 16.0 - size.x / 2.0, -size.y - (k % 2) * 6.0)
+				_fire_layer.draw_texture_rect_region(
+					FLAME_SHEET,
+					Rect2(at.round(), size),
+					Rect2(Vector2(f * frame_w, 0), Vector2(frame_w, frame_h))
+				)
 			if int(t * 6.0 + x + y) % 3 == 0:
 				var ember := base + Vector2(sin(t * 3.0 + x) * 16.0, -40.0 - fmod(t * 30.0, 20.0))
 				_fire_layer.draw_rect(Rect2(ember.round(), Vector2(2, 2)), EMBER)

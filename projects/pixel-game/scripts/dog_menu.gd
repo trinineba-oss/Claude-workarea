@@ -55,6 +55,7 @@ func open(companion: Companion) -> void:
 
 ## Picks the highlighted order.
 func confirm() -> void:
+	Sfx.play("menu_accept", 0.0)
 	var order := options[_index]
 	_finish({"order": "" if order == "close" else order})
 
@@ -64,6 +65,7 @@ func cancel() -> void:
 
 
 func move(step: int) -> void:
+	Sfx.play("menu_move", 0.0)
 	_index = posmod(_index + step, options.size())
 	_build_rows()
 

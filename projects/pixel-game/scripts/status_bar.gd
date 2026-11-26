@@ -35,7 +35,7 @@ func _draw() -> void:
 			var half := Rect2(Vector2.ZERO, Vector2(size.x / 2.0, size.y))
 			draw_texture_rect_region(DOUBLE, Rect2(at, half.size), half)
 	_draw_level()
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	var money_at := Vector2(0, size.y + 10)
 	draw_texture(COIN, money_at)
 	var text_at := money_at + Vector2(COIN.get_width() + 8, COIN.get_height() * 0.8)
@@ -75,7 +75,7 @@ func set_xp(xp: int, needed: int, level: int) -> void:
 
 ## Chad's level and an XP bar, to the right of the doubles.
 func _draw_level() -> void:
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	var at := Vector2(_max_health / 2 * STEP + 18.0, 6.0)
 	var text := "Lv %d" % _level
 	draw_string_outline(
@@ -137,7 +137,7 @@ func _draw_clock(at: Vector2) -> void:
 		for i in 8:
 			var d := Vector2.from_angle(i * TAU / 8.0)
 			draw_line(centre + d * 14.0, centre + d * 19.0, Color(1.0, 0.82, 0.25), 3.0)
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	var text := "Day %d  %s" % [_day, DayNight.clock_text(_hour)]
 	var text_at := at + Vector2(44, 26)
 	draw_string_outline(

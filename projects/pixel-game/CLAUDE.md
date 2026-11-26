@@ -36,8 +36,9 @@ work branch). The plan for open-world systems is `docs/18-open-world-systems.md`
   Android SDK, which is not preinstalled in cloud sessions: install it with `sdkmanager` into
   `~/Android/Sdk` (dl.google.com must be allowed) and make a debug keystore first. Use the Web
   export for quick visual checks. Never commit keystores or `build/`.
-- Effects from free packs live in `assets/vfx/` and `shaders/vfx/` (CC BY 4.0): keep
-  `assets/vfx/CREDITS.md` and the licence files with them, and credit any new pack there.
+- Effects from free packs live in `assets/vfx/` (CC BY 4.0) and `assets/ninja/` (Ninja Adventure,
+  CC0: sounds via `Sfx.play()`, music via `Music`, FX sheets, the pixel font): keep each
+  folder's CREDITS.md and licence file with it, and credit any new pack.
 - The game is an action RPG: keep controls tight (buffered input, cancellable swings, readable
   enemy tells). The wharf demo (`scripts/wharf_demo.gd`) is the slice everything builds from.
 - Planning lives in `docs/` (one file per area). What the owner writes under "Your input" is

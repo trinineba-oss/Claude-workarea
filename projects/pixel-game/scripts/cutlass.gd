@@ -96,6 +96,7 @@ func _hit_body(body: Node) -> void:
 		return
 	var room := body.get_parent()
 	var heavy := _force > 1.5
+	Sfx.play("impact" if heavy else ("punch" if _look == "fist" else "hit"))
 	Effects.burst(room, body.position + Vector2(0, -30), "hit")
 	Effects.slash_arc(room, body.position, room.to_local(global_position), heavy)
 	Effects.float_text(

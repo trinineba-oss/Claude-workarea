@@ -91,7 +91,7 @@ func _draw() -> void:
 		Color(1, 0.8, 0.3),
 		true
 	)
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	var tip := "Hold A, or hold the screen, to reel in"
 	var at := Vector2(bar.position.x - 330, bar.end.y + 50)
 	draw_string_outline(

@@ -54,7 +54,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _draw() -> void:
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	for i in SHOWN:
 		var rect := Rect2(Vector2(i * (SLOT + GAP), 0), Vector2(SLOT, SLOT))
 		draw_rect(rect, Color(0.08, 0.05, 0.12, 0.62), true)

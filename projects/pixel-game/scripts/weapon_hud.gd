@@ -38,7 +38,7 @@ func show_weapon(id: String, wear: int, durability: int) -> void:
 func _draw() -> void:
 	draw_rect(Rect2(Vector2.ZERO, Vector2(52, 52)), Color(0.08, 0.05, 0.12, 0.6))
 	draw_rect(Rect2(Vector2.ZERO, Vector2(52, 52)), Color(1, 1, 1, 0.5), false, 2.0)
-	var font := ThemeDB.fallback_font
+	var font := get_theme_default_font()
 	draw_string_outline(
 		font,
 		Vector2(62, 22),

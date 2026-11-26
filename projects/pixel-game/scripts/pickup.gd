@@ -63,6 +63,7 @@ func _collect(player: Player) -> bool:
 	if kind == "weapon":
 		if not player.add_weapon(weapon_id, wear):
 			return false
+		Sfx.play("pickup")
 		Effects.float_text(
 			get_parent(), position + Vector2(0, -70), Weapons.display_name(weapon_id), Color.WHITE
 		)
@@ -71,7 +72,9 @@ func _collect(player: Player) -> bool:
 		if player.is_full_health():
 			return false
 		player.heal(HEAL_AMOUNT)
+		Sfx.play("heal")
 	else:
 		player.add_money(COIN_VALUE)
+		Sfx.play("coin")
 		Effects.flourish(get_parent(), position, "coin_burst_gold", 1.1, 0.5)
 	return true

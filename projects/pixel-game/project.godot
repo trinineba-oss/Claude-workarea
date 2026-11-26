@@ -93,6 +93,10 @@ dog={
 2d_physics/layer_3="enemies"
 2d_physics/layer_4="pickups"
 
+[gui]
+
+theme/custom_font="res://assets/ninja/font/pixel_font.tres"
+
 [rendering]
 
 environment/defaults/default_clear_color=Color(0.05, 0.05, 0.09, 1)

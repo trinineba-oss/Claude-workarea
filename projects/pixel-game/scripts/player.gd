@@ -246,6 +246,7 @@ func take_hit(damage: int, from_position: Vector2) -> bool:
 	_invincible = INVINCIBLE_SECONDS
 	_squash = Vector2(0.84, 1.14)
 	_cutlass.cancel()
+	Sfx.play("hurt")
 	Effects.burst(get_parent(), position + Vector2(0, -40), "hit")
 	health_changed.emit(health, max_health)
 	if health == 0:
@@ -341,6 +342,7 @@ func wear_weapon(amount := 1) -> void:
 		weapon_changed.emit(weapon_id(), weapon_wear(), Weapons.durability(weapon_id()))
 		return
 	var broken := str(entry["id"])
+	Sfx.play("break_weapon")
 	weapons().remove_at(slot)
 	Effects.burst(get_parent(), position + Vector2(0, -50), "hit")
 	Effects.float_text(
@@ -364,6 +366,7 @@ func throw_weapon() -> WeaponThrow:
 		return null
 	var entry: Dictionary = weapons()[slot]
 	weapons().remove_at(slot)
+	Sfx.play("throw")
 	var thrown := WeaponThrow.new()
 	thrown.setup(str(entry["id"]), int(entry["wear"]), aim, self)
 	get_parent().add_child(thrown)
@@ -440,6 +443,7 @@ func gain_xp(amount: int) -> void:
 	story_flags["chad_level"] = now
 	story_flags["chad_xp"] = total if now < MAX_LEVEL else 0
 	if gained:
+		Sfx.play("level_up", 0.0)
 		heal(max_health)
 		_squash = Vector2(0.8, 1.3)
 		Effects.burst(get_parent(), position + Vector2(0, -40), "sparkle")
@@ -554,7 +558,9 @@ func _start_move(move: Dictionary, spin: bool) -> void:
 	var damage := _move_damage(move) + (1 if flurry > 0.0 else 0)
 	_cutlass.swing(aim, attack_time, damage, move["sweep"], move["reach"], move["force"])
 	_cutlass.set_style(Weapons.look(weapon_id()), Weapons.kind(weapon_id()))
+	Sfx.play("swing_heavy" if heavy or spin else ("whoosh" if weapon_id() == "fists" else "swing"))
 	if spin:
+		Effects.spin_slash(get_parent(), position)
 		Effects.burst(get_parent(), position + Vector2(0, -30), "sparkle")
 		Juice.shake(0.12)
 
@@ -570,6 +576,7 @@ func _start_dodge() -> void:
 	state = State.DODGE
 	_state_time = DODGE_TIME
 	_lunge = (held.normalized() if held != Vector2.ZERO else aim) * DODGE_SPEED
+	Sfx.play("roll")
 	Effects.burst(get_parent(), position + Vector2(0, -8), "dust")
 
 

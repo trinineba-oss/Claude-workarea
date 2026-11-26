@@ -8,8 +8,20 @@ const SPARK := preload("res://assets/sprites/spark.png")
 const VFX_SHEETS := "res://assets/vfx/crisp_juice/sheets.json"
 const VFX_TEXTURE := "res://assets/vfx/crisp_juice/%s.png"
 
+## Pixel effect sheets from the Ninja Adventure pack (assets/ninja/fx, CC0): texture, frames.
+const SHEETS := {
+	"slash_arc": [preload("res://assets/ninja/fx/slash_arc.png"), 6],
+	"slash_spin": [preload("res://assets/ninja/fx/slash_spin.png"), 7],
+	"smoke": [preload("res://assets/ninja/fx/smoke.png"), 6],
+}
+## Debris strips: each frame is a different piece.
+const DEBRIS := {
+	"leaf": [preload("res://assets/ninja/fx/leaf.png"), 6],
+	"wood": [preload("res://assets/ninja/fx/wood.png"), 6],
+	"grass": [preload("res://assets/ninja/fx/grass.png"), 6],
+}
+
 static var _vfx: Dictionary
-static var _crescent: Texture2D
 
 
 ## A short message that floats up from a point in the world and fades ("+2 Mango").
@@ -63,31 +75,85 @@ static func flourish(
 	return sprite
 
 
-## A crescent slash mark over something the cutlass hit, bulging away from the swing's origin
-## `from`: it flares out and fades. The finisher's (`heavy`) is bigger and gold.
+## A slash mark over something the cutlass hit, curving away from the swing's origin `from`
+## (an animated pixel arc). The finisher's (`heavy`) is bigger and gold.
 static func slash_arc(parent: Node, at: Vector2, from: Vector2, heavy: bool) -> Sprite2D:
-	if parent == null or not parent.is_inside_tree():
-		return null
-	var arc := Sprite2D.new()
-	arc.name = "SlashArc"
-	arc.texture = _crescent_texture()
-	arc.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	arc.modulate = Color(1.0, 0.85, 0.4) if heavy else Color(0.9, 0.96, 1.0)
-	arc.z_index = 20
 	var away := (at - from).normalized() if at != from else Vector2.RIGHT
-	arc.rotation = away.angle()
-	arc.position = at + Vector2(0, -30)
-	var size := 2.4 if heavy else 1.6
-	arc.scale = Vector2.ONE * size
-	parent.add_child(arc)
-	var mat := CanvasItemMaterial.new()
-	mat.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	arc.material = mat
-	var tween := arc.create_tween().set_parallel(true)
-	tween.tween_property(arc, "scale", Vector2.ONE * size * 1.5, 0.16).set_ease(Tween.EASE_OUT)
-	tween.tween_property(arc, "modulate:a", 0.0, 0.2).set_delay(0.04)
-	tween.chain().tween_callback(arc.queue_free)
+	var arc := play_sheet(parent, "slash_arc", at + Vector2(0, -30), 2.6 if heavy else 2.0, 0.24)
+	if arc != null:
+		arc.name = "SlashArc"
+		# The sheet's arc bulges downwards: turn that bulge to face away from Chad.
+		arc.rotation = away.angle() - PI / 2.0
+		arc.modulate = Color(1.0, 0.85, 0.45) if heavy else Color.WHITE
 	return arc
+
+
+## The spin attack's whirl around Chad.
+static func spin_slash(parent: Node, at: Vector2) -> Sprite2D:
+	return play_sheet(parent, "slash_spin", at + Vector2(0, -34), 2.6, 0.32)
+
+
+## Plays one of SHEETS once at a point, `size` times its pixel size, over `seconds`.
+static func play_sheet(
+	parent: Node, sheet_name: String, at: Vector2, size: float, seconds: float
+) -> Sprite2D:
+	if parent == null or not parent.is_inside_tree() or not SHEETS.has(sheet_name):
+		return null
+	var spec: Array = SHEETS[sheet_name]
+	var sprite := Sprite2D.new()
+	sprite.texture = spec[0]
+	sprite.hframes = spec[1]
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.scale = Vector2.ONE * size
+	sprite.position = at
+	sprite.z_index = 20
+	parent.add_child(sprite)
+	var tween := sprite.create_tween()
+	tween.tween_property(sprite, "frame", int(spec[1]) - 1, seconds).from(0)
+	tween.tween_callback(sprite.queue_free)
+	return sprite
+
+
+## Bits flying off something hit or broken: "leaf", "wood" or "grass" pieces that burst out,
+## spin, fall and fade.
+static func debris(parent: Node, at: Vector2, kind: String, count := 6) -> void:
+	if parent == null or not parent.is_inside_tree() or not DEBRIS.has(kind):
+		return
+	var spec: Array = DEBRIS[kind]
+	for i in count:
+		var piece := Sprite2D.new()
+		piece.texture = spec[0]
+		piece.hframes = spec[1]
+		piece.frame = randi() % int(spec[1])
+		piece.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		piece.scale = Vector2.ONE * 2.0
+		piece.position = at + Vector2(randf_range(-10, 10), randf_range(-8, 8))
+		piece.z_index = 7
+		parent.add_child(piece)
+		var out := Vector2.from_angle(randf() * TAU) * randf_range(30.0, 80.0)
+		var up := randf_range(24.0, 56.0)
+		var seconds := randf_range(0.4, 0.7)
+		var tween := piece.create_tween().set_parallel(true)
+		# Up and out, then down: an arc in a top-down world.
+		tween.tween_property(piece, "position:x", piece.position.x + out.x, seconds)
+		(
+			tween
+			. tween_property(
+				piece, "position:y", piece.position.y + out.y * 0.5 - up, seconds * 0.4
+			)
+			. set_ease(Tween.EASE_OUT)
+		)
+		(
+			tween
+			. tween_property(
+				piece, "position:y", piece.position.y + out.y * 0.5 + 10.0, seconds * 0.6
+			)
+			. set_delay(seconds * 0.4)
+			. set_ease(Tween.EASE_IN)
+		)
+		tween.tween_property(piece, "rotation", randf_range(-4.0, 4.0), seconds)
+		tween.tween_property(piece, "modulate:a", 0.0, seconds * 0.4).set_delay(seconds * 0.6)
+		tween.chain().tween_callback(piece.queue_free)
 
 
 ## Breaks a sprite into pieces that burst outward, tumble, drop and fade (a smashed crate, a
@@ -130,28 +196,11 @@ static func shatter(parent: Node, sprite: Sprite2D, pieces := 4) -> void:
 			tween.chain().tween_callback(piece.queue_free)
 
 
-## A small pixel-art crescent (made once): an arc of a ring whose centre sits off the left
-## edge, so it bulges towards +x, thickest in the middle and tapering at the tips.
-static func _crescent_texture() -> Texture2D:
-	if _crescent != null:
-		return _crescent
-	var size := 32
-	var image := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	var centre := Vector2(-10.0, size / 2.0)
-	for y in size:
-		for x in size:
-			var offset := Vector2(x + 0.5, y + 0.5) - centre
-			var spread := absf(offset.angle()) / 0.62
-			var thick := 4.5 * (1.0 - spread * spread)
-			var edge := absf(offset.length() - 29.0)
-			var a := 1.0 if thick > 0.0 and edge < thick else 0.0
-			image.set_pixel(x, y, Color(1, 1, 1, a))
-	_crescent = ImageTexture.create_from_image(image)
-	return _crescent
-
-
 static func burst(parent: Node, pos: Vector2, kind: String) -> void:
 	if parent == null or not parent.is_inside_tree():
+		return
+	if kind == "poof":
+		play_sheet(parent, "smoke", pos, 2.4, 0.42)
 		return
 	var p := CPUParticles2D.new()
 	p.texture = SPARK

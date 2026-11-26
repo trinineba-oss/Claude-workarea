@@ -117,7 +117,7 @@ licence page before importing, and credit CC-BY / CC-BY-SA work in the matching 
 
 | Need | Source | Licence |
 | --- | --- | --- |
-| Top-down pixel kit: characters, monsters, tiles, weapons, effects, UI, fonts, sound effects, music (ships a Godot 4 project) | [Ninja Adventure, pixel-boy](https://pixel-boy.itch.io/ninja-adventure-asset-pack) | CC0 |
+| Top-down pixel kit: characters, monsters, tiles, weapons, effects, UI, fonts, sound effects, music (ships a Godot 4 project) | [Ninja Adventure, pixel-boy](https://pixel-boy.itch.io/ninja-adventure-asset-pack); **in the game** (`assets/ninja/`, see its CREDITS.md) | CC0 |
 | Chad's extra animations: climb, jump, run, sit, emote | [Universal LPC generator](https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/) (via `tools/lpc_build.py`) | CC-BY-SA 3.0 / GPL 3 |
 | Cliffs, water, waterfalls, climbable faces, seasons | [LPC revised 4 season terrain](https://opengameart.org/content/lpc-revised-4-season-terrain), [LPC mountains](https://opengameart.org/content/lpc-mountains), [LPC animated water](https://lpc.opengameart.org/node/25071) | Mostly CC-BY-SA; check each |
 | Weapon icons | [16x16 weapon RPG icons](https://opengameart.org/content/16x16-weapon-rpg-icons), [Swords and staffs](https://opengameart.org/content/swords-and-staffs) | CC0 |
@@ -187,5 +187,11 @@ Fluid motion:
 Art and polish:
 
 - [ ] Real pixel art to replace the pixelated placeholders
-- [ ] Pixel font for the HUD and dialogue
-- [ ] Sound effects and music
+- [x] Pixel font for the HUD and dialogue (Ninja Adventure)
+- [x] Sound effects and music (Ninja Adventure: swings, hits, breaking, coins, fire, Evey's
+      grunts, menus; village, wharf and fight themes)
+- [x] Pixel effects: slash arcs, spin whirl, smoke puffs, leaf and wood debris, flames
+- [ ] More sounds: footsteps, ambient waves and wind, rain (all in the pack, not yet used)
+- [ ] LPC cliffs and water for climbing (download when climbing starts)
+- [ ] Aseprite Wizard, Phantom Camera, LimboAI (GitHub is blocked from the cloud session:
+      install them from Godot's AssetLib tab on your PC)
